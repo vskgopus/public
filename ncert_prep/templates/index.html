@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NCERT Exam Prep</title>
+<style>
+  :root {
+    --bg: #f5f7fa; --card: #ffffff; --ink: #1f2933; --muted: #616e7c; --line: #d9e2ec;
+    --accent: #1d4e89; --accent-ink: #ffffff; --soft: #eaf1fb; --ok: #0b6e4f; --warn: #a15c07; --err: #b42318;
+    --shade: rgba(15, 23, 42, .45);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #11161c; --card: #1a222c; --ink: #e4e7eb; --muted: #9aa5b1; --line: #2f3a46;
+            --accent: #5b9bd5; --accent-ink: #0b1622; --soft: #1e2c3d; --ok: #4cc38a; --warn: #f0b35a; --err: #f97066;
+            --shade: rgba(0, 0, 0, .6); color-scheme: dark; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, sans-serif; }
+  main { max-width: 780px; margin: 0 auto; padding: 24px 16px 64px; }
+  .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+  h1 { font-size: 1.75rem; margin: 0 0 4px; }
+  .lede { color: var(--muted); margin: 0 0 22px; max-width: 60ch; }
+  .badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; cursor: pointer;
+           border: 1px solid var(--line); background: var(--card); color: var(--ink); font: inherit; font-size: .9rem; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); flex: none; }
+  .dot.ok { background: var(--ok); } .dot.warn { background: var(--warn); } .dot.err { background: var(--err); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .full { grid-column: 1 / -1; }
+  label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 6px; }
+  .hint { font-weight: 400; color: var(--muted); font-size: .82rem; }
+  select, input[type=number], input[type=password], input[type=text] {
+    width: 100%; padding: 10px 12px; font: inherit; color: var(--ink); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 8px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  fieldset { border: 1px dashed var(--line); border-radius: 10px; padding: 12px 16px 16px; margin: 0; min-width: 0; }
+  legend { font-size: .85rem; color: var(--muted); padding: 0 6px; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  button.primary, button.secondary { padding: 12px 16px; font: inherit; font-weight: 700; cursor: pointer; border-radius: 8px; }
+  button.primary { background: var(--accent); color: var(--accent-ink); border: 0; }
+  button.secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); font-weight: 600; }
+  button:disabled { opacity: .55; cursor: progress; }
+  #go { margin-top: 20px; width: 100%; }
+  .includes { margin: 20px 0 0; padding: 14px 16px; background: var(--soft); border-radius: 10px; font-size: .9rem; }
+  .includes ol { margin: 6px 0 0; padding-left: 20px; }
+  #status { margin-top: 20px; }
+  #log { margin: 0; padding-left: 20px; font-size: .9rem; color: var(--muted); }
+  #log li:last-child { color: var(--ink); }
+  .error { color: var(--err); font-weight: 600; }
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+  .actions a { padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: 600; border: 1px solid var(--accent); color: var(--accent); }
+  .actions a.primary { background: var(--accent); color: var(--accent-ink); }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--accent);
+             border-radius: 50%; animation: spin 1s linear infinite; vertical-align: -2px; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+  @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+
+  /* settings panel */
+  [hidden] { display: none !important; }
+  #shade { position: fixed; inset: 0; background: var(--shade); display: flex; justify-content: flex-end; z-index: 10; }
+  #panel { width: min(460px, 100%); height: 100%; overflow-y: auto; background: var(--card); padding: 22px 20px 40px;
+           border-left: 1px solid var(--line); }
+  #panel h2 { margin: 0; font-size: 1.25rem; }
+  .ph { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .x { background: none; border: 0; font-size: 1.6rem; line-height: 1; cursor: pointer; color: var(--muted); }
+  .opt { border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 12px; }
+  .opt.sel { border-color: var(--accent); background: var(--soft); }
+  .opt > label { display: flex; gap: 10px; align-items: flex-start; margin: 0; cursor: pointer; }
+  .opt > label input { margin-top: 4px; }
+  .opt .body { margin: 10px 0 0 26px; font-size: .9rem; display: grid; gap: 10px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  code, .cmd { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: .85rem; }
+  .cmd { display: block; padding: 8px 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; overflow-x: auto; white-space: pre; }
+  .state { display: flex; gap: 8px; align-items: center; font-weight: 600; }
+  .sect { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
+  .msg { font-size: .85rem; min-height: 1.2em; }
+  .msg.ok { color: var(--ok); } .msg.bad { color: var(--err); }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div>
+      <h1>NCERT Exam Prep</h1>
+    </div>
+    <button class="badge" id="badge" type="button" aria-haspopup="dialog"><span class="dot" id="bdot"></span><span id="btext">Checking AI…</span></button>
+  </div>
+  <p class="lede">Choose a class, subject, book and chapters. The book is downloaded from the official NCERT site
+    (ncert.nic.in) and Claude prepares a printable PDF of notes and questions with answers.</p>
+
+  <form id="f" class="card">
+    <div class="grid">
+      <div><label for="cls">Class</label><select id="cls" required></select></div>
+      <div><label for="subject">Subject</label><select id="subject" required></select></div>
+      <div class="full"><label for="book">Book</label><select id="book" required></select></div>
+      <fieldset>
+        <legend>Chapters</legend>
+        <div class="pair">
+          <div><label for="chf">From</label><select id="chf"></select></div>
+          <div><label for="cht">To</label><select id="cht"></select></div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Page range (optional)</legend>
+        <div class="pair">
+          <div><label for="pf">From</label><input id="pf" type="number" min="1" placeholder="1"></div>
+          <div><label for="pt">To</label><input id="pt" type="number" min="1" placeholder="end"></div>
+        </div>
+      </fieldset>
+      <p class="hint full" style="margin:0">Pages are counted from page 1 of the first selected chapter's NCERT PDF and run on
+        through the later chapters. Leave blank to use whole chapters.</p>
+    </div>
+
+    <div class="includes">
+      <strong>The PDF contains, for each chapter:</strong>
+      <ol>
+        <li>Summary notes, topic by topic</li>
+        <li>Key points to remember</li>
+        <li>One-mark questions with answers (MCQ, fill in the blanks, true/false, assertion-reason, very short)</li>
+        <li>2- and 3-mark questions with answers</li>
+        <li>5-mark questions with answers</li>
+      </ol>
+    </div>
+
+    <button id="go" class="primary" type="submit">Prepare exam material</button>
+
+    <div id="status" hidden>
+      <p id="state"></p>
+      <ol id="log"></ol>
+      <div id="actions" class="actions"></div>
+    </div>
+  </form>
+</main>
+
+<div id="shade" hidden>
+  <div id="panel" role="dialog" aria-modal="true" aria-labelledby="sh">
+    <div class="ph"><h2 id="sh">Settings</h2><button class="x" id="close" type="button" aria-label="Close settings">×</button></div>
+
+    <p class="hint" style="margin-top:0">Choose how the app talks to Claude.</p>
+
+    <div class="opt" id="opt-login">
+      <label><input type="radio" name="engine" value="claude_login" id="eng-login">
+        <span><strong>Claude login</strong><br><span class="hint">Use your Claude Pro or Max account. No API key; uses your plan's usage limits.</span></span></label>
+      <div class="body" id="login-body"></div>
+    </div>
+
+    <div class="opt" id="opt-key">
+      <label><input type="radio" name="engine" value="api_key" id="eng-key">
+        <span><strong>API key</strong><br><span class="hint">Pay per use from console.anthropic.com (about $0.30–0.60 per chapter).</span></span></label>
+      <div class="body">
+        <div id="key-state" class="hint"></div>
+        <label for="apikey" style="margin:0">Anthropic API key</label>
+        <div class="row"><input id="apikey" type="password" placeholder="sk-ant-…" autocomplete="off" style="flex:1;min-width:0">
+          <button class="secondary" id="savekey" type="button">Save</button></div>
+        <span class="hint">Stored only on this computer, in your user settings folder.</span>
+      </div>
+    </div>
+    <div class="msg" id="smsg" role="status"></div>
+
+    <div class="sect">
+      <label for="split" style="margin:0">Split long chapters</label>
+      <select id="split">
+        <option value="0">Off: send each chapter whole</option>
+        <option value="8">Parts of up to 8 pages</option>
+        <option value="12">Parts of up to 12 pages</option>
+        <option value="16">Parts of up to 16 pages</option>
+      </select>
+      <span class="hint">Smaller parts use less of your Claude allowance at a time. If you hit a usage limit, finished parts
+        are kept and the app continues from there next time.</span>
+    </div>
+
+    <div class="sect">
+      <span class="hint">Finished PDFs are saved in <code id="outdir"></code></span>
+      <div class="row"><button class="secondary" id="openfolder" type="button">Open PDF folder</button>
+        <button class="secondary" id="quit" type="button">Quit app</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const CATALOG = {{ catalog | tojson }};
+const TOKEN = {{ token | tojson }};
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const post = (url, body = {}) => fetch(url, { method: "POST", headers: { "Content-Type": "application/json", "X-App-Token": TOKEN }, body: JSON.stringify(body) })
+  .then(async r => { const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.statusText); return j; });
+const opt = (sel, items) => { sel.innerHTML = items.map(([v, t]) => `<option value="${esc(v)}">${esc(t)}</option>`).join(""); };
+const clsLabel = c => c === "11-12" ? "Class 11–12 (combined)" : `Class ${c}`;
+
+// ---------------- book picker
+function book() { return (CATALOG[$("cls").value]?.[$("subject").value] || []).find(b => b.code === $("book").value); }
+function fillClasses() { opt($("cls"), Object.keys(CATALOG).map(c => [c, clsLabel(c)])); $("cls").value = CATALOG["10"] ? "10" : Object.keys(CATALOG)[0]; fillSubjects(); }
+function fillSubjects() { opt($("subject"), Object.keys(CATALOG[$("cls").value]).sort().map(s => [s, s])); if (CATALOG[$("cls").value]["Science"]) $("subject").value = "Science"; fillBooks(); }
+function fillBooks() { opt($("book"), CATALOG[$("cls").value][$("subject").value].map(b => [b.code, b.title])); fillChapters(); }
+function fillChapters() { const b = book(), chs = []; for (let i = b.first_chapter; i <= b.last_chapter; i++) chs.push([i, `Chapter ${i}`]); opt($("chf"), chs); opt($("cht"), chs); }
+$("cls").onchange = fillSubjects; $("subject").onchange = fillBooks; $("book").onchange = fillChapters;
+$("chf").onchange = () => { if (+$("cht").value < +$("chf").value) $("cht").value = $("chf").value; };
+$("cht").onchange = () => { if (+$("cht").value < +$("chf").value) $("chf").value = $("cht").value; };
+fillClasses();
+
+// ---------------- AI status + settings
+let ST = null, loginPoll = null;
+async function refresh() {
+  ST = await fetch("/api/status").then(r => r.json());
+  const s = ST.settings, c = ST.claude;
+  $("eng-login").checked = s.engine === "claude_login"; $("eng-key").checked = s.engine === "api_key";
+  $("opt-login").classList.toggle("sel", s.engine === "claude_login"); $("opt-key").classList.toggle("sel", s.engine === "api_key");
+  $("split").value = String(s.split_pages); $("outdir").textContent = ST.output_dir;
+  $("key-state").textContent = s.api_key_set ? `A key is saved (${s.api_key_hint}).` : (s.env_key ? "Using the ANTHROPIC_API_KEY environment variable." : "No key saved yet.");
+
+  let html;
+  if (!c.installed) {
+    html = `<div class="state"><span class="dot err"></span>Claude Code is not installed</div>
+      <span>Claude login works through Claude Code, Anthropic's free command-line tool. Install it once by running this in a terminal, then reopen Settings:</span>
+      <code class="cmd">${esc(c.install_command)}</code>`;
+  } else if (c.logged_in) {
+    html = `<div class="state"><span class="dot ok"></span>Logged in to Claude</div>
+      <div class="row"><button class="secondary" id="logout" type="button">Log out</button></div>`;
+  } else {
+    html = `<div class="state"><span class="dot warn"></span>Not logged in</div>
+      <div class="row"><button class="primary" id="login" type="button">${c.login_running ? "Waiting for sign-in…" : "Log in with Claude"}</button></div>
+      <span class="hint">A browser tab opens for you to sign in with your Claude account (choose your Pro/Max subscription).</span>
+      ${c.login_url ? `<span class="hint">If no tab opened, open this link: <a href="${esc(c.login_url)}" target="_blank" rel="noopener">sign-in page</a>. If it shows a code, paste it here:</span>
+        <div class="row"><input id="lcode" type="text" placeholder="Paste code" style="flex:1;min-width:0"><button class="secondary" id="sendcode" type="button">Submit</button></div>` : ""}`;
+  }
+  $("login-body").innerHTML = html;
+  if ($("login")) $("login").onclick = async () => { $("login").disabled = true; try { await post("/api/claude/login"); startLoginPoll(); } catch (e) { say(e.message, true); } refresh(); };
+  if ($("logout")) $("logout").onclick = async () => { await post("/api/claude/logout"); refresh(); };
+  if ($("sendcode")) $("sendcode").onclick = async () => { await post("/api/claude/code", { code: $("lcode").value }); say("Code sent."); };
+
+  // corner badge
+  let dot = "err", text;
+  if (s.engine === "claude_login") {
+    if (!c.installed) text = "Claude login: install needed";
+    else if (c.logged_in) { dot = "ok"; text = "Claude login"; }
+    else { dot = "warn"; text = "Log in to Claude"; }
+  } else if (s.api_key_set || s.env_key) { dot = "ok"; text = "API key"; }
+  else text = "API key: not set";
+  $("bdot").className = "dot " + dot; $("btext").textContent = text;
+  if (c.logged_in && loginPoll) { clearInterval(loginPoll); loginPoll = null; say("Logged in.", false); }
+}
+function startLoginPoll() { if (!loginPoll) loginPoll = setInterval(refresh, 2500); }
+function say(m, bad) { $("smsg").textContent = m; $("smsg").className = "msg " + (bad ? "bad" : "ok"); }
+function openPanel() { $("shade").hidden = false; refresh(); $("close").focus(); }
+function closePanel() { $("shade").hidden = true; $("badge").focus(); }
+$("badge").onclick = openPanel; $("close").onclick = closePanel;
+$("shade").onclick = e => { if (e.target === $("shade")) closePanel(); };
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("shade").hidden) closePanel(); });
+document.querySelectorAll('input[name=engine]').forEach(r => r.onchange = async () => { await post("/api/settings", { engine: r.value }); say("Saved."); refresh(); });
+$("savekey").onclick = async () => { try { await post("/api/settings", { api_key: $("apikey").value, engine: "api_key" }); $("apikey").value = ""; say("API key saved."); refresh(); } catch (e) { say(e.message, true); } };
+$("split").onchange = async () => { await post("/api/settings", { split_pages: $("split").value }); say("Saved."); };
+$("openfolder").onclick = () => post("/api/open-folder").catch(e => say(e.message, true));
+$("quit").onclick = async () => { await post("/api/quit").catch(() => {}); document.body.innerHTML = '<main><h1>NCERT Exam Prep has closed.</h1><p class="lede">You can close this window.</p></main>'; };
+refresh().then(() => { const c = ST.claude, s = ST.settings;
+  if ((s.engine === "claude_login" && !(c.installed && c.logged_in)) || (s.engine === "api_key" && !(s.api_key_set || s.env_key))) openPanel(); });
+
+// ---------------- jobs
+$("f").onsubmit = async e => {
+  e.preventDefault();
+  $("go").disabled = true; $("status").hidden = false; $("actions").innerHTML = ""; $("log").innerHTML = "";
+  $("state").innerHTML = '<span class="spinner"></span>Starting…';
+  try {
+    const j = await post("/api/jobs", { cls: $("cls").value, subject: $("subject").value, book: $("book").value,
+      chapter_from: $("chf").value, chapter_to: $("cht").value, page_from: $("pf").value, page_to: $("pt").value });
+    poll(j.id);
+  } catch (err) { fail(err.message); }
+};
+function fail(msg) { $("state").innerHTML = `<span class="error">${esc(msg)}</span>`; $("go").disabled = false; }
+async function poll(id) {
+  const j = await fetch(`/api/jobs/${id}`).then(r => r.json());
+  $("log").innerHTML = j.log.map(l => `<li>${esc(l)}</li>`).join("");
+  if (j.status === "error") return fail(j.error);
+  if (j.status === "done") {
+    $("state").textContent = `Ready (took ${Math.max(1, Math.round(j.elapsed / 60))} min).`;
+    $("actions").innerHTML = `<a class="primary" href="${j.download}" target="_blank">Open PDF to print</a>
+      <a href="${j.download}?download=1">Download PDF</a><a href="#" id="folder2">Open PDF folder</a>`;
+    $("folder2").onclick = ev => { ev.preventDefault(); post("/api/open-folder"); };
+    $("go").disabled = false; return;
+  }
+  const m = Math.floor(j.elapsed / 60), s = j.elapsed % 60;
+  $("state").innerHTML = `<span class="spinner"></span>Working… ${m}:${String(s).padStart(2, "0")}`;
+  setTimeout(() => poll(id), 3000);
+}
+</script>
+</body>
+</html>

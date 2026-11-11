@@ -1,0 +1,214 @@
+<title>NCERT Prep with Claude</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: answer-sheet page. A red margin rule runs down the left of the work area;
+     left column = choices + NCERT downloads, right column = the prompt to paste. */
+  :root {
+    --paper: #fbfcfe; --sheet: #ffffff; --ink: #172036; --muted: #5a6478; --rule: #dde3ee;
+    --accent: #1f4fa3; --accent-ink: #ffffff; --accent-soft: #e8eefb; --margin: #d4483b; --ok: #13795b;
+    --display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+    --body: "Inter", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0f1420; --sheet: #161d2c; --ink: #e6eaf2; --muted: #9aa5ba; --rule: #2a3346;
+      --accent: #7fa6ef; --accent-ink: #0d1424; --accent-soft: #1d2a45; --margin: #ef7a6e; --ok: #4fc597;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0f1420; --sheet: #161d2c; --ink: #e6eaf2; --muted: #9aa5ba; --rule: #2a3346;
+    --accent: #7fa6ef; --accent-ink: #0d1424; --accent-soft: #1d2a45; --margin: #ef7a6e; --ok: #4fc597;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--paper); color: var(--ink); font: 15px/1.55 var(--body); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding-block: 28px 56px;
+          padding-left: max(16px, env(safe-area-inset-left, 0px));
+          padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  header h1 { font: 700 clamp(1.6rem, 3.2vw, 2.2rem)/1.15 var(--display); margin: 0 0 6px; text-wrap: balance; }
+  header p { margin: 0; color: var(--muted); max-width: 68ch; }
+  .marks { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .chip { font: 500 12px/1 var(--mono); padding: 6px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+  .grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 20px; margin-top: 24px; align-items: start; }
+  @media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+  .sheet { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 20px 20px 22px 30px; position: relative; min-width: 0; }
+  .sheet::before { content: ""; position: absolute; left: 16px; top: 0; bottom: 0; width: 2px; background: var(--margin); opacity: .55; }
+  .step { display: grid; gap: 10px; }
+  .step + .step { margin-top: 22px; padding-top: 18px; border-top: 1px dashed var(--rule); }
+  .step h2 { font: 600 1rem/1.3 var(--display); margin: 0; display: flex; gap: 10px; align-items: baseline; }
+  .step h2 .n { font: 500 12px/1 var(--mono); color: var(--margin); letter-spacing: .04em; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 420px) { .row { grid-template-columns: 1fr; } }
+  label { display: grid; gap: 5px; font-size: 13px; font-weight: 600; min-width: 0; }
+  select, input { width: 100%; font: inherit; font-weight: 400; color: var(--ink); background: var(--paper);
+                  border: 1px solid var(--rule); border-radius: 7px; padding: 9px 10px; }
+  select:focus-visible, input:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .hint { font-size: 12.5px; color: var(--muted); margin: 0; }
+  .files { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .files a { display: flex; justify-content: space-between; gap: 12px; align-items: center; text-decoration: none;
+             color: var(--ink); border: 1px solid var(--rule); border-radius: 8px; padding: 9px 12px; background: var(--paper); }
+  .files a:hover { border-color: var(--accent); }
+  .files .code { font: 12px/1 var(--mono); color: var(--muted); }
+  .files .go { color: var(--accent); font-weight: 600; font-size: 13px; white-space: nowrap; }
+  .btns { display: flex; flex-wrap: wrap; gap: 10px; }
+  .btn { font: 600 14px/1 var(--body); padding: 11px 16px; border-radius: 8px; cursor: pointer; text-decoration: none;
+         border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); }
+  .btn.ghost { background: transparent; color: var(--accent); }
+  .status { font-size: 13px; color: var(--ok); min-height: 1.2em; }
+  .prompt-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+  .prompt-head h2 { font: 600 1rem/1.3 var(--display); margin: 0; }
+  textarea { width: 100%; min-height: 520px; resize: vertical; font: 13px/1.55 var(--mono); color: var(--ink);
+             background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 12px; }
+  ol.how { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+  .note { margin-top: 14px; font-size: 13px; color: var(--muted); background: var(--accent-soft); border-radius: 8px; padding: 10px 12px; }
+  @media (prefers-reduced-motion: no-preference) { .btn, .files a { transition: border-color .15s, background .15s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>NCERT Prep with Claude</h1>
+    <p>Make printable CBSE exam notes and question banks from the official NCERT textbook, using your own Claude Pro
+      account. No API key needed: pick the chapter, download it from ncert.nic.in, and paste the ready-made prompt into claude.ai.</p>
+    <div class="marks" aria-label="What you get">
+      <span class="chip">Summary notes</span><span class="chip">Key points</span>
+      <span class="chip">1 mark Q&amp;A</span><span class="chip">2 / 3 mark Q&amp;A</span><span class="chip">5 mark Q&amp;A</span>
+    </div>
+  </header>
+
+  <div class="grid">
+    <section class="sheet" aria-label="Choose and download">
+      <div class="step">
+        <h2><span class="n">STEP 1</span>Choose the chapter</h2>
+        <div class="row">
+          <label for="cls">Class<select id="cls"></select></label>
+          <label for="subject">Subject<select id="subject"></select></label>
+        </div>
+        <label for="book">Book<select id="book"></select></label>
+        <div class="row">
+          <label for="chf">Chapter from<select id="chf"></select></label>
+          <label for="cht">Chapter to<select id="cht"></select></label>
+        </div>
+        <div class="row">
+          <label for="pf">Pages from (optional)<input id="pf" type="number" min="1" inputmode="numeric" placeholder="first"></label>
+          <label for="pt">Pages to (optional)<input id="pt" type="number" min="1" inputmode="numeric" placeholder="last"></label>
+        </div>
+        <p class="hint">Page numbers are the ones printed on the textbook pages. Leave them empty for whole chapters.
+          One chapter per chat gives the most complete question bank.</p>
+      </div>
+
+      <div class="step">
+        <h2><span class="n">STEP 2</span>Download from NCERT</h2>
+        <ul class="files" id="files"></ul>
+        <p class="hint">Official chapter PDFs from ncert.nic.in. Save them, then attach them in claude.ai.</p>
+      </div>
+
+      <div class="step">
+        <h2><span class="n">STEP 3</span>Ask Claude</h2>
+        <ol class="how">
+          <li>Open claude.ai and start a new chat.</li>
+          <li>Attach the chapter PDF(s) from step 2 (the paperclip or + button).</li>
+          <li>Copy the prompt on the right, paste it, and send.</li>
+          <li>Claude makes a printable PDF for you to download and print.</li>
+        </ol>
+        <div class="btns">
+          <button class="btn" id="copy" type="button">Copy prompt</button>
+          <a class="btn ghost" href="https://claude.ai/new" target="_blank" rel="noopener">Open claude.ai</a>
+        </div>
+        <div class="status" id="status" role="status"></div>
+      </div>
+    </section>
+
+    <section class="sheet" aria-label="Prompt">
+      <div class="prompt-head">
+        <h2>Your prompt</h2>
+        <span class="hint" id="meta"></span>
+      </div>
+      <textarea id="prompt" spellcheck="false" aria-label="Prompt to paste into claude.ai"></textarea>
+      <div class="note">If Claude replies with the material as text instead of a PDF, turn on file creation in claude.ai
+        (Settings → Capabilities) and ask again, or say <em>"Put all of this in one document I can print."</em> For long chapters,
+        reply <em>"continue"</em> if Claude stops before the 5-mark questions.</div>
+    </section>
+  </div>
+</div>
+
+<script>
+const CATALOG = /*CATALOG*/{};
+const $ = id => document.getElementById(id);
+const fill = (sel, items) => { sel.innerHTML = ""; items.forEach(([v, t]) => sel.add(new Option(t, v))); };
+const clsLabel = c => c === "11-12" ? "Class 11–12 (combined)" : `Class ${c}`;
+const pad = n => String(n).padStart(2, "0");
+
+function book() { return CATALOG[$("cls").value][$("subject").value].find(b => b[0] === $("book").value); }
+function fillSubjects() {
+  const subs = Object.keys(CATALOG[$("cls").value]).sort();
+  fill($("subject"), subs.map(s => [s, s]));
+  if (subs.includes("Science")) $("subject").value = "Science";
+  fillBooks();
+}
+function fillBooks() { fill($("book"), CATALOG[$("cls").value][$("subject").value].map(b => [b[0], b[1]])); fillChapters(); }
+function fillChapters() {
+  const [, , first, last] = book(); const chs = [];
+  for (let i = first; i <= last; i++) chs.push([i, `Chapter ${i}`]);
+  fill($("chf"), chs); fill($("cht"), chs); update();
+}
+
+function update() {
+  if (+$("cht").value < +$("chf").value) $("cht").value = $("chf").value;
+  const [code, title] = book();
+  const cls = $("cls").value, subject = $("subject").value;
+  const a = +$("chf").value, b = +$("cht").value;
+  const chapters = []; for (let i = a; i <= b; i++) chapters.push(i);
+
+  $("files").innerHTML = chapters.map(n => {
+    const url = `https://ncert.nic.in/textbook/pdf/${code}${pad(n)}.pdf`;
+    return `<li><a href="${url}" target="_blank" rel="noopener"><span>Chapter ${n}<br><span class="code">${code}${pad(n)}.pdf</span></span><span class="go">Download PDF</span></a></li>`;
+  }).join("");
+
+  const pf = $("pf").value.trim(), pt = $("pt").value.trim();
+  const pages = pf || pt ? ` (only textbook pages ${pf || "start"} to ${pt || "end"})` : "";
+  const chText = a === b ? `Chapter ${a}` : `Chapters ${a} to ${b}`;
+  const bookText = title.toLowerCase() === subject.toLowerCase() ? "" : `, book "${title}"`;
+  const classText = cls === "11-12" ? "Class 11–12" : `Class ${cls}`;
+  $("meta").textContent = `${classText} · ${subject} · ${chText}`;
+
+  $("prompt").value =
+`You are an experienced CBSE teacher and board paper-setter. I have attached the official NCERT textbook PDF for ${classText}, ${subject}${bookText}, ${chText}${pages}.
+
+Using ONLY these NCERT pages, prepare complete exam preparation material${a === b ? "" : " for each chapter in turn"}, in this order:
+
+1. SUMMARY NOTES - explain every topic and sub-topic in book order as short, clear points: definitions, explanations, examples, processes, reasons. A student who reads only these notes should understand the whole chapter.
+
+2. KEY POINTS TO REMEMBER - must-remember facts: definitions, laws, formulae, equations, dates, names, differences, units.
+
+3. ONE MARK QUESTIONS WITH ANSWERS - every 1-mark question that could reasonably be asked: MCQs (4 options, give the correct option), fill in the blanks, true/false (with the correction when false), very short answer, and assertion-reason (standard CBSE four options). Aim for 30-50 for a full chapter.
+
+4. 2 AND 3 MARK QUESTIONS WITH ANSWERS - include all NCERT in-text and end-of-chapter exercise questions of this length plus other likely questions, and numericals with full working where relevant. Label each [2 marks] or [3 marks]. Answers the right length to score full marks (2 marks: 2-3 points; 3 marks: 3-4 points). Aim for 15-30.
+
+5. 5 MARK QUESTIONS WITH ANSWERS - complete model answers (5+ points, with derivations, steps, diagram descriptions or case-based reasoning as the subject needs), including the long NCERT exercise questions. Aim for 6-12.
+
+Rules: answers must be correct, match NCERT wording and be complete enough for full marks in a CBSE board exam. Write formulae with proper symbols (H₂O, x², √, π, →). Put each answer directly below its question, starting with "Ans.".
+
+When the content is ready, create a printable A4 PDF file of all of it, with a cover title "${classText} ${subject}${bookText.replace(', book "', ' - ').replace('"', '')} - ${chText} - Exam Preparation", a heading for each of the five sections, numbered questions in bold and answers below each. If you cannot create files, put everything in one document that I can print.`;
+}
+
+const clsKeys = Object.keys(CATALOG);
+fill($("cls"), clsKeys.map(c => [c, clsLabel(c)]));
+$("cls").value = clsKeys.includes("10") ? "10" : clsKeys[0];
+$("cls").onchange = fillSubjects; $("subject").onchange = fillBooks; $("book").onchange = fillChapters;
+["chf", "cht", "pf", "pt"].forEach(id => $(id).addEventListener("input", update));
+$("chf").addEventListener("change", update); $("cht").addEventListener("change", () => {
+  if (+$("cht").value < +$("chf").value) $("chf").value = $("cht").value; update(); });
+fillSubjects();
+
+$("copy").onclick = () => {
+  const ta = $("prompt");
+  const done = () => { $("status").textContent = "Prompt copied. Paste it into claude.ai with the PDF attached."; };
+  try {
+    navigator.clipboard.writeText(ta.value).then(done, () => { ta.select(); $("status").textContent = "Prompt selected. Press Ctrl+C (or Cmd+C) to copy."; });
+  } catch (e) { ta.select(); $("status").textContent = "Prompt selected. Press Ctrl+C (or Cmd+C) to copy."; }
+};
+</script>

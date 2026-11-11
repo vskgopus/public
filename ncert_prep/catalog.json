@@ -1,0 +1,8449 @@
+{
+ "1": {
+  "English": [
+   {
+    "code": "aemr1",
+    "title": "Mridang",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "English"
+   }
+  ],
+  "Mathematics": [
+   {
+    "code": "aejm1",
+    "title": "Joyful-Mathematics (English)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "English"
+   },
+   {
+    "code": "ahjm1",
+    "title": "Joyful-Mathematics (Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Hindi"
+   },
+   {
+    "code": "amrjm1",
+    "title": "Joyful-Mathematics (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "asijm1",
+    "title": "Joyful-Mathematics (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "apjm1",
+    "title": "Joyful-Mathematics (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "agjm1",
+    "title": "Joyful-Mathematics (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "ayjm1",
+    "title": "Joyful-Mathematics (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "akjm1",
+    "title": "Joyful-Mathematics (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "aajm1",
+    "title": "Joyful-Mathematics (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "aijm1",
+    "title": "Joyful-Mathematics (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "aojm1",
+    "title": "Joyful-Mathematics (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "askjm1",
+    "title": "Joyful-Mathematics (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "aorjm1",
+    "title": "Joyful-Mathematics (Oriya)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "abnjm1",
+    "title": "Joyful-Mathematics (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "asnjm1",
+    "title": "Joyful-Mathematics (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "amnjm1",
+    "title": "Joyful-Mathematics (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "aujm1",
+    "title": "Joyful-Mathematics (Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Urdu"
+   },
+   {
+    "code": "anpjm1",
+    "title": "Joyful-Mathematics (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "atljm1",
+    "title": "Joyful-Mathematics (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "aknjm1",
+    "title": "Joyful-Mathematics (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "atmjm1",
+    "title": "Joyful-Mathematics (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "adgjm1",
+    "title": "Joyful-Mathematics (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "aksjm1",
+    "title": "Joyful-Mathematics (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   }
+  ],
+  "Hindi": [
+   {
+    "code": "ahsr1",
+    "title": "Sarangi",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Hindi"
+   }
+  ],
+  "Urdu": [
+   {
+    "code": "aush1",
+    "title": "Shahnai",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Urdu"
+   }
+  ]
+ },
+ "2": {
+  "Mathematics": [
+   {
+    "code": "bejm1",
+    "title": "Joyful-Mathematics (English)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "English"
+   },
+   {
+    "code": "bhjm1",
+    "title": "Joyful-Mathematics (Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Hindi"
+   },
+   {
+    "code": "basjm1",
+    "title": "Joyful-Mathematics (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "bpnjm1",
+    "title": "Joyful-Mathematics (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "bgjjm1",
+    "title": "Joyful-Mathematics (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "bmljm1",
+    "title": "Joyful-Mathematics (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "bmtjm1",
+    "title": "Joyful-Mathematics (Maithli)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "bbdjm1",
+    "title": "Joyful-Mathematics (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "bmrjm1",
+    "title": "Joyful-Mathematics (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "bsijm1",
+    "title": "Joyful-Mathematics (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "bbnjm1",
+    "title": "Joyful-Mathematics (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "bskjm1",
+    "title": "Joyful-Mathematics (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "bnpjm1",
+    "title": "Joyful-Mathematics (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "borjm1",
+    "title": "Joyful-Mathematics (Oriya)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "bmnjm1",
+    "title": "Joyful-Mathematics (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "bujm1",
+    "title": "Joyful-Mathematics (Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Urdu"
+   },
+   {
+    "code": "bsnjm1",
+    "title": "Joyful-Mathematics (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "bkojm1",
+    "title": "Joyful-Mathematics (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "bknjm1",
+    "title": "Joyful-Mathematics (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "btmjm1",
+    "title": "Joyful-Mathematics (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "btljm1",
+    "title": "Joyful-Mathematics (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "bdgjm1",
+    "title": "Joyful-Mathematics (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   },
+   {
+    "code": "bksjm1",
+    "title": "Joyful-Mathematics (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   }
+  ],
+  "Hindi": [
+   {
+    "code": "bhsr1",
+    "title": "Sarangi",
+    "first_chapter": 1,
+    "last_chapter": 26,
+    "medium": "Hindi"
+   }
+  ],
+  "English": [
+   {
+    "code": "bemr1",
+    "title": "Mridang",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "English"
+   }
+  ],
+  "Urdu": [
+   {
+    "code": "bush1",
+    "title": "Shahnai",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Urdu"
+   }
+  ]
+ },
+ "3": {
+  "Hindi": [
+   {
+    "code": "chhn1",
+    "title": "Rimjhim",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Hindi"
+   },
+   {
+    "code": "chve1",
+    "title": "Veena",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Hindi"
+   }
+  ],
+  "Environmental Studies": [
+   {
+    "code": "ceap1",
+    "title": "Looking Around",
+    "first_chapter": 1,
+    "last_chapter": 24,
+    "medium": "English"
+   },
+   {
+    "code": "chap1",
+    "title": "Aas-Pass",
+    "first_chapter": 1,
+    "last_chapter": 24,
+    "medium": "Hindi"
+   },
+   {
+    "code": "cuap1",
+    "title": "Aas-Pass(urdu)",
+    "first_chapter": 1,
+    "last_chapter": 24,
+    "medium": "Urdu"
+   }
+  ],
+  "English": [
+   {
+    "code": "ceen1",
+    "title": "Marigold",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "English"
+   },
+   {
+    "code": "cesa1",
+    "title": "Santoor",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "English"
+   }
+  ],
+  "Mathematics": [
+   {
+    "code": "cemh1",
+    "title": "Mathematics",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "English"
+   },
+   {
+    "code": "chmh1",
+    "title": "Ganit",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Hindi"
+   },
+   {
+    "code": "curi1",
+    "title": "Riyazi Ka Jadoo-III(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Urdu"
+   },
+   {
+    "code": "cemm1",
+    "title": "Maths Mela",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "English"
+   },
+   {
+    "code": "chmm1",
+    "title": "Ganit Mela",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Hindi"
+   },
+   {
+    "code": "cumm1",
+    "title": "Riyazi Mela",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Urdu"
+   },
+   {
+    "code": "casmm1",
+    "title": "Maths Mela (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "cbnmm1",
+    "title": "Maths Mela (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "cbdmm1",
+    "title": "Maths Mela (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "cdgmm1",
+    "title": "Maths Mela (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "cgjmm1",
+    "title": "Maths Mela (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "cknmm1",
+    "title": "Maths Mela (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "cmtmm1",
+    "title": "Maths Mela (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "cmlmm1",
+    "title": "Maths Mela (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "cmnmm1",
+    "title": "Maths Mela (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "cnpmm1",
+    "title": "Maths Mela (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "cormm1",
+    "title": "Maths Mela (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "cpnmm1",
+    "title": "Maths Mela (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "csnmm1",
+    "title": "Maths Mela (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "ctmmm1",
+    "title": "Maths Mela (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "ctlmm1",
+    "title": "Maths Mela (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "cskmm1",
+    "title": "Maths Mela (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "cmrmm1",
+    "title": "Maths Mela (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "ckomm1",
+    "title": "Maths Mela (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "csimm1",
+    "title": "Maths Mela (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "cksmm1",
+    "title": "Maths Mela (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   }
+  ],
+  "Urdu": [
+   {
+    "code": "culb1",
+    "title": "Ibtedai Urdu",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Urdu"
+   },
+   {
+    "code": "cust1",
+    "title": "Sitar",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Urdu"
+   }
+  ],
+  "The World Around Us": [
+   {
+    "code": "ceev1",
+    "title": "Our Wondrous World",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "English"
+   },
+   {
+    "code": "chev1",
+    "title": "Hamara Adhbhut Sansar",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Hindi"
+   },
+   {
+    "code": "cuev1",
+    "title": "Hamari Hairat Angez Duniya",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Urdu"
+   },
+   {
+    "code": "cbnev1",
+    "title": "Our Wondrous World (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "corev1",
+    "title": "Our Wondrous World (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "cmrev1",
+    "title": "Our Wondrous World (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "cnpev1",
+    "title": "Our Wondrous World (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "ctlev1",
+    "title": "Our Wondrous World (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "cgjev1",
+    "title": "Our Wondrous World (Gujrati)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "cmnev1",
+    "title": "Our Wondrous World (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "cskev1",
+    "title": "Our Wondrous World (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "casev1",
+    "title": "Our Wondrous World (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "cbdev1",
+    "title": "Our Wondrous World (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "cpnev1",
+    "title": "Our Wondrous World (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "cmlev1",
+    "title": "Our Wondrous World (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "cmtev1",
+    "title": "Our Wondrous World (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "cdgev1",
+    "title": "Our Wondrous World (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "cknev1",
+    "title": "Our Wondrous World (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "csnev1",
+    "title": "Our Wondrous World (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "ctmev1",
+    "title": "Our Wondrous World (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "csiev1",
+    "title": "Our Wondrous World (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "cksev1",
+    "title": "Our Wondrous World (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "ckoev1",
+    "title": "Our Wondrous World (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   }
+  ],
+  "Arts": [
+   {
+    "code": "cebu1",
+    "title": "Bansuri - I",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "English"
+   },
+   {
+    "code": "chbu1",
+    "title": "Bansuri - I (Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Hindi"
+   },
+   {
+    "code": "cubu1",
+    "title": "Bansuri - I (Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Urdu"
+   },
+   {
+    "code": "cbnbu1",
+    "title": "Bansuri - I (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "cmtbu1",
+    "title": "Bansuri - I (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "cmnbu1",
+    "title": "Bansuri - I (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "cmrbu1",
+    "title": "Bansuri - I (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "cnpbu1",
+    "title": "Bansuri - I (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "cpnbu1",
+    "title": "Bansuri - I (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "cbdbu1",
+    "title": "Bansuri - I (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "cgjbu1",
+    "title": "Bansuri - I (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "cdgbu1",
+    "title": "Bansuri - I (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "ckobu1",
+    "title": "Bansuri - I (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "csnbu1",
+    "title": "Bansuri - I (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "ctmbu1",
+    "title": "Bansuri - I (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "ctlbu1",
+    "title": "Bansuri - I (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "casbu1",
+    "title": "Bansuri - I (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "cknbu1",
+    "title": "Bansuri - I (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "cskbu1",
+    "title": "Bansuri - I (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "cmlbu1",
+    "title": "Bansuri - I (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "corbu1",
+    "title": "Bansuri - I (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "csibu1",
+    "title": "Bansuri - I (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "cksbu1",
+    "title": "Bansuri - I (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   }
+  ],
+  "Physical Education and Well Being": [
+   {
+    "code": "ceky1",
+    "title": "Khel Yoga",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "chky1",
+    "title": "Khel Yoga (Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Hindi"
+   },
+   {
+    "code": "cmlky1",
+    "title": "Khel Yoga (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "cbnky1",
+    "title": "Khel Yoga (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "cgjky1",
+    "title": "Khel Yoga (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "cknky1",
+    "title": "Khel Yoga (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "ckoky1",
+    "title": "Khel Yoga (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "cmnky1",
+    "title": "Khel Yoga (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "cnpky1",
+    "title": "Khel Yoga (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "corky1",
+    "title": "Khel Yoga (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "casky1",
+    "title": "Khel Yoga (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "cdgky1",
+    "title": "Khel Yoga (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "cpnky1",
+    "title": "Khel Yoga (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "cskky1",
+    "title": "Khel Yoga (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "csnky1",
+    "title": "Khel Yoga (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "ctmky1",
+    "title": "Khel Yoga (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "cmrky1",
+    "title": "Khel Yoga (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "cbdky1",
+    "title": "Khel Yoga (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "ctlky1",
+    "title": "Khel Yoga (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "cmtky1",
+    "title": "Khel Yoga (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "cuky1",
+    "title": "Khel Yoga (Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Urdu"
+   },
+   {
+    "code": "csiky1",
+    "title": "Khel Yoga (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "cksky1",
+    "title": "Khel Yoga (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   }
+  ]
+ },
+ "4": {
+  "Mathematics": [
+   {
+    "code": "demh1",
+    "title": "Math-Mela",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "English"
+   },
+   {
+    "code": "dhmh1",
+    "title": "Ganit Mela",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Hindi"
+   },
+   {
+    "code": "duri1",
+    "title": "Riyazi Mela",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Urdu"
+   },
+   {
+    "code": "demm1",
+    "title": "Math-Mela",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "English"
+   },
+   {
+    "code": "dhmm1",
+    "title": "Ganit Mela",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Hindi"
+   },
+   {
+    "code": "dumm1",
+    "title": "Riyazi Mela",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Urdu"
+   },
+   {
+    "code": "dmtmm1",
+    "title": "Math-Mela (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "dpnmm1",
+    "title": "Math-Mela (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "dgjmm1",
+    "title": "Math-Mela (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "ddgmm1",
+    "title": "Math-Mela (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "dnpmm1",
+    "title": "Math-Mela (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "dmnmm1",
+    "title": "Math-Mela (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "dasmm1",
+    "title": "Math-Mela (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "dsimm1",
+    "title": "Math-Mela (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "dormm1",
+    "title": "Math-Mela (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "dbdmm1",
+    "title": "Math-Mela (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "dbnmm1",
+    "title": "Math-Mela (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "dmrmm1",
+    "title": "Math-Mela (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "dknmm1",
+    "title": "Math-Mela (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "dmlmm1",
+    "title": "Math-Mela (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "dskmm1",
+    "title": "Math-Mela (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "dtmmm1",
+    "title": "Math-Mela (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "dsnmm1",
+    "title": "Math-Mela (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "dtlmm1",
+    "title": "Math-Mela (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "dkomm1",
+    "title": "Math-Mela (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "dksmm1",
+    "title": "Math-Mela (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   }
+  ],
+  "Hindi": [
+   {
+    "code": "dhhn1",
+    "title": "Veena",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Hindi"
+   },
+   {
+    "code": "dhve1",
+    "title": "Veena",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Hindi"
+   }
+  ],
+  "Environmental Studies": [
+   {
+    "code": "deap1",
+    "title": "Looking Around(EVS)",
+    "first_chapter": 1,
+    "last_chapter": 27,
+    "medium": "English"
+   },
+   {
+    "code": "dhap1",
+    "title": "Aas Paas",
+    "first_chapter": 1,
+    "last_chapter": 27,
+    "medium": "Hindi"
+   },
+   {
+    "code": "duap1",
+    "title": "Aas-Paas(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 27,
+    "medium": "Urdu"
+   }
+  ],
+  "The World Around Us": [
+   {
+    "code": "deev1",
+    "title": "Our Wonderous World",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "English"
+   },
+   {
+    "code": "dhev1",
+    "title": "Hamara Adhbhut Sansar",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Hindi"
+   },
+   {
+    "code": "duev1",
+    "title": "Hamari Hairatangez Duniya",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Urdu"
+   },
+   {
+    "code": "dpev1",
+    "title": "Our Wonderous World (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "dgjev1",
+    "title": "Our Wonderous World (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "dknev1",
+    "title": "Our Wondrous World (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "dskev1",
+    "title": "Our Wondrous World (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "dkoev1",
+    "title": "Our Wondrous World (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "dbnev1",
+    "title": "Our Wondrous World (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "dorev1",
+    "title": "Our Wondrous World (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "dmrev1",
+    "title": "Our Wondrous World (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "dmlev1",
+    "title": "Our Wondrous World (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "dbdev1",
+    "title": "Our Wondrous World (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "dnpev1",
+    "title": "Our Wondrous World (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "dasev1",
+    "title": "Our Wondrous World (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "ddgev1",
+    "title": "Our Wondrous World (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "dmnev1",
+    "title": "Our Wondrous World (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "dtmev1",
+    "title": "Our Wondrous World (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "dksev1",
+    "title": "Our Wondrous World (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "dtlev1",
+    "title": "Our Wondrous World (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "dsiev1",
+    "title": "Our Wondrous World (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "dsnev1",
+    "title": "Our Wondrous World (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "dmtev1",
+    "title": "Our Wondrous World (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   }
+  ],
+  "English": [
+   {
+    "code": "deen1",
+    "title": "Santoor",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "English"
+   },
+   {
+    "code": "desa1",
+    "title": "Santoor",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "English"
+   }
+  ],
+  "Arts": [
+   {
+    "code": "debu1",
+    "title": "Bansuri",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "English"
+   },
+   {
+    "code": "dhbu1",
+    "title": "Bansuri - I (Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Hindi"
+   },
+   {
+    "code": "dubu1",
+    "title": "Bansuri - I (Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Urdu"
+   },
+   {
+    "code": "dorbu1",
+    "title": "Bansuri - I (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "dgjbu1",
+    "title": "Bansuri - I (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "dpnbu1",
+    "title": "Bansuri - I (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "dsibu1",
+    "title": "Bansuri - I (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "dtmbu1",
+    "title": "Bansuri - I (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "dbdbu1",
+    "title": "Bansuri - I (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "dnpbu1",
+    "title": "Bansuri - I (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "dkobu1",
+    "title": "Bansuri - I (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "dasbu1",
+    "title": "Bansuri - I (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "dbnbu1",
+    "title": "Bansuri - I (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "ddgbu1",
+    "title": "Bansuri - I (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "dmnbu1",
+    "title": "Bansuri - I (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "dskbu1",
+    "title": "Bansuri - I (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "dmlbu1",
+    "title": "Bansuri - I (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "dknbu1",
+    "title": "Bansuri - I (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "dksbu1",
+    "title": "Bansuri - I (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "dmtbu1",
+    "title": "Bansuri - I (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "dmrbu1",
+    "title": "Bansuri - I (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "dsnbu1",
+    "title": "Bansuri - I (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   },
+   {
+    "code": "dtlbu1",
+    "title": "Bansuri - I (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Other"
+   }
+  ],
+  "Physical Education and Well Being": [
+   {
+    "code": "deky1",
+    "title": "Khel Yoga",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "English"
+   },
+   {
+    "code": "dhky1",
+    "title": "Khel Yoga(Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Hindi"
+   },
+   {
+    "code": "dorky1",
+    "title": "Khel Yoga(Odia)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "dgjky1",
+    "title": "Khel Yoga(Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "dbnky1",
+    "title": "Khel Yoga(Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "dasky1",
+    "title": "Khel Yoga (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "dtmky1",
+    "title": "Khel Yoga (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "dpnky1",
+    "title": "Khel Yoga (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "dmrky1",
+    "title": "Khel Yoga (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "dtlky1",
+    "title": "Khel Yoga (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "ddgky1",
+    "title": "Khel Yoga (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "dknky1",
+    "title": "Khel Yoga (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "dnpky1",
+    "title": "Khel Yoga (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "dskky1",
+    "title": "Khel Yoga (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "dksky1",
+    "title": "Khel Yoga (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "dmlky1",
+    "title": "Khel Yoga (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "dmnky1",
+    "title": "Khel Yoga (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "dbdky1",
+    "title": "Khel Yoga (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "dmtky1",
+    "title": "Khel Yoga (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "dkoky1",
+    "title": "Khel Yoga (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "dsiky1",
+    "title": "Khel Yoga (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "dsnky1",
+    "title": "Khel Yoga (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   }
+  ],
+  "Urdu": [
+   {
+    "code": "dulb1",
+    "title": "Ibtedai Urdu-IV",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Urdu"
+   },
+   {
+    "code": "dust1",
+    "title": "Sitaar",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Urdu"
+   }
+  ]
+ },
+ "5": {
+  "Mathematics": [
+   {
+    "code": "eemm1",
+    "title": "Math-Mela",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "English"
+   },
+   {
+    "code": "ehmm1",
+    "title": "Ganit-Mela",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Hindi"
+   },
+   {
+    "code": "eumm1",
+    "title": "Riyazi Mela",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Urdu"
+   },
+   {
+    "code": "etmmm1",
+    "title": "Math-Mela (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "emrmm1",
+    "title": "Math-Mela (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "eormm1",
+    "title": "Math-Mela (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "epnmm1",
+    "title": "Math-Mela (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "emnmm1",
+    "title": "Math-Mela (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "eknmm1",
+    "title": "Math-Mela (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "enpmm1",
+    "title": "Math-Mela (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "ekomm1",
+    "title": "Math-Mela (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "easmm1",
+    "title": "Math-Mela (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "ebdmm1",
+    "title": "Math-Mela (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "ebnmm1",
+    "title": "Math-Mela (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "edgmm1",
+    "title": "Math-Mela (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "emlmm1",
+    "title": "Math-Mela (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "etlmm1",
+    "title": "Math-Mela (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "eksmm1",
+    "title": "Math-Mela (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "egjmm1",
+    "title": "Math-Mela (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "esimm1",
+    "title": "Math-Mela (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "esnmm1",
+    "title": "Math-Mela (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "emtmm1",
+    "title": "Math-Mela (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "eskmm1",
+    "title": "Math-Mela (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   },
+   {
+    "code": "eemh1",
+    "title": "Math-Magic",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "English"
+   },
+   {
+    "code": "ehmh1",
+    "title": "Ganit",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Hindi"
+   },
+   {
+    "code": "euma1",
+    "title": "Riyazi Ka Jadoo(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Urdu"
+   }
+  ],
+  "Hindi": [
+   {
+    "code": "ehve1",
+    "title": "Veena",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Hindi"
+   },
+   {
+    "code": "ehhn1",
+    "title": "Rimjhim",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Hindi"
+   }
+  ],
+  "English": [
+   {
+    "code": "eesa1",
+    "title": "Santoor",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "English"
+   },
+   {
+    "code": "eeen1",
+    "title": "Marigold",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "English"
+   }
+  ],
+  "The World Around Us": [
+   {
+    "code": "eeev1",
+    "title": "Our Wonderous World",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "English"
+   },
+   {
+    "code": "ehev1",
+    "title": "Hamara Adbhut Sansar",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Hindi"
+   },
+   {
+    "code": "euev1",
+    "title": "Hamari Hairatangez Duniya",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Urdu"
+   },
+   {
+    "code": "eorev1",
+    "title": "Our Wonderous World (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "egjev1",
+    "title": "Our Wonderous World (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "esnev1",
+    "title": "Our Wonderous World (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "edgev1",
+    "title": "Our Wonderous World (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "emlev1",
+    "title": "Our Wonderous World (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "eskev1",
+    "title": "Our Wonderous World (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "ebnev1",
+    "title": "Our Wonderous World (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "enpev1",
+    "title": "Our Wonderous World (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "eknev1",
+    "title": "Our Wonderous World (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "epnev1",
+    "title": "Our Wonderous World (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "etmev1",
+    "title": "Our Wonderous World (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "emnev1",
+    "title": "Our Wonderous World (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "emrev1",
+    "title": "Our Wonderous World (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "etlev1",
+    "title": "Our Wonderous World (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "easev1",
+    "title": "Our Wonderous World (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "eksev1",
+    "title": "Our Wonderous World (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "ebdev1",
+    "title": "Our Wonderous World (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "emtev1",
+    "title": "Our Wonderous World (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "ekoev1",
+    "title": "Our Wonderous World (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "esiev1",
+    "title": "Our Wonderous World (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   }
+  ],
+  "Arts": [
+   {
+    "code": "eebu1",
+    "title": "Bansuri",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "English"
+   },
+   {
+    "code": "ehbu1",
+    "title": "Bansuri (Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Hindi"
+   },
+   {
+    "code": "eubu1",
+    "title": "Bansuri (Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Urdu"
+   },
+   {
+    "code": "egjbu1",
+    "title": "Bansuri (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "emtbu1",
+    "title": "Bansuri (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "eorbu1",
+    "title": "Bansuri (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "epnbu1",
+    "title": "Bansuri (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "eknbu1",
+    "title": "Bansuri (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "ebnbu1",
+    "title": "Bansuri (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "edgbu1",
+    "title": "Bansuri (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "etmbu1",
+    "title": "Bansuri (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "eksbu1",
+    "title": "Bansuri (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "enpbu1",
+    "title": "Bansuri (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "easbu1",
+    "title": "Bansuri (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "eskbu1",
+    "title": "Bansuri (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "emrbu1",
+    "title": "Bansuri (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "esibu1",
+    "title": "Bansuri (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "etlbu1",
+    "title": "Bansuri (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "emnbu1",
+    "title": "Bansuri (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "emlbu1",
+    "title": "Bansuri (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "ebdbu1",
+    "title": "Bansuri (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "esnbu1",
+    "title": "Bansuri (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "ekobu1",
+    "title": "Bansuri (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   }
+  ],
+  "Physical Education and Well Being": [
+   {
+    "code": "eeky1",
+    "title": "Khel Yoga",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "English"
+   },
+   {
+    "code": "eorky1",
+    "title": "Khel Yoga(Odia)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "epnky1",
+    "title": "Khel Yoga(Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "eknky1",
+    "title": "Khel Yoga(Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "ebnky1",
+    "title": "Khel Yoga(Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "etmky1",
+    "title": "Khel Yoga(Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "enpky1",
+    "title": "Khel Yoga(Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "emtky1",
+    "title": "Khel Yoga(Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "emnky1",
+    "title": "Khel Yoga(Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "etlky1",
+    "title": "Khel Yoga(Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "egjky1",
+    "title": "Khel Yoga(Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "easky1",
+    "title": "Khel Yoga(Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "ekoky1",
+    "title": "Khel Yoga(Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "eskky1",
+    "title": "Khel Yoga(Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "ekoky1",
+    "title": "Khel Yoga(Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "ebdky1",
+    "title": "Khel Yoga(Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "edgky1",
+    "title": "Khel Yoga(Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "eksky1",
+    "title": "Khel Yoga(Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "emrky1",
+    "title": "Khel Yoga(Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "esnky1",
+    "title": "Khel Yoga(Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "esiky1",
+    "title": "Khel Yoga(Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   },
+   {
+    "code": "emlky1",
+    "title": "Khel Yoga(Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Other"
+   }
+  ],
+  "Urdu": [
+   {
+    "code": "eust1",
+    "title": "Sitaar",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Urdu"
+   },
+   {
+    "code": "eulb1",
+    "title": "Ibtedai Urdu Class-V",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Urdu"
+   }
+  ],
+  "Environmental Studies": [
+   {
+    "code": "ehap1",
+    "title": "Aas-Pass",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Hindi"
+   },
+   {
+    "code": "eeap1",
+    "title": "Looking Around",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "English"
+   },
+   {
+    "code": "euev1",
+    "title": "Ass Pass(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Urdu"
+   }
+  ]
+ },
+ "6": {
+  "Hindi": [
+   {
+    "code": "fhml1",
+    "title": "Malhar",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Hindi"
+   }
+  ],
+  "Vocational Education": [
+   {
+    "code": "fekb1",
+    "title": "Kaushal Bodh",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "English"
+   },
+   {
+    "code": "fhkb1",
+    "title": "Kaushal Bodh (Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Hindi"
+   },
+   {
+    "code": "fbnkb1",
+    "title": "Kaushal Bodh (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "fbdkb1",
+    "title": "Kaushal Bodh (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "fdgkb1",
+    "title": "Kaushal Bodh (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "fkokb1",
+    "title": "Kaushal Bodh (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "forkb1",
+    "title": "Kaushal Bodh (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "fpnkb1",
+    "title": "Kaushal Bodh (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "fmlkb1",
+    "title": "Kaushal Bodh (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "fknkb1",
+    "title": "Kaushal Bodh (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "fmnkb1",
+    "title": "Kaushal Bodh (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "ftmkb1",
+    "title": "Kaushal Bodh (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "fgjkb1",
+    "title": "Kaushal Bodh (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "fmtkb1",
+    "title": "Kaushal Bodh (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "faskb1",
+    "title": "Kaushal Bodh (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "fnpkb1",
+    "title": "Kaushal Bodh (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "fskkb1",
+    "title": "Kaushal Bodh (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "fkskb1",
+    "title": "Kaushal Bodh (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "fmrkb1",
+    "title": "Kaushal Bodh (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "ftlkb1",
+    "title": "Kaushal Bodh (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "fsnkb1",
+    "title": "Kaushal Bodh (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "fsikb1",
+    "title": "Kaushal Bodh (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   }
+  ],
+  "Physical Education and Well Being": [
+   {
+    "code": "feky1",
+    "title": "Khel Yatra",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "fhky1",
+    "title": "Khel Yatra (Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Hindi"
+   },
+   {
+    "code": "fbnky1",
+    "title": "Khel Yatra (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "fpnky1",
+    "title": "Khel Yatra (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "fasky1",
+    "title": "Khel Yatra (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "ftmky1",
+    "title": "Khel Yatra (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "fnpky1",
+    "title": "Khel Yatra (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "forky1",
+    "title": "Khel Yatra (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "fdgky1",
+    "title": "Khel Yatra (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "ftlky1",
+    "title": "Khel Yatra (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "fkoky1",
+    "title": "Khel Yatra (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "fknky1",
+    "title": "Khel Yatra (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "fmlky1",
+    "title": "Khel Yatra (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "fbdky1",
+    "title": "Khel Yatra (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "fksky1",
+    "title": "Khel Yatra (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "fmnky1",
+    "title": "Khel Yatra (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "fmrky1",
+    "title": "Khel Yatra (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "fskky1",
+    "title": "Khel Yatra (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "fsnky1",
+    "title": "Khel Yatra (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "fsiky1",
+    "title": "Khel Yatra (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "fmtky1",
+    "title": "Khel Yatra (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "fgjky1",
+    "title": "Khel Yatra (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Other"
+   },
+   {
+    "code": "fukl1",
+    "title": "Jismani Taleem aur Tandurusti",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Urdu"
+   }
+  ],
+  "English": [
+   {
+    "code": "fepr1",
+    "title": "Poorvi",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   }
+  ],
+  "Mathematics": [
+   {
+    "code": "fegp1",
+    "title": "Ganita Prakash",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "English"
+   },
+   {
+    "code": "fhgp1",
+    "title": "Ganita Prakash (Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Hindi"
+   },
+   {
+    "code": "forgp1",
+    "title": "Ganita Prakash (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "fbdgp1",
+    "title": "Ganita Prakash (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "fmlgp1",
+    "title": "Ganita Prakash (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "fpngp1",
+    "title": "Ganita Prakash (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "fskgp1",
+    "title": "Ganita Prakash (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "fkngp1",
+    "title": "Ganita Prakash (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "ftmgp1",
+    "title": "Ganita Prakash (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "fmrgp1",
+    "title": "Ganita Prakash (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "fbngp1",
+    "title": "Ganita Prakash (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "ftlgp1",
+    "title": "Ganita Prakash (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "fmtgp1",
+    "title": "Ganita Prakash (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "fdggp1",
+    "title": "Ganita Prakash (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "fnpgp1",
+    "title": "Ganita Prakash (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "fugp1",
+    "title": "Ganita Prakash (Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Urdu"
+   },
+   {
+    "code": "fasgp1",
+    "title": "Ganita Prakash (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "fgjgp1",
+    "title": "Ganita Prakash (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "fmngp1",
+    "title": "Ganita Prakash (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "fkogp1",
+    "title": "Ganita Prakash (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "fsngp1",
+    "title": "Ganita Prakash (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "fsigp1",
+    "title": "Ganita Prakash (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   },
+   {
+    "code": "fksgp1",
+    "title": "Ganita Prakash (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   }
+  ],
+  "Social Science": [
+   {
+    "code": "fees1",
+    "title": "Exploring Society India and Beyond",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "English"
+   },
+   {
+    "code": "fhes1",
+    "title": "Samaj Ka Aadhyan: Bharat or uske aage",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Hindi"
+   },
+   {
+    "code": "fknes1",
+    "title": "Exploring Society India and Beyond (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "fkses1",
+    "title": "Exploring Society India and Beyond (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "fores1",
+    "title": "Exploring Society India and Beyond (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "fmnes1",
+    "title": "Exploring Society India and Beyond (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "fmres1",
+    "title": "Exploring Society India and Beyond (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "fpnes1",
+    "title": "Exploring Society India and Beyond (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "fdges1",
+    "title": "Exploring Society India and Beyond (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "fgjes1",
+    "title": "Exploring Society India and Beyond (Gujrati)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "fmles1",
+    "title": "Exploring Society India and Beyond (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "fskes1",
+    "title": "Exploring Society India and Beyond (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "fbnes1",
+    "title": "Exploring Society India and Beyond (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "fbdes1",
+    "title": "Exploring Society India and Beyond (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "fmtes1",
+    "title": "Exploring Society India and Beyond (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "fnpes1",
+    "title": "Exploring Society India and Beyond (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "ftmes1",
+    "title": "Exploring Society India and Beyond (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "ftles1",
+    "title": "Exploring Society India and Beyond (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "fues1",
+    "title": "Muashre Ki Daryaft Hindustan aur Us Se Aage (Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Urdu"
+   },
+   {
+    "code": "fsnes1",
+    "title": "Exploring Society India and Beyond (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "fases1",
+    "title": "Exploring Society India and Beyond (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "fkoes1",
+    "title": "Exploring Society India and Beyond (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   },
+   {
+    "code": "fsies1",
+    "title": "Exploring Society India and Beyond (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   }
+  ],
+  "Sanskrit": [
+   {
+    "code": "fsde1",
+    "title": "Deepakam",
+    "first_chapter": 1,
+    "last_chapter": 16,
+    "medium": "Other"
+   }
+  ],
+  "Science": [
+   {
+    "code": "fecu1",
+    "title": "Curiosity",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "English"
+   },
+   {
+    "code": "fhcu1",
+    "title": "Jigyasa",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Hindi"
+   },
+   {
+    "code": "fucu1",
+    "title": "Tajassus",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Urdu"
+   },
+   {
+    "code": "fmlcu1",
+    "title": "Curiosity (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "ftmcu1",
+    "title": "Curiosity (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "fkncu1",
+    "title": "Curiosity (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "fmtcu1",
+    "title": "Curiosity (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "fpncu1",
+    "title": "Curiosity (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "fbncu1",
+    "title": "Curiosity (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "forcu1",
+    "title": "Curiosity (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "fkocu1",
+    "title": "Curiosity (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "fmncu1",
+    "title": "Curiosity (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "fnpcu1",
+    "title": "Curiosity (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "fskcu1",
+    "title": "Curiosity (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "ftlcu1",
+    "title": "Curiosity (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "fascu1",
+    "title": "Curiosity (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "fmrcu1",
+    "title": "Curiosity (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "fbdcu1",
+    "title": "Curiosity (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "fdgcu1",
+    "title": "Curiosity (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "fgjcu1",
+    "title": "Curiosity (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "fsncu1",
+    "title": "Curiosity (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "fkscu1",
+    "title": "Curiosity (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "fsicu1",
+    "title": "Curiosity (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   }
+  ],
+  "Arts": [
+   {
+    "code": "fekr1",
+    "title": "Kriti-I",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "English"
+   },
+   {
+    "code": "fhkr1",
+    "title": "Kriti-I (Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Hindi"
+   },
+   {
+    "code": "fbnkr1",
+    "title": "Kriti-I (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "fkokr1",
+    "title": "Kriti-I (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "fbdkr1",
+    "title": "Kriti-I (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "fmtkr1",
+    "title": "Kriti-I (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "fmnkr1",
+    "title": "Kriti-I (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "faskr1",
+    "title": "Kriti-I (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "fdgkr1",
+    "title": "Kriti-I (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "fdgkr1",
+    "title": "Kriti-I (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "forkr1",
+    "title": "Kriti-I (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "ftmkr1",
+    "title": "Kriti-I (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "fgjkr1",
+    "title": "Kriti-I (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "fknkr1",
+    "title": "Kriti-I (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "fmlkr1",
+    "title": "Kriti-I (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "fmrkr1",
+    "title": "Kriti-I (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "fskkr1",
+    "title": "Kriti-I (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "fnpkr1",
+    "title": "Kriti-I (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "fpnkr1",
+    "title": "Kriti-I (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "ftlkr1",
+    "title": "Kriti-I (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "fkskr1",
+    "title": "Kriti-I (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "fsikr1",
+    "title": "Kriti-I (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   },
+   {
+    "code": "fsnkr1",
+    "title": "Kriti-I (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Other"
+   }
+  ],
+  "Urdu": [
+   {
+    "code": "fuky1",
+    "title": "Khayal",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Urdu"
+   }
+  ],
+  "Punjabi": [
+   {
+    "code": "fpunjabi1",
+    "title": "Satluj",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   }
+  ],
+  "Santhali": [
+   {
+    "code": "fsanthali1",
+    "title": "Sobornakha",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   }
+  ],
+  "Tamil": [
+   {
+    "code": "ftami1",
+    "title": "Tamil",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   }
+  ],
+  "Malayalam": [
+   {
+    "code": "fmaly1",
+    "title": "Malayalam",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   }
+  ],
+  "Nepali": [
+   {
+    "code": "fnepa1",
+    "title": "Nepali",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   }
+  ],
+  "Kannada": [
+   {
+    "code": "fkannada1",
+    "title": "Kannada",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Other"
+   }
+  ],
+  "Marathi": [
+   {
+    "code": "fmargod1",
+    "title": "Marathi",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Other"
+   }
+  ]
+ },
+ "7": {
+  "Mathematics": [
+   {
+    "code": "gegp1",
+    "title": "Ganita Prakash",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "gegp2",
+    "title": "Ganita Prakash-II",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "ghgp1",
+    "title": "Ganita Prakash(Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Hindi"
+   },
+   {
+    "code": "gugp1",
+    "title": "Ganita Prakash(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Urdu"
+   },
+   {
+    "code": "ghgp2",
+    "title": "Ganita Prakash-II (Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Hindi"
+   },
+   {
+    "code": "gbngp1",
+    "title": "Ganita Prakash(Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "ggjgp1",
+    "title": "Ganita Prakash(Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gpngp1",
+    "title": "Ganita Prakash(Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gnpgp1",
+    "title": "Ganita Prakash(Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gdggp1",
+    "title": "Ganita Prakash(Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gtmgp1",
+    "title": "Ganita Prakash(Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gtlgp1",
+    "title": "Ganita Prakash(Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gmrgp1",
+    "title": "Ganita Prakash(Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gkngp1",
+    "title": "Ganita Prakash(Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gbdgp1",
+    "title": "Ganita Prakash(Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gorgp1",
+    "title": "Ganita Prakash(Odia)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gasgp1",
+    "title": "Ganita Prakash(Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gkogp1",
+    "title": "Ganita Prakash(Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gmngp1",
+    "title": "Ganita Prakash(Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gskgp1",
+    "title": "Ganita Prakash(Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gsigp1",
+    "title": "Ganita Prakash(Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gksgp1",
+    "title": "Ganita Prakash(Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gmtgp1",
+    "title": "Ganita Prakash(Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gmlgp1",
+    "title": "Ganita Prakash(Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gsngp1",
+    "title": "Ganita Prakash-II (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "ggjgp2",
+    "title": "Ganita Prakash-II (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gkngp2",
+    "title": "Ganita Prakash-II (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gmrgp2",
+    "title": "Ganita Prakash-II (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gorgp2",
+    "title": "Ganita Prakash-II (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gpngp2",
+    "title": "Ganita Prakash-II (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gasgp2",
+    "title": "Ganita Prakash-II (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gbngp2",
+    "title": "Ganita Prakash-II (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gtmgp2",
+    "title": "Ganita Prakash-II (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gmlgp2",
+    "title": "Ganita Prakash-II (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gtlgp2",
+    "title": "Ganita Prakash-II (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gdggp2",
+    "title": "Ganita Prakash-II (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gbdgp2",
+    "title": "Ganita Prakash-II (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gnpgp2",
+    "title": "Ganita Prakash-II (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gsigp2",
+    "title": "Ganita Prakash-II (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gmngp2",
+    "title": "Ganita Prakash-II (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gmtgp2",
+    "title": "Ganita Prakash-II (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gkogp2",
+    "title": "Ganita Prakash-II (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gskgp2",
+    "title": "Ganita Prakash-II (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gsngp2",
+    "title": "Ganita Prakash-II (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gksgp2",
+    "title": "Ganita Prakash-II (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   }
+  ],
+  "Arts": [
+   {
+    "code": "gekr1",
+    "title": "Kriti",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "English"
+   },
+   {
+    "code": "ghkr1",
+    "title": "Kriti-I (Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Hindi"
+   },
+   {
+    "code": "gbnkr1",
+    "title": "Kriti-I (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "gpnkr1",
+    "title": "Kriti-I (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "gskkr1",
+    "title": "Kriti-I (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "gknkr1",
+    "title": "Kriti-I (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "gorkr1",
+    "title": "Kriti-I (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "gmrkr1",
+    "title": "Kriti-I (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "gdgkr1",
+    "title": "Kriti-I (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "gbdkr1",
+    "title": "Kriti-I (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "ggjkr1",
+    "title": "Kriti-I (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "gkokr1",
+    "title": "Kriti-I (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "gaskr1",
+    "title": "Kriti-I (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "gmtkr1",
+    "title": "Kriti-I (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "gsnkr1",
+    "title": "Kriti-I (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "gtmkr1",
+    "title": "Kriti-I (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "gnpkr1",
+    "title": "Kriti-I (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "gsikr1",
+    "title": "Kriti-I (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "gsikr1",
+    "title": "Kriti-I (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "gmnkr1",
+    "title": "Kriti-I (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "gmlkr1",
+    "title": "Kriti-I (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   },
+   {
+    "code": "gkskr1",
+    "title": "Kriti-I (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Other"
+   }
+  ],
+  "Hindi": [
+   {
+    "code": "ghml1",
+    "title": "Malhar",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Hindi"
+   }
+  ],
+  "Sanskrit": [
+   {
+    "code": "gsde1",
+    "title": "Deepakam",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Other"
+   }
+  ],
+  "Science": [
+   {
+    "code": "gecu1",
+    "title": "Curiosity",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "English"
+   },
+   {
+    "code": "ghcu1",
+    "title": "Jigyasa",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Hindi"
+   },
+   {
+    "code": "gucu1",
+    "title": "Tajassus",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Urdu"
+   },
+   {
+    "code": "gmrcu1",
+    "title": "Curiosity (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gorcu1",
+    "title": "Curiosity (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gbncu1",
+    "title": "Curiosity (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gpncu1",
+    "title": "Curiosity (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gascu1",
+    "title": "Curiosity (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gtmcu1",
+    "title": "Curiosity (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gnpcu1",
+    "title": "Curiosity (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gmncu1",
+    "title": "Curiosity (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gtlcu1",
+    "title": "Curiosity (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gbdcu1",
+    "title": "Curiosity (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gsncu1",
+    "title": "Curiosity (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gkncu1",
+    "title": "Curiosity (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gdgcu1",
+    "title": "Curiosity (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gkocu1",
+    "title": "Curiosity (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gkscu1",
+    "title": "Curiosity (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gmlcu1",
+    "title": "Curiosity (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gmtcu1",
+    "title": "Curiosity (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gskcu1",
+    "title": "Curiosity (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gsicu1",
+    "title": "Curiosity (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "ggjcu1",
+    "title": "Curiosity (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   }
+  ],
+  "English": [
+   {
+    "code": "gepr1",
+    "title": "Poorvi",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   }
+  ],
+  "Social Science": [
+   {
+    "code": "gees1",
+    "title": "Exploring Society India and Beyond Part-I",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "English"
+   },
+   {
+    "code": "ghes1",
+    "title": "Samaj Ka Aadhyan: Bharat or uske aage Part-I",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Hindi"
+   },
+   {
+    "code": "gees2",
+    "title": "Exploring Society India and Beyond Part-II",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "ghes2",
+    "title": "Samaj Ka Aadhyan: Bharat or uske aage Part-II",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Hindi"
+   },
+   {
+    "code": "gues1",
+    "title": "Muashrey ki Daryaft - Hindustan aur Uske age Part-I",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Urdu"
+   },
+   {
+    "code": "gues2",
+    "title": "Muashrey ki Daryaft - Hindustan aur Uske age Part-II",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Urdu"
+   },
+   {
+    "code": "gores1",
+    "title": "Exploring Society India and Beyond Part-I (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gmres1",
+    "title": "Exploring Society India and Beyond Part-I (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gpnes1",
+    "title": "Exploring Society India and Beyond Part-I (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gkoes1",
+    "title": "Exploring Society India and Beyond Part-I (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gmles1",
+    "title": "Exploring Society India and Beyond Part-I (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gknes1",
+    "title": "Exploring Society India and Beyond Part-I (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gdges1",
+    "title": "Exploring Society India and Beyond Part-I (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gmnes1",
+    "title": "Exploring Society India and Beyond Part-I (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gnpes1",
+    "title": "Exploring Society India and Beyond Part-I (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gskes1",
+    "title": "Exploring Society India and Beyond Part-I (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gmtes1",
+    "title": "Exploring Society India and Beyond Part-I (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gases1",
+    "title": "Exploring Society India and Beyond Part-I (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gbnes1",
+    "title": "Exploring Society India and Beyond Part-I (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gbdes1",
+    "title": "Exploring Society India and Beyond Part-I (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "ggjes1",
+    "title": "Exploring Society India and Beyond Part-I (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gtmes1",
+    "title": "Exploring Society India and Beyond Part-I (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gsnes1",
+    "title": "Exploring Society India and Beyond Part-I (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gsies1",
+    "title": "Exploring Society India and Beyond Part-I (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gtles1",
+    "title": "Exploring Society India and Beyond Part-I (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "gkses1",
+    "title": "Exploring Society India and Beyond Part-I (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   },
+   {
+    "code": "ggjes2",
+    "title": "Exploring Society India and Beyond Part-II (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gknes2",
+    "title": "Exploring Society India and Beyond Part-II (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gores2",
+    "title": "Exploring Society India and Beyond Part-II (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gpnes2",
+    "title": "Exploring Society India and Beyond Part-II (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gbnes2",
+    "title": "Exploring Society India and Beyond Part-II (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gtmes2",
+    "title": "Exploring Society India and Beyond Part-II (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gmles2",
+    "title": "Exploring Society India and Beyond Part-II (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gases2",
+    "title": "Exploring Society India and Beyond Part-II (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gmres2",
+    "title": "Exploring Society India and Beyond Part-II (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gtles2",
+    "title": "Exploring Society India and Beyond Part-II (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gskes2",
+    "title": "Exploring Society India and Beyond Part-II (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gkoes2",
+    "title": "Exploring Society India and Beyond Part-II (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gmnes2",
+    "title": "Exploring Society India and Beyond Part-II (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gsies2",
+    "title": "Exploring Society India and Beyond Part-II (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gnpes2",
+    "title": "Exploring Society India and Beyond Part-II (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gbdes2",
+    "title": "Exploring Society India and Beyond Part-II (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gkses2",
+    "title": "Exploring Society India and Beyond Part-II (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gsnes2",
+    "title": "Exploring Society India and Beyond Part-II (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gdges2",
+    "title": "Exploring Society India and Beyond Part-II (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   },
+   {
+    "code": "gmtes2",
+    "title": "Exploring Society India and Beyond Part-II (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Other"
+   }
+  ],
+  "Physical Education and Well Being": [
+   {
+    "code": "geky1",
+    "title": "Khel Yatra",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "English"
+   },
+   {
+    "code": "gukl1",
+    "title": "Khel Yatra (Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Urdu"
+   },
+   {
+    "code": "ghky1",
+    "title": "Khel Yatra (Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Hindi"
+   },
+   {
+    "code": "gpnky1",
+    "title": "Khel Yatra (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "gdgky1",
+    "title": "Khel Yatra (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "gsnky1",
+    "title": "Khel Yatra (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "gmlky1",
+    "title": "Khel Yatra (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "ggjky1",
+    "title": "Khel Yatra (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "gorky1",
+    "title": "Khel Yatra (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "gbnky1",
+    "title": "Khel Yatra (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "gmrky1",
+    "title": "Khel Yatra (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "gkoky1",
+    "title": "Khel Yatra (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "gbdky1",
+    "title": "Khel Yatra (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "gskky1",
+    "title": "Khel Yatra (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "gknky1",
+    "title": "Khel Yatra (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "gtmky1",
+    "title": "Khel Yatra (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "gtlky1",
+    "title": "Khel Yatra (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "gmnky1",
+    "title": "Khel Yatra (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "gnpky1",
+    "title": "Khel Yatra (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "gasky1",
+    "title": "Khel Yatra (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "gksky1",
+    "title": "Khel Yatra (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "gmtky1",
+    "title": "Khel Yatra (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "gsiky1",
+    "title": "Khel Yatra (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   }
+  ],
+  "Vocational Education": [
+   {
+    "code": "gekb1",
+    "title": "Kaushal Bodh",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "ghkb1",
+    "title": "Kaushal Bodh(Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Hindi"
+   },
+   {
+    "code": "gtlkb1",
+    "title": "Kaushal Bodh(Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gorkb1",
+    "title": "Kaushal Bodh(Odia)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gpnkb1",
+    "title": "Kaushal Bodh(Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "ggjkb1",
+    "title": "Kaushal Bodh(Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gtmkb1",
+    "title": "Kaushal Bodh(Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gdgkb1",
+    "title": "Kaushal Bodh(Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gknkb1",
+    "title": "Kaushal Bodh(Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gnpkb1",
+    "title": "Kaushal Bodh(Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gskkb1",
+    "title": "Kaushal Bodh(Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gmlkb1",
+    "title": "Kaushal Bodh(Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gkokb1",
+    "title": "Kaushal Bodh(Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gbnkb1",
+    "title": "Kaushal Bodh(Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gbdkb1",
+    "title": "Kaushal Bodh(Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gkskb1",
+    "title": "Kaushal Bodh(Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gmtkb1",
+    "title": "Kaushal Bodh(Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gmrkb1",
+    "title": "Kaushal Bodh(Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gsnkb1",
+    "title": "Kaushal Bodh(Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gaskb1",
+    "title": "Kaushal Bodh(Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gmnkb1",
+    "title": "Kaushal Bodh(Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "gsikb1",
+    "title": "Kaushal Bodh(Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   }
+  ],
+  "Urdu": [
+   {
+    "code": "guky1",
+    "title": "Khayal",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Urdu"
+   }
+  ]
+ },
+ "8": {
+  "Mathematics": [
+   {
+    "code": "hegp1",
+    "title": "Ganita Prakash Part-I",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "hegp2",
+    "title": "Ganita Prakash Part-II",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "hhgp1",
+    "title": "Ganita Prakash Part-I (Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Hindi"
+   },
+   {
+    "code": "hhgp2",
+    "title": "Ganita Prakash Part-II (Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Hindi"
+   },
+   {
+    "code": "hugp1",
+    "title": "Ganita Prakash Part-I (Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Urdu"
+   },
+   {
+    "code": "hpngp1",
+    "title": "Ganita Prakash Part-I (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hmtgp1",
+    "title": "Ganita Prakash Part-I (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hmrgp1",
+    "title": "Ganita Prakash Part-I (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hbngp1",
+    "title": "Ganita Prakash Part-I (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hbdgp1",
+    "title": "Ganita Prakash Part-I (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hnpgp1",
+    "title": "Ganita Prakash Part-I (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "horgp1",
+    "title": "Ganita Prakash Part-I (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hkngp1",
+    "title": "Ganita Prakash Part-I (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "htlgp1",
+    "title": "Ganita Prakash Part-I (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hdggp1",
+    "title": "Ganita Prakash Part-I (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hkogp1",
+    "title": "Ganita Prakash Part-I (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "htmgp1",
+    "title": "Ganita Prakash Part-I (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hksgp1",
+    "title": "Ganita Prakash Part-I (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hmngp1",
+    "title": "Ganita Prakash Part-I (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hskgp1",
+    "title": "Ganita Prakash Part-I (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hsngp1",
+    "title": "Ganita Prakash Part-I (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hmlgp1",
+    "title": "Ganita Prakash Part-I (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hsigp1",
+    "title": "Ganita Prakash Part-I (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hasgp1",
+    "title": "Ganita Prakash Part-I (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hgjgp1",
+    "title": "Ganita Prakash Part-I (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hkngp2",
+    "title": "Ganita Prakash Part-II(Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "horgp2",
+    "title": "Ganita Prakash Part-II(Odia)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hpngp2",
+    "title": "Ganita Prakash Part-II(Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hgjgp2",
+    "title": "Ganita Prakash Part-II(Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "htmgp2",
+    "title": "Ganita Prakash Part-II(Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hmlgp2",
+    "title": "Ganita Prakash Part-II(Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hasgp2",
+    "title": "Ganita Prakash Part-II(Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hmrgp2",
+    "title": "Ganita Prakash Part-II(Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "htlgp2",
+    "title": "Ganita Prakash Part-II(Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hbngp2",
+    "title": "Ganita Prakash Part-II(Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hsngp2",
+    "title": "Ganita Prakash Part-II(Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hsigp2",
+    "title": "Ganita Prakash Part-II(Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hmngp2",
+    "title": "Ganita Prakash Part-II(Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hbdgp2",
+    "title": "Ganita Prakash Part-II(Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hdggp2",
+    "title": "Ganita Prakash Part-II(Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hskgp2",
+    "title": "Ganita Prakash Part-II(Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hnpgp2",
+    "title": "Ganita Prakash Part-II(Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hkogp2",
+    "title": "Ganita Prakash Part-II(Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hksgp2",
+    "title": "Ganita Prakash Part-II(Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hmtgp2",
+    "title": "Ganita Prakash Part-II(Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hemh1",
+    "title": "Mathematics",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "English"
+   },
+   {
+    "code": "hhmh1",
+    "title": "Ganit",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Hindi"
+   },
+   {
+    "code": "huhi1",
+    "title": "Riyazi(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 16,
+    "medium": "Urdu"
+   }
+  ],
+  "Arts": [
+   {
+    "code": "hekr1",
+    "title": "Kriti",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "English"
+   },
+   {
+    "code": "hhkr1",
+    "title": "Kriti (Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Hindi"
+   },
+   {
+    "code": "hukr1",
+    "title": "Kriti (Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Urdu"
+   },
+   {
+    "code": "hmrkr1",
+    "title": "Kriti (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "htmkr1",
+    "title": "Kriti (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "hpnkr1",
+    "title": "Kriti (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "hnpkr1",
+    "title": "Kriti (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "horkr1",
+    "title": "Kriti (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "hdgkr1",
+    "title": "Kriti (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "hknkr1",
+    "title": "Kriti (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "hmlkr1",
+    "title": "Kriti (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "hbdkr1",
+    "title": "Kriti (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "hbnkr1",
+    "title": "Kriti (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "htlkr1",
+    "title": "Kriti (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "haskr1",
+    "title": "Kriti (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "hkskr1",
+    "title": "Kriti (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "hskkr1",
+    "title": "Kriti (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "hgjkr1",
+    "title": "Kriti (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "hkokr1",
+    "title": "Kriti (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "hsnkr1",
+    "title": "Kriti (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "hmtkr1",
+    "title": "Kriti (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "hmnkr1",
+    "title": "Kriti (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   },
+   {
+    "code": "hsikr1",
+    "title": "Kriti (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Other"
+   }
+  ],
+  "Hindi": [
+   {
+    "code": "hhml1",
+    "title": "Malhar",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Hindi"
+   },
+   {
+    "code": "hhvs1",
+    "title": "Vasant",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Hindi"
+   },
+   {
+    "code": "hhdv1",
+    "title": "Durva",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Hindi"
+   },
+   {
+    "code": "hhbk1",
+    "title": "Bharat Ki Khoj",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "Hindi"
+   },
+   {
+    "code": "hhsb1",
+    "title": "Sanshipt Budhcharit",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Hindi"
+   }
+  ],
+  "Sanskrit": [
+   {
+    "code": "hsde1",
+    "title": "Deepakam",
+    "first_chapter": 1,
+    "last_chapter": 16,
+    "medium": "Other"
+   },
+   {
+    "code": "hhsk1",
+    "title": "Ruchira",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Hindi"
+   }
+  ],
+  "Science": [
+   {
+    "code": "hecu1",
+    "title": "Curiosity",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "English"
+   },
+   {
+    "code": "hhcu1",
+    "title": "Jigyasa",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Hindi"
+   },
+   {
+    "code": "hucu1",
+    "title": "Tajassus",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Urdu"
+   },
+   {
+    "code": "hpncu1",
+    "title": "Curiosity (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "htmcu1",
+    "title": "Curiosity (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "horcu1",
+    "title": "Curiosity (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "hascu1",
+    "title": "Curiosity (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "hmrcu1",
+    "title": "Curiosity (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "hbncu1",
+    "title": "Curiosity (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "hdgcu1",
+    "title": "Curiosity (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "htlcu1",
+    "title": "Curiosity (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "hbdcu1",
+    "title": "Curiosity (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "hgjcu1",
+    "title": "Curiosity (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "hmncu1",
+    "title": "Curiosity (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "hskcu1",
+    "title": "Curiosity (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "hmlcu1",
+    "title": "Curiosity (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "hkncu1",
+    "title": "Curiosity (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "hkocu1",
+    "title": "Curiosity (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "hmtcu1",
+    "title": "Curiosity (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "hnpcu1",
+    "title": "Curiosity (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "hsncu1",
+    "title": "Curiosity (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "hsicu1",
+    "title": "Curiosity (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "hkscu1",
+    "title": "Curiosity (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Other"
+   },
+   {
+    "code": "hesc1",
+    "title": "Science",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "English"
+   },
+   {
+    "code": "hhsc1",
+    "title": "Vigyan",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Hindi"
+   },
+   {
+    "code": "huse1",
+    "title": "Science(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 18,
+    "medium": "Urdu"
+   }
+  ],
+  "English": [
+   {
+    "code": "hepr1",
+    "title": "Poorvi",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "hehd1",
+    "title": "Honeydew",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "heih1",
+    "title": "It So Happend",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   }
+  ],
+  "Social Science": [
+   {
+    "code": "hees1",
+    "title": "Exploring Society India and Beyond Part-I",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "hhes1",
+    "title": "Samaj Ka Aadhyan: Bharat or uske aage Part-I",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Hindi"
+   },
+   {
+    "code": "hues1",
+    "title": "Muashrey ki Daryaft - Hindustan Aur Uske Age Part-I",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Urdu"
+   },
+   {
+    "code": "hees2",
+    "title": "Exploring Society India and Beyond Part-II",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "hores1",
+    "title": "Exploring Society India and Beyond Part-I (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hskes1",
+    "title": "Exploring Society India and Beyond Part-I (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hmles1",
+    "title": "Exploring Society India and Beyond Part-I (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hpnes1",
+    "title": "Exploring Society India and Beyond Part-I (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hgjes1",
+    "title": "Exploring Society India and Beyond Part-I (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hbnes1",
+    "title": "Exploring Society India and Beyond Part-I (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "htmes1",
+    "title": "Exploring Society India and Beyond Part-I (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hnpes1",
+    "title": "Exploring Society India and Beyond Part-I (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hmnes1",
+    "title": "Exploring Society India and Beyond Part-I (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hknes1",
+    "title": "Exploring Society India and Beyond Part-I (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hmres1",
+    "title": "Exploring Society India and Beyond Part-I (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hdges1",
+    "title": "Exploring Society India and Beyond Part-I (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hases1",
+    "title": "Exploring Society India and Beyond Part-I (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hkoes1",
+    "title": "Exploring Society India and Beyond Part-I (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hmtes1",
+    "title": "Exploring Society India and Beyond Part-I (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hbdes1",
+    "title": "Exploring Society India and Beyond Part-I (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hkses1",
+    "title": "Exploring Society India and Beyond Part-I (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hsnes1",
+    "title": "Exploring Society India and Beyond Part-I (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "htles1",
+    "title": "Exploring Society India and Beyond Part-I (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hsies1",
+    "title": "Exploring Society India and Beyond Part-I (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hess4",
+    "title": "Resource And Development(Geography)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "hhss4",
+    "title": "Sansadhan Avam Vikas(Bhugol)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Hindi"
+   },
+   {
+    "code": "hess3",
+    "title": "Social And Political Life",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "hhss3",
+    "title": "Samajik Avam Rajnatik Jeevan",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Hindi"
+   },
+   {
+    "code": "hess2",
+    "title": "Our-Pasts-III",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "hugy1",
+    "title": "Wasayel aur Taraqqui(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Urdu"
+   },
+   {
+    "code": "huss1",
+    "title": "Samaji Aur Siyasi Zindagi(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Urdu"
+   },
+   {
+    "code": "huhm1",
+    "title": "Hamare Maazi-III (Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Urdu"
+   }
+  ],
+  "Physical Education and Well Being": [
+   {
+    "code": "heky1",
+    "title": "Khel Yatra",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "English"
+   },
+   {
+    "code": "hhky1",
+    "title": "Khel Yatra ( Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Hindi"
+   },
+   {
+    "code": "huky1",
+    "title": "Khel Yatra (Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Urdu"
+   },
+   {
+    "code": "hpnky1",
+    "title": "Khel Yatra (Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "hmrky1",
+    "title": "Khel Yatra (Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "horky1",
+    "title": "Khel Yatra (Odia)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "hmlky1",
+    "title": "Khel Yatra (Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "hgjky1",
+    "title": "Khel Yatra (Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "hskky1",
+    "title": "Khel Yatra (Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "hnpky1",
+    "title": "Khel Yatra (Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "htmky1",
+    "title": "Khel Yatra (Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "hbnky1",
+    "title": "Khel Yatra (Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "hdgky1",
+    "title": "Khel Yatra (Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "hbdky1",
+    "title": "Khel Yatra (Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "hknky1",
+    "title": "Khel Yatra (Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "htlky1",
+    "title": "Khel Yatra (Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "hmnky1",
+    "title": "Khel Yatra (Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "hmtky1",
+    "title": "Khel Yatra (Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "hasky1",
+    "title": "Khel Yatra (Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "hksky1",
+    "title": "Khel Yatra (Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "hkoky1",
+    "title": "Khel Yatra (Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "hsiky1",
+    "title": "Khel Yatra (Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   },
+   {
+    "code": "hsnky1",
+    "title": "Khel Yatra (Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Other"
+   }
+  ],
+  "Vocational Education": [
+   {
+    "code": "hekb1",
+    "title": "Kaushal Bodh",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "hhkb1",
+    "title": "Kaushal Bodh (Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Hindi"
+   },
+   {
+    "code": "hgjkb1",
+    "title": "Kaushal Bodh(Gujarati)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hbdkb1",
+    "title": "Kaushal Bodh(Bodo)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "horkb1",
+    "title": "Kaushal Bodh(Odia)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "htlkb1",
+    "title": "Kaushal Bodh(Telugu)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hskkb1",
+    "title": "Kaushal Bodh(Sanskrit)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hpnkb1",
+    "title": "Kaushal Bodh(Punjabi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hnpkb1",
+    "title": "Kaushal Bodh(Nepali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hmrkb1",
+    "title": "Kaushal Bodh(Marathi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hknkb1",
+    "title": "Kaushal Bodh(Kannada)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "htmkb1",
+    "title": "Kaushal Bodh(Tamil)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hdgkb1",
+    "title": "Kaushal Bodh(Dogri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hkokb1",
+    "title": "Kaushal Bodh(Konkani)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hmtkb1",
+    "title": "Kaushal Bodh(Maithili)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hmlkb1",
+    "title": "Kaushal Bodh(Malayalam)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hmnkb1",
+    "title": "Kaushal Bodh(Manipuri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hsnkb1",
+    "title": "Kaushal Bodh(Santhali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hbnkb1",
+    "title": "Kaushal Bodh(Bengali)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "haskb1",
+    "title": "Kaushal Bodh(Assamese)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hsikb1",
+    "title": "Kaushal Bodh(Sindhi)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "hkskb1",
+    "title": "Kaushal Bodh(Kashmiri)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   }
+  ],
+  "Urdu": [
+   {
+    "code": "hukl1",
+    "title": "Khayal",
+    "first_chapter": 1,
+    "last_chapter": 21,
+    "medium": "Urdu"
+   },
+   {
+    "code": "huaz1",
+    "title": "Apni Zaban",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Urdu"
+   },
+   {
+    "code": "huug1",
+    "title": "Urdu Guldasta (Supl)",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "Urdu"
+   },
+   {
+    "code": "hudp1",
+    "title": "Door-Pass",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Urdu"
+   },
+   {
+    "code": "hujp1",
+    "title": "Jaan Pahechan",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Urdu"
+   }
+  ],
+  "Class 8": [
+   {
+    "code": "class4",
+    "title": "Class 8",
+    "first_chapter": 1,
+    "last_chapter": 1,
+    "medium": "Other"
+   }
+  ]
+ },
+ "9": {
+  "English": [
+   {
+    "code": "iebe1",
+    "title": "Kaveri",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   }
+  ],
+  "Hindi": [
+   {
+    "code": "ihga1",
+    "title": "Ganga",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Hindi"
+   }
+  ],
+  "Sanskrit": [
+   {
+    "code": "ihsh1",
+    "title": "Sharada",
+    "first_chapter": 1,
+    "last_chapter": 16,
+    "medium": "Hindi"
+   }
+  ],
+  "Mathematics": [
+   {
+    "code": "iemh1",
+    "title": "Ganita Manjari",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "iemh2",
+    "title": "Ganita Manjari PART-II",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "English"
+   },
+   {
+    "code": "ihmh1",
+    "title": "Ganita Manjari (Hindi)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Hindi"
+   },
+   {
+    "code": "iumh1",
+    "title": "Ganit Manjari (Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Urdu"
+   }
+  ],
+  "Science": [
+   {
+    "code": "iesc1",
+    "title": "Exploration",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "English"
+   },
+   {
+    "code": "ihsc1",
+    "title": "Anveshan",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Hindi"
+   }
+  ],
+  "Urdu": [
+   {
+    "code": "iuju1",
+    "title": "Jamuna",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Urdu"
+   }
+  ],
+  "Social Science": [
+   {
+    "code": "iest1",
+    "title": "Understanding Society India and Beyond PART-I",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "English"
+   },
+   {
+    "code": "iest2",
+    "title": "Understanding Society India and Beyond PART-II",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "English"
+   }
+  ],
+  "Physical Education and Well Being": [
+   {
+    "code": "iehp1",
+    "title": "Khel Praveen",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "English"
+   }
+  ],
+  "Skill Education": [
+   {
+    "code": "iekv1",
+    "title": "Kaushal Vikas",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "English"
+   }
+  ],
+  "Vocational": [
+   {
+    "code": "ievc1",
+    "title": "Cashier",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "ieva1",
+    "title": "Store Operations Assistant",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "English"
+   },
+   {
+    "code": "ievs1",
+    "title": "Solanceous Crop Cultivator",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "ievt1",
+    "title": "Assistant Beauty Therapist",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "English"
+   },
+   {
+    "code": "ievw1",
+    "title": "Animal Health Workers (Agriculture)",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "English"
+   },
+   {
+    "code": "ieve1",
+    "title": "Hand Embroiderer (Addawala)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "ievh1",
+    "title": "Hand Embroiderer",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "iepg1",
+    "title": "Plumber General",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "ieeo1",
+    "title": "IT Domestic Data Entry Operator",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "iees1",
+    "title": "Employability Skill",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   }
+  ],
+  "Arts": [
+   {
+    "code": "iemr1",
+    "title": "Madhurima",
+    "first_chapter": 1,
+    "last_chapter": 17,
+    "medium": "English"
+   }
+  ]
+ },
+ "10": {
+  "Mathematics": [
+   {
+    "code": "jemh1",
+    "title": "Mathematics",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "English"
+   },
+   {
+    "code": "jhmh1",
+    "title": "Ganit",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Hindi"
+   },
+   {
+    "code": "jumh1",
+    "title": "Riyazi",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Urdu"
+   }
+  ],
+  "Science": [
+   {
+    "code": "jesc1",
+    "title": "Science",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "English"
+   },
+   {
+    "code": "jhsc1",
+    "title": "Vigyan",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Hindi"
+   },
+   {
+    "code": "jusc1",
+    "title": "Science(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 16,
+    "medium": "Urdu"
+   }
+  ],
+  "Hindi": [
+   {
+    "code": "jhks1",
+    "title": "Kshitij-2",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Hindi"
+   },
+   {
+    "code": "jhsp1",
+    "title": "Sparsh",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Hindi"
+   },
+   {
+    "code": "jhsy1",
+    "title": "Sanchayan Bhag-2",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Hindi"
+   },
+   {
+    "code": "jhkr1",
+    "title": "Kritika",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Hindi"
+   }
+  ],
+  "English": [
+   {
+    "code": "jeff1",
+    "title": "First Flight",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "English"
+   },
+   {
+    "code": "jefp1",
+    "title": "Foot Prints Without feet Supp. Reader",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "English"
+   },
+   {
+    "code": "jewe2",
+    "title": "Words and Expressions  2",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "English"
+   }
+  ],
+  "Social Science": [
+   {
+    "code": "jess1",
+    "title": "Contemporary India",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "jhss1",
+    "title": "Samkalin Bharat",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Hindi"
+   },
+   {
+    "code": "juss1",
+    "title": "Aasri Hindustan-II",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Urdu"
+   },
+   {
+    "code": "jess2",
+    "title": "Understanding Economic Development",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "jhss2",
+    "title": "Arthik Vikas ki Samajh",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Hindi"
+   },
+   {
+    "code": "juss2",
+    "title": "Maashi Taraqqui Ki Samajh",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Urdu"
+   },
+   {
+    "code": "jess3",
+    "title": "India and the Contemporary World-II",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "jhss3",
+    "title": "Bharat Aur Samakalin Vishav-2",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Hindi"
+   },
+   {
+    "code": "juss3",
+    "title": "Hindustan Aur Asri Duniya",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Urdu"
+   },
+   {
+    "code": "jess4",
+    "title": "Democratic Politics",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "jhss4",
+    "title": "Loktantrik Rajniti",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Hindi"
+   },
+   {
+    "code": "juss4",
+    "title": "Jamhuri Siyasat-II",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Urdu"
+   }
+  ],
+  "Sanskrit": [
+   {
+    "code": "jhsk1",
+    "title": "Shemushi",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Hindi"
+   },
+   {
+    "code": "jhva1",
+    "title": "Vyakaranavithi",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Hindi"
+   },
+   {
+    "code": "jsab1",
+    "title": "Abhyaswaan Bhav-II",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Other"
+   }
+  ],
+  "Urdu": [
+   {
+    "code": "juge1",
+    "title": "Gulzar-e-Urdu",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Urdu"
+   },
+   {
+    "code": "june1",
+    "title": "Nawa-e-Urdu",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Urdu"
+   },
+   {
+    "code": "jujp1",
+    "title": "Jaan Pahechan",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Urdu"
+   },
+   {
+    "code": "judp1",
+    "title": "Door-Paas",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Urdu"
+   },
+   {
+    "code": "jusr1",
+    "title": "Sab Rang",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "Urdu"
+   }
+  ],
+  "Health and Physical Education": [
+   {
+    "code": "jehp1",
+    "title": "Health and Physical Education",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "English"
+   }
+  ]
+ },
+ "11": {
+  "Sanskrit": [
+   {
+    "code": "khsk1",
+    "title": "Bhaswati",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Hindi"
+   },
+   {
+    "code": "khsk2",
+    "title": "Shashwati",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Hindi"
+   }
+  ],
+  "Accountancy": [
+   {
+    "code": "keac1",
+    "title": "Financial Accounting-I",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "khac1",
+    "title": "Lekhashastra-I",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Hindi"
+   },
+   {
+    "code": "keac2",
+    "title": "Accountancy-II",
+    "first_chapter": 1,
+    "last_chapter": 2,
+    "medium": "English"
+   },
+   {
+    "code": "khac2",
+    "title": "Lekhashastra-II",
+    "first_chapter": 1,
+    "last_chapter": 2,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kuac1",
+    "title": "Khatadari-I(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Urdu"
+   },
+   {
+    "code": "kuac2",
+    "title": "Khatadari-II(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Urdu"
+   }
+  ],
+  "Business Studies": [
+   {
+    "code": "kebs1",
+    "title": "Business Studies",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "English"
+   },
+   {
+    "code": "khbs1",
+    "title": "Vyavsay Adhyanan",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kubs1",
+    "title": "Karobari Mutalah I",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Urdu"
+   }
+  ],
+  "Chemistry": [
+   {
+    "code": "kech1",
+    "title": "Chemistry Part-I",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "English"
+   },
+   {
+    "code": "khch1",
+    "title": "Rasayan Vigyan bhag-I",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kuch1",
+    "title": "Keemiya I",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Urdu"
+   },
+   {
+    "code": "kech2",
+    "title": "Chemistry Part II",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "English"
+   },
+   {
+    "code": "khch2",
+    "title": "Rasayan Vigyan bhag-II",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kuch2",
+    "title": "Keemiya II",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Urdu"
+   }
+  ],
+  "Mathematics": [
+   {
+    "code": "kemh1",
+    "title": "Mathematics",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "English"
+   },
+   {
+    "code": "khmh1",
+    "title": "Ganit",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kumh1",
+    "title": "Riyazi I",
+    "first_chapter": 1,
+    "last_chapter": 16,
+    "medium": "Urdu"
+   }
+  ],
+  "Vocational": [
+   {
+    "code": "kepc1",
+    "title": "Floriculturist- Protected Cultivation",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "kevt1",
+    "title": "Vision Technician",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "keoc1",
+    "title": "Floriculturist",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "English"
+   },
+   {
+    "code": "keda1",
+    "title": "General Duty Assistant",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "kedf1",
+    "title": "Dairy Farmer Enterpreneur",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "English"
+   },
+   {
+    "code": "kefc1",
+    "title": "Floriculturist",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "English"
+   }
+  ],
+  "Biology": [
+   {
+    "code": "kebo1",
+    "title": "Biology",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "English"
+   },
+   {
+    "code": "khbo1",
+    "title": "Jeev Vigyan",
+    "first_chapter": 1,
+    "last_chapter": 19,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kubo1",
+    "title": "Hayatiyaat",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Urdu"
+   }
+  ],
+  "Home Science": [
+   {
+    "code": "kehe1",
+    "title": "Human Ecology and Family Sciences Part I",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "kehe2",
+    "title": "Human Ecology and Family Sciences Part II",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "English"
+   },
+   {
+    "code": "khhe1",
+    "title": "Manav Paristhitiki evm pariwar vigyan Bhag-I",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Hindi"
+   },
+   {
+    "code": "khhe2",
+    "title": "Manav Paristhitiki evm pariwar vigyan Bhag-II",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kuim1",
+    "title": "Insani Mahauliyat aur Uloom e Khandandari-I",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Urdu"
+   },
+   {
+    "code": "kuim2",
+    "title": "Insani Mahauliyat aur Uloom e Khandandari Part-II",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "Urdu"
+   }
+  ],
+  "Psychology": [
+   {
+    "code": "kepy1",
+    "title": "Introduction to Psychology",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "khpy1",
+    "title": "Manovigyan",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kupy1",
+    "title": "Nafsiyaat",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "Urdu"
+   }
+  ],
+  "Economics": [
+   {
+    "code": "keec1",
+    "title": "Indian Economic Development",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "kest1",
+    "title": "Statistics for Economics",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "khst1",
+    "title": "Sankhyiki",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Hindi"
+   },
+   {
+    "code": "khec1",
+    "title": "Bhartiya Airthryavstha Ka Vikas",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kuec1",
+    "title": "Hindustan Ki Moaashi Tarraqqi(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Urdu"
+   },
+   {
+    "code": "kusc1",
+    "title": "Shumariyaat Bar-e-Mushiyat(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "Urdu"
+   }
+  ],
+  "Geography": [
+   {
+    "code": "kegy2",
+    "title": "Fundamental of Physical Geography",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "English"
+   },
+   {
+    "code": "khgy2",
+    "title": "Bhautique Bhugol ke Mool Sidhant",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kugy1",
+    "title": "Hindustan Tabi'i Mahaul (Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Urdu"
+   },
+   {
+    "code": "kegy3",
+    "title": "Pratical Work in Geography",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "English"
+   },
+   {
+    "code": "khgy3",
+    "title": "Bhugol Main Prayogatmak Karya",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kegy1",
+    "title": "India Physical Environment",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "English"
+   },
+   {
+    "code": "khgy1",
+    "title": "Bhart Bhautik Paryabaran",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kugy3",
+    "title": "Jughrafia Mein Aamli Kam (Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Urdu"
+   },
+   {
+    "code": "kugm1",
+    "title": "Tabi'i Jughraiya Ka Mubadiyat (Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 16,
+    "medium": "Urdu"
+   }
+  ],
+  "Physics": [
+   {
+    "code": "keph1",
+    "title": "Physics Part-I",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "khph1",
+    "title": "Bhautiki-I",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kuph1",
+    "title": "Tabiyaat-I",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Urdu"
+   },
+   {
+    "code": "keph2",
+    "title": "Physics Part-II",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "khph2",
+    "title": "Bhautiki-II",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kuph2",
+    "title": "Tabiyaat-II",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Urdu"
+   }
+  ],
+  "Hindi": [
+   {
+    "code": "khat1",
+    "title": "Antra",
+    "first_chapter": 1,
+    "last_chapter": 16,
+    "medium": "Hindi"
+   },
+   {
+    "code": "khar1",
+    "title": "Aroh",
+    "first_chapter": 1,
+    "last_chapter": 16,
+    "medium": "Hindi"
+   },
+   {
+    "code": "khvt1",
+    "title": "Vitan",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Hindi"
+   },
+   {
+    "code": "khan1",
+    "title": "Antral",
+    "first_chapter": 1,
+    "last_chapter": 2,
+    "medium": "Hindi"
+   }
+  ],
+  "Sociology": [
+   {
+    "code": "kesy1",
+    "title": "Introducing Sociology",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "khsy1",
+    "title": "Samaj Shastra Parichay-I",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kusy1",
+    "title": "Samajiyaat Ka Tarf",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Urdu"
+   },
+   {
+    "code": "kesy2",
+    "title": "Understanding Society",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "khsy2",
+    "title": "Samaj ka Bodh",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kusy2",
+    "title": "Mutala-e-Muashira",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Urdu"
+   }
+  ],
+  "English": [
+   {
+    "code": "keww1",
+    "title": "Woven Words",
+    "first_chapter": 1,
+    "last_chapter": 27,
+    "medium": "English"
+   },
+   {
+    "code": "kehb1",
+    "title": "Hornbill",
+    "first_chapter": 1,
+    "last_chapter": 14,
+    "medium": "English"
+   },
+   {
+    "code": "kesp1",
+    "title": "Snapshots Suppl.Reader English",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   }
+  ],
+  "Political Science": [
+   {
+    "code": "keps1",
+    "title": "Political Theory",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "khps1",
+    "title": "Raajneeti Sidhant",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kups1",
+    "title": "Hindustani Aain aur Kaam",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Urdu"
+   },
+   {
+    "code": "keps2",
+    "title": "India Constitution at Work",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "English"
+   },
+   {
+    "code": "khps2",
+    "title": "Bharat ka Samvidhan Sidhant aur Vyavhar",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kups2",
+    "title": "Siyasi Nazaria",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Urdu"
+   }
+  ],
+  "History": [
+   {
+    "code": "kehs1",
+    "title": "Themes in World History",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "khhs1",
+    "title": "Vishwa Itihas Ke Kuch Vishay",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kuta1",
+    "title": "Tareekh-e-Alam per Mabni Mauzuaat Part I",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Urdu"
+   }
+  ],
+  "Heritage Crafts": [
+   {
+    "code": "kehc1",
+    "title": "Living Craft Traditions of India",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "English"
+   },
+   {
+    "code": "kuhc1",
+    "title": "Hindustan me Dastkari Ki Riwayat",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Urdu"
+   }
+  ],
+  "Graphics design": [
+   {
+    "code": "kegd1",
+    "title": "The story of graphic design",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "khgd1",
+    "title": "graphic design ek kahani",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Hindi"
+   }
+  ],
+  "Computers and Communication Technology": [
+   {
+    "code": "kect1",
+    "title": "CCT Part-I",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "kect2",
+    "title": "CCT Part-II",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "English"
+   },
+   {
+    "code": "khct1",
+    "title": "Computer aur Sanchar Prodhogiki Part-I",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Hindi"
+   },
+   {
+    "code": "khct2",
+    "title": "Computer aur Sanchar Prodhogiki Part-II",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kuct1",
+    "title": "Computer Aur Muwaslati Technology I",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Urdu"
+   },
+   {
+    "code": "kuct2",
+    "title": "Computer Aur Muwaslati Technology II",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Urdu"
+   }
+  ],
+  "Fine Art": [
+   {
+    "code": "kefa1",
+    "title": "An Introduction to Indian Art Part-I",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "khfa1",
+    "title": "Bhartiya Kala ka parichay",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Hindi"
+   }
+  ],
+  "Urdu": [
+   {
+    "code": "kuna1",
+    "title": "Nai Awaz",
+    "first_chapter": 1,
+    "last_chapter": 20,
+    "medium": "Urdu"
+   },
+   {
+    "code": "kudh1",
+    "title": "Dhanak",
+    "first_chapter": 1,
+    "last_chapter": 27,
+    "medium": "Urdu"
+   },
+   {
+    "code": "kuga1",
+    "title": "Gulistan e Adab",
+    "first_chapter": 1,
+    "last_chapter": 22,
+    "medium": "Urdu"
+   },
+   {
+    "code": "kuku1",
+    "title": "Khyabane Urdu",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Urdu"
+   }
+  ],
+  "Creative Writing and Translation": [
+   {
+    "code": "khsr1",
+    "title": "Srijan",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "Hindi"
+   },
+   {
+    "code": "kucw1",
+    "title": "Takhleequi Jauhar",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "Urdu"
+   }
+  ],
+  "Informatics Practices": [
+   {
+    "code": "keip1",
+    "title": "Informatics Practices",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   }
+  ],
+  "Biotechnology": [
+   {
+    "code": "kebt1",
+    "title": "Biotechnology",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "English"
+   }
+  ],
+  "Computer Science": [
+   {
+    "code": "kecs1",
+    "title": "Computer Science",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "English"
+   },
+   {
+    "code": "kucs1",
+    "title": "Computer Science - Urdu",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Urdu"
+   }
+  ],
+  "Health and Physical Education": [
+   {
+    "code": "kehp1",
+    "title": "Health and Physical Education",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "English"
+   }
+  ],
+  "Knowledge Traditions Practices of India": [
+   {
+    "code": "keks1",
+    "title": "Knowledge Traditions Practices of India",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "English"
+   }
+  ],
+  "Sangeet": [
+   {
+    "code": "khtp1",
+    "title": "Tabla evam Pakhawaj",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Hindi"
+   },
+   {
+    "code": "khgv1",
+    "title": "Hindustani Sangeet Gayan Evam Vadan",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Hindi"
+   }
+  ]
+ },
+ "12": {
+  "Accountancy": [
+   {
+    "code": "leac1",
+    "title": "Accountancy-I",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "English"
+   },
+   {
+    "code": "leac2",
+    "title": "Accountancy Part-II",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "English"
+   },
+   {
+    "code": "lhac1",
+    "title": "Lekhashastra Part-I",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lhac2",
+    "title": "Lekhashastra Part-II",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Hindi"
+   },
+   {
+    "code": "leca1",
+    "title": "Computerised Accounting System",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "English"
+   },
+   {
+    "code": "luac1",
+    "title": "Khatadari-I(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Urdu"
+   },
+   {
+    "code": "luac2",
+    "title": "Khatadari-II(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Urdu"
+   }
+  ],
+  "Mathematics": [
+   {
+    "code": "lemh1",
+    "title": "Mathematics Part-I",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "English"
+   },
+   {
+    "code": "lemh2",
+    "title": "Mathematics Part-II",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "lhmh1",
+    "title": "Ganit-I",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lhmh2",
+    "title": "Ganit-II",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lumh1",
+    "title": "Riyazi-I",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Urdu"
+   },
+   {
+    "code": "lumh2",
+    "title": "Riyazi-II",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Urdu"
+   }
+  ],
+  "Physics": [
+   {
+    "code": "leph1",
+    "title": "Physics Part-I",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "leph2",
+    "title": "Physics Part-II",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "English"
+   },
+   {
+    "code": "lhph1",
+    "title": "Bhautiki-I",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lhph2",
+    "title": "Bhautiki-II",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Hindi"
+   },
+   {
+    "code": "luph1",
+    "title": "Tabiyaat-I",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Urdu"
+   },
+   {
+    "code": "luph2",
+    "title": "Tabiyaat-II",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Urdu"
+   }
+  ],
+  "Hindi": [
+   {
+    "code": "lhat1",
+    "title": "Antra",
+    "first_chapter": 1,
+    "last_chapter": 21,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lhar1",
+    "title": "Aroh",
+    "first_chapter": 1,
+    "last_chapter": 15,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lhvt1",
+    "title": "Vitan",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lhan1",
+    "title": "Antral Bhag 2",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Hindi"
+   }
+  ],
+  "English": [
+   {
+    "code": "lekl1",
+    "title": "Kaliedoscope",
+    "first_chapter": 1,
+    "last_chapter": 21,
+    "medium": "English"
+   },
+   {
+    "code": "lefl1",
+    "title": "Flamingo",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "English"
+   },
+   {
+    "code": "levt1",
+    "title": "Vistas",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "English"
+   }
+  ],
+  "Biotechnology": [
+   {
+    "code": "lebt1",
+    "title": "Biotechnology",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "English"
+   }
+  ],
+  "Biology": [
+   {
+    "code": "lebo1",
+    "title": "Biology",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "English"
+   },
+   {
+    "code": "lhbo1",
+    "title": "Jeev Vigyan",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lubo1",
+    "title": "Hayatiyaat",
+    "first_chapter": 1,
+    "last_chapter": 16,
+    "medium": "Urdu"
+   }
+  ],
+  "History": [
+   {
+    "code": "lehs1",
+    "title": "Themes in Indian History-I",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "English"
+   },
+   {
+    "code": "lhhs1",
+    "title": "Bharatiya Itihas ke kuchh Vishay-I",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lehs2",
+    "title": "Themes in Indian History-II",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "English"
+   },
+   {
+    "code": "lhhs2",
+    "title": "Bharatiya Itihas ke kuchh Vishay-II",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lehs3",
+    "title": "Themes in Indian History-III",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "English"
+   },
+   {
+    "code": "lhhs3",
+    "title": "Bharatiya Itihas ke kuchh Vishay-III",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "Hindi"
+   },
+   {
+    "code": "luth1",
+    "title": "Tareekh-e-Hind ke Mauzuaat-I(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "Urdu"
+   },
+   {
+    "code": "luth2",
+    "title": "Tareekh-e-Hind ke Mauzuaat-II(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "Urdu"
+   },
+   {
+    "code": "luth3",
+    "title": "Tareekh-e-Hind ke Mauzuaat-III(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "Urdu"
+   }
+  ],
+  "Geography": [
+   {
+    "code": "legy1",
+    "title": "Fundamentals of Human Geography",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "legy3",
+    "title": "Practical Work in Geography Part II",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "English"
+   },
+   {
+    "code": "lhgy1",
+    "title": "Manav Bhugol Ke Mool Sidhant",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lhgy3",
+    "title": "Bhugol main peryojnatmak pryogatmak karye",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "Hindi"
+   },
+   {
+    "code": "legy2",
+    "title": "India -People And Economy",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "English"
+   },
+   {
+    "code": "lhgy2",
+    "title": "Bharat log aur arthvyasastha(Bhugol)",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lufh1",
+    "title": "Insani Jughrafia Ke Buniyadi Usool(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Urdu"
+   },
+   {
+    "code": "lugy1",
+    "title": "Hindustan Awam Aur Maishat(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Urdu"
+   },
+   {
+    "code": "lugy3",
+    "title": "Jughrafia Mein Aamli Kam(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Urdu"
+   }
+  ],
+  "Psychology": [
+   {
+    "code": "lepy1",
+    "title": "Psychology",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "lhpy1",
+    "title": "Manovigyan",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lupy1",
+    "title": "Nafsiat(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "Urdu"
+   }
+  ],
+  "Sociology": [
+   {
+    "code": "lesy1",
+    "title": "Indian Society",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "lhsy1",
+    "title": "Bhartiya Samaj",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lesy2",
+    "title": "Social Change and Development in India",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "lhsy2",
+    "title": "Bharat main Samajik Parivartan aur Vikas",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Hindi"
+   },
+   {
+    "code": "luis1",
+    "title": "Hindustani Samaj(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Urdu"
+   },
+   {
+    "code": "lusy2",
+    "title": "Hindustan Mein Samaji Tabdili Aur Taraqqi(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Urdu"
+   }
+  ],
+  "Chemistry": [
+   {
+    "code": "lech1",
+    "title": "Chemistry-I",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "lech2",
+    "title": "Chemistry-II",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "lhch1",
+    "title": "Rasayan vigyan bhag I",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lhch2",
+    "title": "Rasayan vigyan bhag II",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Hindi"
+   },
+   {
+    "code": "luch1",
+    "title": "Keemiya-I",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "Urdu"
+   },
+   {
+    "code": "luch2",
+    "title": "Keemiya-II",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Urdu"
+   }
+  ],
+  "Sanskrit": [
+   {
+    "code": "lhsk1",
+    "title": "Bhaswati",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lhsk2",
+    "title": "Shaswati",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Hindi"
+   }
+  ],
+  "Political Science": [
+   {
+    "code": "leps1",
+    "title": "Contemporary World Politics",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "lhps1",
+    "title": "Samkalin Vishwa Rajniti",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Hindi"
+   },
+   {
+    "code": "leps2",
+    "title": "Politics in India Since Independence",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "lhps2",
+    "title": "Swatantra Bharat Mein Rajniti-II",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lups1",
+    "title": "Aasri Alami Siyasat(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "Urdu"
+   },
+   {
+    "code": "luab1",
+    "title": "Azadi Ke Baad Hindustan Ki Siyasat(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "Urdu"
+   }
+  ],
+  "Home Science": [
+   {
+    "code": "lehe1",
+    "title": "Human Ecology and Family Sciences Part I",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "lehe2",
+    "title": "Human Ecology and Family Sciences Part II",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "lehh1",
+    "title": "Manav Paristhitik avam Parivar Vigyan Bhag 1",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   },
+   {
+    "code": "lehh2",
+    "title": "Manav Paristhitiki avam Parivar Vigyan Bhag 2",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   }
+  ],
+  "Economics": [
+   {
+    "code": "leec2",
+    "title": "Introductory Microeconomics",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "English"
+   },
+   {
+    "code": "leec1",
+    "title": "Introductory Macroeconomics",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "English"
+   },
+   {
+    "code": "lhec2",
+    "title": "Vyashthi Arthshasrta",
+    "first_chapter": 1,
+    "last_chapter": 5,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lhec1",
+    "title": "Samashty Arthshastra Ek Parichay",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lume1",
+    "title": "Juzvi Maashiyat ka Taruf(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Urdu"
+   },
+   {
+    "code": "lume2",
+    "title": "Kulli Maashiyat Ka Taruf(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Urdu"
+   }
+  ],
+  "Business Studies": [
+   {
+    "code": "lebs1",
+    "title": "Business Studies-I",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "lhbs1",
+    "title": "Vyavasai Adhyan-I",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lebs2",
+    "title": "Business Studies-II",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "English"
+   },
+   {
+    "code": "lhbs2",
+    "title": "Vyavasai Adhyan-II",
+    "first_chapter": 1,
+    "last_chapter": 3,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lubs1",
+    "title": "Karobari Uloom I(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Urdu"
+   },
+   {
+    "code": "lubs2",
+    "title": "Karobari Uloom II(Urdu)",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "Urdu"
+   }
+  ],
+  "Urdu": [
+   {
+    "code": "luga1",
+    "title": "Gulistan-e- Adab",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Urdu"
+   },
+   {
+    "code": "luku1",
+    "title": "Khayaban-e-Urdu",
+    "first_chapter": 1,
+    "last_chapter": 6,
+    "medium": "Urdu"
+   },
+   {
+    "code": "luna1",
+    "title": "Nai Awaz",
+    "first_chapter": 1,
+    "last_chapter": 16,
+    "medium": "Urdu"
+   },
+   {
+    "code": "ludh1",
+    "title": "Dhanak",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Urdu"
+   }
+  ],
+  "Heritage Crafts": [
+   {
+    "code": "luhc1",
+    "title": "Hindustan me Dastkari Ki Riwayat",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "Urdu"
+   },
+   {
+    "code": "lehc1",
+    "title": "Craft Tradition of India",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "English"
+   },
+   {
+    "code": "lhhc1",
+    "title": "Bharatiya Hastkla Ki Paramparayen",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "Hindi"
+   }
+  ],
+  "New Age Graphics Design": [
+   {
+    "code": "legd1",
+    "title": "New Age Graphics Design",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "English"
+   }
+  ],
+  "Creative Writing & Translation": [
+   {
+    "code": "khsr2",
+    "title": "Srijan-II",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "Hindi"
+   },
+   {
+    "code": "lucw1",
+    "title": "Takhleequi Jauhar",
+    "first_chapter": 1,
+    "last_chapter": 11,
+    "medium": "Urdu"
+   }
+  ],
+  "Fine Art": [
+   {
+    "code": "lefa1",
+    "title": "An Introduction to Indian Art Part-II",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "English"
+   },
+   {
+    "code": "lhfa1",
+    "title": "Bhartiya Kala ka Itihaas Bhag 2",
+    "first_chapter": 1,
+    "last_chapter": 8,
+    "medium": "Hindi"
+   }
+  ],
+  "Computer Science": [
+   {
+    "code": "lecs1",
+    "title": "Computer Science",
+    "first_chapter": 1,
+    "last_chapter": 13,
+    "medium": "English"
+   }
+  ],
+  "Informatics Practices": [
+   {
+    "code": "leip1",
+    "title": "Informatics Practices",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "English"
+   }
+  ],
+  "Sangeet": [
+   {
+    "code": "lstp1",
+    "title": "Tabla evam Pakhawaj",
+    "first_chapter": 1,
+    "last_chapter": 7,
+    "medium": "Other"
+   },
+   {
+    "code": "lsgv1",
+    "title": "Hindustani Sangeet Gayan Evam Vaadan",
+    "first_chapter": 1,
+    "last_chapter": 9,
+    "medium": "Other"
+   }
+  ]
+ },
+ "11-12": {
+  "Hindi": [
+   {
+    "code": "kham1",
+    "title": "Abhivyakti Aur Madhyam",
+    "first_chapter": 1,
+    "last_chapter": 16,
+    "medium": "Hindi"
+   }
+  ],
+  "Sanskrit": [
+   {
+    "code": "klss1",
+    "title": "Sanskrit Sahitya parichay",
+    "first_chapter": 1,
+    "last_chapter": 12,
+    "medium": "Other"
+   }
+  ],
+  "Heritage Crafts": [
+   {
+    "code": "mehc1",
+    "title": "Exploring Craft Tradition of India",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "English"
+   },
+   {
+    "code": "khhc1",
+    "title": "Bhartiya Hastkala Parmparaon ki Khoj",
+    "first_chapter": 1,
+    "last_chapter": 10,
+    "medium": "Hindi"
+   }
+  ],
+  "Urdu": [
+   {
+    "code": "kuza1",
+    "title": "Zuban-O-Adab ki Tareekh",
+    "first_chapter": 1,
+    "last_chapter": 23,
+    "medium": "Urdu"
+   },
+   {
+    "code": "juuq1",
+    "title": "Urdu Qwaid aur Insha",
+    "first_chapter": 1,
+    "last_chapter": 24,
+    "medium": "Urdu"
+   },
+   {
+    "code": "kuiz1",
+    "title": "Izhar Aur Zara-e-Izhar",
+    "first_chapter": 1,
+    "last_chapter": 4,
+    "medium": "Urdu"
+   }
+  ]
+ }
+}
