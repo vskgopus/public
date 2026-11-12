@@ -6,8 +6,13 @@
 <title>Module 5 — DO-178C: Airborne Software Certification</title>
 <link rel="stylesheet" href="../site.css">
 </head>
-<body>
-<header class="site-header"><a href="../index.html">Embedded System Training</a></header>
+<body class="module">
+<header class="site-header"><div class="bar">
+<a class="brand" href="../index.html"><span class="logo" aria-hidden="true">◆</span>Embedded System Training</a>
+<nav class="topnav" aria-label="Modules"><a href="../modules/01-embedded-c.html"><span class="nav-n">1</span>Embedded C</a><a href="../modules/02-mcu-peripherals.html"><span class="nav-n">2</span>MCU</a><a href="../modules/03-comm-protocols.html"><span class="nav-n">3</span>Protocols</a><a href="../modules/04-rtos.html"><span class="nav-n">4</span>RTOS</a><a href="../modules/05-do178c.html" aria-current="page"><span class="nav-n">5</span>DO-178C</a><a class="nav-quiz" href="../quiz/index.html">Expert quiz</a></nav>
+</div></header>
+<div class="layout has-toc">
+<nav class="toc" aria-label="On this page"><details open><summary>On this page</summary><ol><li><a href="#1-beginner-what-do-178c-is">Beginner — what DO-178C is</a><ol><li class="sub"><a href="#1-1-purpose">Purpose</a></li><li class="sub"><a href="#1-2-where-it-fits">Where it fits</a></li><li class="sub"><a href="#1-3-software-levels">Software levels</a></li></ol></li><li><a href="#2-intermediate-processes-plans-and-data">Intermediate — processes, plans and data</a><ol><li class="sub"><a href="#2-1-life-cycle-processes">Life-cycle processes</a></li><li class="sub"><a href="#2-2-the-five-plans-and-three-standards">The five plans and three standards</a></li><li class="sub"><a href="#2-3-development-outputs">Development outputs</a></li><li class="sub"><a href="#2-4-other-key-life-cycle-data">Other key life-cycle data</a></li><li class="sub"><a href="#2-5-working-with-the-authority">Working with the authority</a></li></ol></li><li><a href="#3-advanced-verification">Advanced — verification</a><ol><li class="sub"><a href="#3-1-reviews-and-analyses">Reviews and analyses</a></li><li class="sub"><a href="#3-2-requirements-based-testing">Requirements-based testing</a></li><li class="sub"><a href="#3-3-structural-coverage-analysis">Structural coverage analysis</a></li><li class="sub"><a href="#3-4-mc-dc-in-depth">MC/DC in depth</a></li><li class="sub"><a href="#3-5-resolving-coverage-gaps">Resolving coverage gaps</a></li><li class="sub"><a href="#3-6-traceability">Traceability</a></li></ol></li><li><a href="#4-expert-topics-that-decide-audits">Expert — topics that decide audits</a><ol><li class="sub"><a href="#4-1-level-a-source-to-object-code">Level A: source-to-object code</a></li><li class="sub"><a href="#4-2-tool-qualification-do-330">Tool qualification (DO-330)</a></li><li class="sub"><a href="#4-3-supplements">Supplements</a></li><li class="sub"><a href="#4-4-previously-developed-software-cots-and-rtos">Previously developed software, COTS and RTOS</a></li><li class="sub"><a href="#4-5-partitioning-and-multicore">Partitioning and multicore</a></li><li class="sub"><a href="#4-6-configuration-management-in-practice">Configuration management in practice</a></li><li class="sub"><a href="#4-7-common-findings-and-how-to-avoid-them">Common findings and how to avoid them</a></li></ol></li><li><a href="#how-the-other-modules-connect-to-do-178c">How the other modules connect to DO-178C</a><ol></ol></li><li><a href="#key-takeaways">Key takeaways</a><ol></ol></li><li><a href="#self-check">Self-check</a><ol></ol></li></ol></details></nav>
 <main class="content">
 <h1>Module 5 — DO-178C: Airborne Software Certification</h1>
 <p><a href="04-rtos.html">← Module 4</a> · <a href="../index.html">Course home</a> · <a href="../quiz/index.html?module=do178c">Take the quiz</a></p>
@@ -19,15 +24,14 @@
 <li>Handle the expert topics that cause most audit findings: derived requirements, dead and deactivated code,
 coverage gaps, tool qualification, previously developed software and multicore.</li>
 </ul>
-<blockquote>
-<p><strong>About this module.</strong> DO-178C is a copyrighted RTCA document (published in Europe by EUROCAE as ED-12C).
+<aside class="callout callout-note"><p><strong>About this module.</strong> DO-178C is a copyrighted RTCA document (published in Europe by EUROCAE as ED-12C).
 This module is a summary for training. It is <strong>not</strong> a substitute for the document itself, for its Annex A
 objective tables, or for the guidance of your certification authority (FAA, EASA or others). Where a number or
 document revision is quoted, check it against the primary source before relying on it in a project.</p>
-</blockquote>
+</aside>
 <hr>
-<h2>1. Beginner — what DO-178C is</h2>
-<h3>1.1 Purpose</h3>
+<h2 id="1-beginner-what-do-178c-is" class="lvl lvl-beginner"><span class="badge badge-beginner">Beginner</span> 1. Beginner — what DO-178C is</h2>
+<h3 id="1-1-purpose">1.1 Purpose</h3>
 <p>DO-178C, <em>Software Considerations in Airborne Systems and Equipment Certification</em> (RTCA, 2011), gives
 <strong>objectives</strong> for the software life cycle, the <strong>activities</strong> that satisfy them, and the <strong>evidence</strong> (life-cycle
 data) that shows they were satisfied. Certification authorities recognise it as an acceptable means of compliance
@@ -35,7 +39,7 @@ for airborne software. In the US this is through an FAA Advisory Circular (AC 20
 verify the current revision).</p>
 <p>DO-178C doesn&#39;t prescribe a language, a tool or a development model. It requires that you <strong>plan</strong> how you&#39;ll meet
 the objectives, <strong>do</strong> what you planned, and <strong>prove</strong> it.</p>
-<h3>1.2 Where it fits</h3>
+<h3 id="1-2-where-it-fits">1.2 Where it fits</h3>
 <pre><code>Aircraft / system level        ARP4754A (now ARP4754B) system development,  ARP4761 safety assessment
         │  system requirements allocated to software + software level
         ▼
@@ -43,7 +47,7 @@ Software                       DO-178C  (+ supplements DO-330 tools, DO-331 mode
                                          DO-332 object-oriented, DO-333 formal methods)
 Hardware (complex electronics) DO-254
 </code></pre>
-<h3>1.3 Software levels</h3>
+<h3 id="1-3-software-levels">1.3 Software levels</h3>
 <p>The <strong>system safety assessment</strong>, not the software team, assigns the software level from the most severe
 failure condition the software can cause or contribute to:</p>
 <table>
@@ -84,8 +88,8 @@ failure condition the software can cause or contribute to:</p>
 other than the author). Commonly cited objective counts for DO-178C are 71 (A), 69 (B), 62 (C) and 26 (D).
 Confirm them against the Annex A tables.</p>
 <hr>
-<h2>2. Intermediate — processes, plans and data</h2>
-<h3>2.1 Life-cycle processes</h3>
+<h2 id="2-intermediate-processes-plans-and-data" class="lvl lvl-intermediate"><span class="badge badge-intermediate">Intermediate</span> 2. Intermediate — processes, plans and data</h2>
+<h3 id="2-1-life-cycle-processes">2.1 Life-cycle processes</h3>
 <table>
 <thead>
 <tr>
@@ -118,7 +122,7 @@ Confirm them against the Annex A tables.</p>
 <td>Communication and agreement with the certification authority</td>
 </tr>
 </tbody></table>
-<h3>2.2 The five plans and three standards</h3>
+<h3 id="2-2-the-five-plans-and-three-standards">2.2 The five plans and three standards</h3>
 <table>
 <thead>
 <tr>
@@ -151,13 +155,16 @@ Confirm them against the Annex A tables.</p>
 <td>Rules that the outputs must follow, and that reviews check</td>
 </tr>
 </tbody></table>
-<h3>2.3 Development outputs</h3>
+<h3 id="2-3-development-outputs">2.3 Development outputs</h3>
 <pre><code>System requirements allocated to software
    └─► High-level requirements (HLR)          what the software must do
          └─► Software architecture + low-level requirements (LLR)   how, detailed enough to code from
                └─► Source code
                      └─► Executable object code (+ parameter data items)
 </code></pre>
+<figure class="diagram"><svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" role="img" aria-labelledby="do178ctrace-t"><title id="do178ctrace-t">DO-178C development outputs, requirements-based verification and traceability</title><defs><marker id="do178ctrace-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><text class="txt-h" x="170" y="22" text-anchor="middle">Development</text><text class="txt-h" x="570" y="22" text-anchor="middle">Verification (requirements-based)</text><rect class="box box-a" x="30" y="36" width="230" height="48" rx="8"/><text class="txt-b" x="145.0" y="57.0" text-anchor="middle">System requirements</text><text class="txt-s" x="145.0" y="74.0" text-anchor="middle">allocated to software</text><rect class="box box-a" x="55" y="102" width="230" height="48" rx="8"/><text class="txt-b" x="170.0" y="123.0" text-anchor="middle">High-level requirements</text><text class="txt-s" x="170.0" y="140.0" text-anchor="middle">HLR</text><rect class="box box-a" x="80" y="168" width="230" height="48" rx="8"/><text class="txt-b" x="195.0" y="189.0" text-anchor="middle">Architecture + low-level</text><text class="txt-s" x="195.0" y="206.0" text-anchor="middle">requirements (LLR)</text><rect class="box box-a" x="105" y="234" width="230" height="48" rx="8"/><text class="txt-b" x="220.0" y="263.0" text-anchor="middle">Source code</text><line class="ln" x1="90" y1="84" x2="115" y2="102" marker-end="url(#do178ctrace-ah)"/><line class="ln" x1="115" y1="150" x2="140" y2="168" marker-end="url(#do178ctrace-ah)"/><line class="ln" x1="140" y1="216" x2="165" y2="234" marker-end="url(#do178ctrace-ah)"/><rect class="box box-b" x="250" y="300" width="220" height="46" rx="8"/><text class="txt-b" x="360.0" y="328.0" text-anchor="middle">Executable object code</text><line class="ln" x1="220" y1="282" x2="300" y2="300" marker-end="url(#do178ctrace-ah)"/><rect class="box box-c" x="470" y="102" width="230" height="48" rx="8"/><text class="txt-b" x="585.0" y="123.0" text-anchor="middle">HW/SW integration tests</text><text class="txt-s" x="585.0" y="140.0" text-anchor="middle">on target, vs HLR</text><rect class="box box-c" x="470" y="168" width="230" height="48" rx="8"/><text class="txt-b" x="585.0" y="189.0" text-anchor="middle">Software integration tests</text><text class="txt-s" x="585.0" y="206.0" text-anchor="middle">vs HLR, architecture</text><rect class="box box-c" x="470" y="234" width="230" height="48" rx="8"/><text class="txt-b" x="585.0" y="255.0" text-anchor="middle">Low-level tests</text><text class="txt-s" x="585.0" y="272.0" text-anchor="middle">vs LLR</text><line class="ln dash accent" x1="285" y1="126" x2="468" y2="126" /><line class="ln dash accent" x1="310" y1="192" x2="468" y2="192" /><line class="ln dash accent" x1="310" y1="200" x2="468" y2="252" /><line class="ln" x1="585" y1="282" x2="472" y2="318" marker-end="url(#do178ctrace-ah)"/><text class="txt-s" x="640" y="304" text-anchor="middle">tests execute the EOC</text><rect class="box box-d" x="500" y="352" width="200" height="40" rx="8"/><text class="txt-b" x="600.0" y="377.0" text-anchor="middle">Structural coverage analysis</text><line class="ln" x1="470" y1="330" x2="520" y2="352" marker-end="url(#do178ctrace-ah)"/><text class="txt-s accent" x="130" y="380" text-anchor="start">- - -  bidirectional traceability</text></svg> <figcaption><span class="fig-n">Figure 1.</span> Development outputs (left), the requirements-based tests that verify them (right), and the traceability between them. Structural coverage analysis measures what those tests exercised.</figcaption></figure>
+
+
 <ul>
 <li><strong>Derived requirements</strong> are requirements that don&#39;t trace directly to a higher-level requirement, for example
 a design decision such as &quot;the filter runs at 100 Hz&quot;. They must be identified and <strong>provided to the system
@@ -165,21 +172,21 @@ safety assessment process</strong> so their safety impact is evaluated.</li>
 <li><strong>Parameter data items</strong> (new in DO-178C), such as configuration tables, are data that change behaviour without
 changing executable code. They have their own verification objectives.</li>
 </ul>
-<h3>2.4 Other key life-cycle data</h3>
+<h3 id="2-4-other-key-life-cycle-data">2.4 Other key life-cycle data</h3>
 <p>Software Verification Cases and Procedures (SVCP), Software Verification Results (SVR), Software Configuration
 Index (SCI), Software Life Cycle Environment Configuration Index (SECI), Problem Reports, SCM and SQA Records,
 and finally the <strong>Software Accomplishment Summary (SAS)</strong>, which states how compliance with the PSAC was achieved.</p>
-<h3>2.5 Working with the authority</h3>
+<h3 id="2-5-working-with-the-authority">2.5 Working with the authority</h3>
 <p>Authorities review progress at defined points. FAA practice calls these <strong>Stages of Involvement</strong> (SOI 1 planning,
 SOI 2 development, SOI 3 verification, SOI 4 final). The details come from authority guidance and orders, not
 from DO-178C itself, so check your authority&#39;s current procedures.</p>
 <hr>
-<h2>3. Advanced — verification</h2>
-<h3>3.1 Reviews and analyses</h3>
+<h2 id="3-advanced-verification" class="lvl lvl-advanced"><span class="badge badge-advanced">Advanced</span> 3. Advanced — verification</h2>
+<h3 id="3-1-reviews-and-analyses">3.1 Reviews and analyses</h3>
 <p>Each development output is reviewed or analysed for compliance with its parent, accuracy and consistency,
 compatibility with the target, verifiability, conformance to standards, traceability, and (for code and
 integration) algorithm correctness. Checklists in the plans make these reviews repeatable.</p>
-<h3>3.2 Requirements-based testing</h3>
+<h3 id="3-2-requirements-based-testing">3.2 Requirements-based testing</h3>
 <ul>
 <li>Tests are derived from <strong>requirements</strong>, never from the code.</li>
 <li>Test both <strong>normal range</strong> (equivalence classes, boundary values, time-related functions, state transitions)
@@ -188,7 +195,7 @@ and <strong>robustness</strong> (invalid inputs, out-of-range values, failure mo
 testing against LLRs.</li>
 <li>Run tests on the target hardware, or in an environment whose equivalence is justified.</li>
 </ul>
-<h3>3.3 Structural coverage analysis</h3>
+<h3 id="3-3-structural-coverage-analysis">3.3 Structural coverage analysis</h3>
 <p>Coverage measures how thoroughly the <strong>requirements-based tests</strong> exercised the code. It is an analysis of
 completeness, not a way of creating tests.</p>
 <table>
@@ -211,54 +218,245 @@ completeness, not a way of creating tests.</p>
 <td>Decision coverage, plus every condition took all outcomes and <strong>was shown to independently affect the decision&#39;s outcome</strong></td>
 </tr>
 </tbody></table>
-<p>MC/DC example for <code>if (A &amp;&amp; B &amp;&amp; C)</code>: a minimal set uses N+1 = 4 tests:</p>
+<figure class="diagram"><svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 260" role="img" aria-labelledby="coverageladder-t"><title id="coverageladder-t">Statement, decision, MC/DC and multiple condition coverage with test counts</title><defs><marker id="coverageladder-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><text class="txt-h" x="360" y="20" text-anchor="middle">Coverage criteria for  if (A &amp;&amp; B &amp;&amp; C) { … }  (minimum tests)</text><rect class="box box-a" x="40" y="180" width="150" height="50" rx="6"/><text class="txt-b" x="115" y="206" text-anchor="middle">Statement</text><text class="txt-s" x="115" y="226" text-anchor="middle">1 test</text><text class="txt-s txt-m" x="115" y="248" text-anchor="middle">Levels A, B, C</text><rect class="box box-b" x="205" y="140" width="150" height="90" rx="6"/><text class="txt-b" x="280" y="166" text-anchor="middle">Decision</text><text class="txt-s" x="280" y="186" text-anchor="middle">2 tests</text><text class="txt-s txt-m" x="280" y="248" text-anchor="middle">Levels A, B</text><rect class="box box-c" x="370" y="100" width="150" height="130" rx="6"/><text class="txt-b" x="445" y="126" text-anchor="middle">MC/DC</text><text class="txt-s" x="445" y="146" text-anchor="middle">4 tests (N+1)</text><text class="txt-s txt-m" x="445" y="248" text-anchor="middle">Level A</text><rect class="box box-d" x="535" y="60" width="150" height="170" rx="6"/><text class="txt-b" x="610" y="86" text-anchor="middle">Multiple condition</text><text class="txt-s" x="610" y="106" text-anchor="middle">8 tests (2ᴺ)</text><text class="txt-s txt-m" x="610" y="248" text-anchor="middle">not required by DO-178C</text><line class="ln" x1="40" y1="230" x2="690" y2="230" /></svg> <figcaption><span class="fig-n">Figure 2.</span> Each criterion adds to the previous one. The minimum number of tests grows from 1 to 2ᴺ for the same three-condition decision.</figcaption></figure>
+
+
+<p>The next section explains MC/DC in depth, including how many tests each kind of decision needs.</p>
+<p>Also required at Levels A–C: analysis that the tests exercised the <strong>data coupling and control coupling</strong>
+between components, that is, the interfaces actually used in the integrated software.</p>
+<h3 id="3-4-mc-dc-in-depth">3.4 MC/DC in depth</h3>
+<h4>Vocabulary</h4>
 <table>
 <thead>
 <tr>
-<th>Test</th>
-<th>A</th>
-<th>B</th>
-<th>C</th>
-<th>Result</th>
-<th>Shows independence of</th>
+<th>Term</th>
+<th>Meaning (DO-178C sense, paraphrased)</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>1</td>
-<td>T</td>
-<td>T</td>
-<td>T</td>
-<td>T</td>
-<td>(baseline)</td>
+<td><strong>Condition</strong></td>
+<td>A Boolean expression with no Boolean operators except NOT, for example <code>speed &gt; V_MAX</code>, <code>valid</code>, <code>!door_open</code></td>
 </tr>
 <tr>
+<td><strong>Decision</strong></td>
+<td>A Boolean expression made of conditions and zero or more Boolean operators, for example <code>valid &amp;&amp; (speed &gt; V_MAX)</code>. If a condition appears more than once, each occurrence counts as a separate condition.</td>
+</tr>
+<tr>
+<td><strong>Independence pair</strong></td>
+<td>Two tests that show one condition, on its own, changes the decision&#39;s outcome</td>
+</tr>
+</tbody></table>
+<aside class="callout callout-note"><p><strong>Note:</strong> a decision isn&#39;t only the expression in an <code>if</code>. An assignment such as <code>alarm = valid &amp;&amp; over_limit;</code>
+is also a Boolean expression with operators, and is normally treated as a decision for MC/DC. FAA position paper
+CAST-10 discusses this. Agree the interpretation, and how your coverage tool handles it, in your plans.</p>
+</aside>
+<h4>The rule in one picture</h4>
+<p>To show that condition X independently affects the outcome, find two tests in which <strong>only X changes</strong> and
+<strong>the outcome changes</strong>. The other conditions must be set so they don&#39;t &quot;block&quot; X:</p>
+<figure class="diagram"><svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 210" role="img" aria-labelledby="mcdcandor-t"><title id="mcdcandor-t">MC/DC independence rule for AND and OR gates</title><defs><marker id="mcdcandor-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><text class="txt-h" x="180" y="22" text-anchor="middle">AND: hold the others TRUE</text><text class="txt-h" x="540" y="22" text-anchor="middle">OR: hold the others FALSE</text><path class="gate" d="M150,40 h40 a40,40 0 0 1 0,80 h-40 z"/><line class="ln" x1="80" y1="56" x2="150" y2="56" /><text class="txt-s b accent" x="74" y="60" text-anchor="end">A  flips</text><line class="ln" x1="80" y1="80" x2="150" y2="80" /><text class="txt-s" x="74" y="84" text-anchor="end">B = T</text><line class="ln" x1="80" y1="104" x2="150" y2="104" /><text class="txt-s" x="74" y="108" text-anchor="end">C = T</text><line class="ln" x1="230" y1="80" x2="290" y2="80" /><text class="txt-s b accent" x="296" y="84" text-anchor="start">= A</text><path class="gate" d="M510,40 q28,40 0,80 q62,0 92,-40 q-30,-40 -92,-40 z"/><line class="ln" x1="440" y1="56" x2="516" y2="56" /><text class="txt-s b accent" x="434" y="60" text-anchor="end">A  flips</text><line class="ln" x1="440" y1="80" x2="524" y2="80" /><text class="txt-s" x="434" y="84" text-anchor="end">B = F</text><line class="ln" x1="440" y1="104" x2="516" y2="104" /><text class="txt-s" x="434" y="108" text-anchor="end">C = F</text><line class="ln" x1="602" y1="80" x2="650" y2="80" /><text class="txt-s b accent" x="656" y="84" text-anchor="start">= A</text><text class="txt-s" x="180" y="150" text-anchor="middle">Any FALSE input forces FALSE, so the others</text><text class="txt-s" x="180" y="166" text-anchor="middle">must be TRUE to let one condition decide.</text><text class="txt-s b" x="180" y="192" text-anchor="middle">Tests: TTT + one FALSE per condition = N+1</text><text class="txt-s" x="540" y="150" text-anchor="middle">Any TRUE input forces TRUE, so the others</text><text class="txt-s" x="540" y="166" text-anchor="middle">must be FALSE to let one condition decide.</text><text class="txt-s b" x="540" y="192" text-anchor="middle">Tests: FFF + one TRUE per condition = N+1</text></svg> <figcaption><span class="fig-n">Figure 3.</span> For AND, any FALSE input decides the result, so the other inputs are held TRUE. For OR, any TRUE input decides the result, so the others are held FALSE.</figcaption></figure>
+
+
+<h4>How many tests? Minimum unique-cause MC/DC sets</h4>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Others held at…</th>
+<th>A minimal test set (outcome)</th>
+<th>Tests</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>A</code></td>
+<td>n/a</td>
+<td>T (T), F (F)</td>
 <td>2</td>
-<td>F</td>
-<td>T</td>
-<td>T</td>
-<td>F</td>
-<td>A (vs 1)</td>
+</tr>
+<tr>
+<td><code>A &amp;&amp; B</code></td>
+<td>TRUE</td>
+<td>TT (T), FT (F), TF (F)</td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>A &amp;&amp; B &amp;&amp; C</code></td>
+<td>TRUE</td>
+<td>TTT (T), FTT (F), TFT (F), TTF (F)</td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>A || B</code></td>
+<td>FALSE</td>
+<td>FF (F), TF (T), FT (T)</td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>A || B || C</code></td>
+<td>FALSE</td>
+<td>FFF (F), TFF (T), FTF (T), FFT (T)</td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>!(A &amp;&amp; B)</code></td>
+<td>NOT adds no condition</td>
+<td>TT (F), FT (T), TF (T)</td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>A != B</code> (XOR of two Booleans)</td>
+<td>Any change flips the outcome</td>
+<td>FF (F), TF (T), FT (T)</td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>(A &amp;&amp; B) || C</code></td>
+<td>See worked example 2</td>
+<td>TTF (T), FTF (F), TFF (F), TFT (T)</td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>A || (B &amp;&amp; C)</code></td>
+<td>A needs B &amp;&amp; C = F; B and C need A = F</td>
+<td>FTT (T), FFT (F), FTF (F), TTF (T)</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<p>For <strong>N</strong> independent conditions, unique-cause MC/DC needs <strong>at least N+1</strong> tests (the upper bound is commonly
+quoted as 2N). Compare that with <strong>multiple condition coverage</strong>, which tests every combination (2ᴺ). DO-178C
+doesn&#39;t require multiple condition coverage:</p>
+<table>
+<thead>
+<tr>
+<th>Conditions N</th>
+<th>MC/DC minimum (N+1)</th>
+<th>All combinations (2ᴺ)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2</td>
+<td>3</td>
+<td>4</td>
 </tr>
 <tr>
 <td>3</td>
-<td>T</td>
-<td>F</td>
-<td>T</td>
-<td>F</td>
-<td>B (vs 1)</td>
+<td>4</td>
+<td>8</td>
 </tr>
 <tr>
 <td>4</td>
-<td>T</td>
-<td>T</td>
-<td>F</td>
-<td>F</td>
-<td>C (vs 1)</td>
+<td>5</td>
+<td>16</td>
+</tr>
+<tr>
+<td>5</td>
+<td>6</td>
+<td>32</td>
+</tr>
+<tr>
+<td>10</td>
+<td>11</td>
+<td>1 024</td>
 </tr>
 </tbody></table>
-<p>Also required at Levels A–C: analysis that the tests exercised the <strong>data coupling and control coupling</strong>
-between components, that is, the interfaces actually used in the integrated software.</p>
-<h3>3.4 Resolving coverage gaps</h3>
+<aside class="callout callout-tip"><p><strong>Tip:</strong> every truth table and test count in this section was checked with the repository&#39;s helper,
+<code>node tools/mcdc.js &quot;(A&amp;&amp;B)||C&quot; TTF FTF TFF TFT</code>, which prints the independence pairs and whether a test set
+achieves unique-cause MC/DC.</p>
+</aside>
+<h4>Worked example 1: <code>if (A &amp;&amp; B &amp;&amp; C)</code></h4>
+<p>The decision is TRUE only for TTT. Each FALSE row that differs from TTT in exactly one condition forms that
+condition&#39;s independence pair with TTT. The selected rows are highlighted:</p>
+<table class="tt"><thead><tr><th>#</th><th>A</th><th>B</th><th>C</th><th>Outcome</th><th class="note">Use</th></tr></thead><tbody>
+<tr class="sel"><td>1</td><td class="t">T</td><td class="t">T</td><td class="t">T</td><td class="t">T</td><td class="note">baseline for all three pairs</td></tr>
+<tr class="sel"><td>2</td><td class="f">F</td><td class="t">T</td><td class="t">T</td><td class="f">F</td><td class="note">pair (1, 2) shows <b>A</b></td></tr>
+<tr class="sel"><td>3</td><td class="t">T</td><td class="f">F</td><td class="t">T</td><td class="f">F</td><td class="note">pair (1, 3) shows <b>B</b></td></tr>
+<tr class="sel"><td>4</td><td class="t">T</td><td class="t">T</td><td class="f">F</td><td class="f">F</td><td class="note">pair (1, 4) shows <b>C</b></td></tr>
+<tr><td>5</td><td class="f">F</td><td class="f">F</td><td class="t">T</td><td class="f">F</td><td class="note">not needed</td></tr>
+<tr><td>6</td><td class="f">F</td><td class="t">T</td><td class="f">F</td><td class="f">F</td><td class="note">not needed</td></tr>
+<tr><td>7</td><td class="t">T</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="note">not needed</td></tr>
+<tr><td>8</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="note">not needed</td></tr>
+</tbody></table>
+
+<p>Result: <strong>4 tests</strong> (rows 1–4), which is N+1.</p>
+<h4>Worked example 2: <code>if ((A &amp;&amp; B) || C)</code></h4>
+<figure class="diagram"><svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 236" role="img" aria-labelledby="mcdcmixed-t"><title id="mcdcmixed-t">Logic diagram of (A and B) or C with the conditions needed for each independence pair</title><defs><marker id="mcdcmixed-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><text class="txt-h" x="360" y="22" text-anchor="middle">Showing independence in  (A &amp;&amp; B) || C</text><path class="gate" d="M170,50 h40 a40,40 0 0 1 0,80 h-40 z"/><line class="ln" x1="90" y1="66" x2="170" y2="66" /><text class="txt-b" x="84" y="70" text-anchor="end">A</text><line class="ln" x1="90" y1="114" x2="170" y2="114" /><text class="txt-b" x="84" y="118" text-anchor="end">B</text><line class="ln" x1="250" y1="90" x2="420" y2="90" /><text class="txt-s" x="330" y="82" text-anchor="middle">A &amp;&amp; B</text><path class="gate" d="M412,70 q28,40 0,80 q62,0 92,-40 q-30,-40 -92,-40 z"/><line class="ln" x1="90" y1="160" x2="380" y2="160" /><path class="ln" fill="none" d="M380,160 H400 V130 H424"/><text class="txt-b" x="84" y="164" text-anchor="end">C</text><line class="ln" x1="504" y1="110" x2="560" y2="110" /><text class="txt-s b" x="566" y="114" text-anchor="start">outcome</text><text class="txt-s" x="360" y="206" text-anchor="middle">To show A or B: keep C = FALSE (otherwise the OR masks them), and keep the other AND input TRUE.</text><text class="txt-s" x="360" y="224" text-anchor="middle">To show C: make A &amp;&amp; B FALSE (otherwise the OR is already TRUE).</text></svg> <figcaption><span class="fig-n">Figure 4.</span> Which inputs must be held, and at what value, so that each condition can decide the outcome.</figcaption></figure>
+
+
+<table class="tt"><thead><tr><th>A</th><th>B</th><th>C</th><th>A && B</th><th>Outcome</th><th class="note">Independence pairs this row belongs to</th></tr></thead><tbody>
+<tr><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="note">C (with FFT)</td></tr>
+<tr><td class="f">F</td><td class="f">F</td><td class="t">T</td><td class="f">F</td><td class="t">T</td><td class="note">C (with FFF)</td></tr>
+<tr class="sel"><td class="f">F</td><td class="t">T</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="note"><b>A</b> (with TTF); C (with FTT)</td></tr>
+<tr><td class="f">F</td><td class="t">T</td><td class="t">T</td><td class="f">F</td><td class="t">T</td><td class="note">C (with FTF)</td></tr>
+<tr class="sel"><td class="t">T</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="note"><b>B</b> (with TTF); <b>C</b> (with TFT)</td></tr>
+<tr class="sel"><td class="t">T</td><td class="f">F</td><td class="t">T</td><td class="f">F</td><td class="t">T</td><td class="note"><b>C</b> (with TFF)</td></tr>
+<tr class="sel"><td class="t">T</td><td class="t">T</td><td class="f">F</td><td class="t">T</td><td class="t">T</td><td class="note"><b>A</b> (with FTF); <b>B</b> (with TFF)</td></tr>
+<tr><td class="t">T</td><td class="t">T</td><td class="t">T</td><td class="t">T</td><td class="t">T</td><td class="note">none: C is masked because A && B is already TRUE</td></tr>
+</tbody></table>
+
+<ul>
+<li><strong>A</strong> has exactly one pair, FTF/TTF: B must be TRUE and C FALSE.</li>
+<li><strong>B</strong> has exactly one pair, TFF/TTF: A must be TRUE and C FALSE.</li>
+<li><strong>C</strong> has three possible pairs. Choose one that reuses tests you already have: TFF/TFT.</li>
+<li>Minimal set: <strong>TTF, FTF, TFF, TFT</strong>, which is 4 tests (N+1). TTF, FTF, TFF, FTT works too.</li>
+</ul>
+<h4>Decision coverage is not MC/DC</h4>
+<p>For <code>A &amp;&amp; B</code>, the two tests TT (T) and FF (F) give <strong>100 % decision coverage</strong>, but <strong>no independence pair</strong>: both
+conditions change together, so the tests can&#39;t show which one caused the outcome. A defect such as <code>A || B</code>
+written instead of <code>A &amp;&amp; B</code> would also pass both tests (TT gives T, FF gives F). MC/DC (TT, FT, TF) catches it,
+because FT and TF would return T instead of F.</p>
+<h4>Short-circuit evaluation in C</h4>
+<p><code>&amp;&amp;</code> and <code>||</code> evaluate left to right and stop as soon as the result is known. In <code>if (A &amp;&amp; B)</code> with A = FALSE,
+<strong>B is never evaluated</strong>. Coverage tools and analyses commonly treat it as &quot;don&#39;t care&quot; (x), so A&#39;s independence
+pair is TT (T) vs Fx (F).</p>
+<table class="tt"><thead><tr><th>Test</th><th>A</th><th>B</th><th>Outcome</th><th class="note">Shows</th></tr></thead><tbody>
+<tr><td>1</td><td class="t">T</td><td class="t">T</td><td class="t">T</td><td class="note">baseline</td></tr>
+<tr><td>2</td><td class="f">F</td><td class="x">x (not evaluated)</td><td class="f">F</td><td class="note">A (vs 1)</td></tr>
+<tr><td>3</td><td class="t">T</td><td class="f">F</td><td class="f">F</td><td class="note">B (vs 1)</td></tr>
+</tbody></table>
+
+<aside class="callout callout-warn"><p><strong>Warning:</strong> because the right operand may not run, MISRA C:2012 (Rule 13.5) forbids persistent side effects in
+the right-hand operand of <code>&amp;&amp;</code> and <code>||</code>, for example <code>if (ok &amp;&amp; read_sensor(&amp;v))</code>. Check the rule against the
+edition your project uses.</p>
+</aside>
+<h4>Unique-cause vs masking MC/DC</h4>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>What may change between the two tests of a pair</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Unique-cause</strong></td>
+<td>Only the condition being shown</td>
+</tr>
+<tr>
+<td><strong>Masking</strong></td>
+<td>Other conditions may change too, <strong>if their effect on the outcome is masked</strong>, for example by an AND input that is FALSE</td>
+</tr>
+</tbody></table>
+<p>Masking is needed when conditions are <strong>coupled</strong>. In <code>(A &amp;&amp; B) || (A &amp;&amp; C)</code>, A appears twice, so the two
+occurrences always change together, and unique-cause pairs are impossible for each occurrence. To show the
+<strong>first</strong> A, mask the second term by setting C = FALSE:</p>
+<ul>
+<li>(A=T, B=T, C=F) → TRUE, and (A=F, B=T, C=F) → FALSE.</li>
+<li>The second A also changed, but <code>A &amp;&amp; C</code> is FALSE in both tests because C = FALSE, so its change is masked.</li>
+</ul>
+<p>FAA position paper CAST-6 discusses the rationale for accepting masking MC/DC. State the variant you use in
+your PSAC/SVP, and make sure your coverage tool measures the same variant.</p>
+<h4>Practical rules</h4>
+<ol>
+<li><strong>Design tests from requirements first</strong>, run them, then measure MC/DC. Missing pairs point to missing
+requirements, inadequate tests, or redundant conditions in the code (see 3.5).</li>
+<li>A condition that can never get an independence pair, for example <code>if (x &gt; 10 &amp;&amp; x &gt; 5)</code> where the second
+condition is redundant, usually means a <strong>design or code defect</strong>, not a testing problem.</li>
+<li>Bitwise operators on Boolean values (<code>&amp;</code>, <code>|</code>) can hide decisions from some tools. Follow your coding standard,
+which usually requires <code>&amp;&amp;</code>/<code>||</code> for Boolean logic.</li>
+<li>Splitting a complex decision into nested <code>if</code>s can improve readability, but do it for the design, not to make
+coverage look easier. Reviewers check that the requirements are still fully tested.</li>
+</ol>
+<aside class="callout callout-tip"><p><strong>Tip:</strong> practise with the dedicated <a href="../quiz/index.html?module=mcdc">Coverage &amp; MC/DC quiz</a>: 16 worked questions on test sets, short-circuit evaluation, masking and coverage gaps.</p>
+</aside>
+<h3 id="3-5-resolving-coverage-gaps">3.5 Resolving coverage gaps</h3>
 <p>When code isn&#39;t covered, find out <strong>why</strong>:</p>
 <table>
 <thead>
@@ -290,18 +488,18 @@ between components, that is, the interfaces actually used in the integrated soft
 </tbody></table>
 <p><strong>Don&#39;t</strong> write a &quot;test&quot; whose only purpose is to execute uncovered code with no requirement behind it. That hides
 the real problem: either a missing requirement or unwanted code.</p>
-<h3>3.5 Traceability</h3>
+<h3 id="3-6-traceability">3.6 Traceability</h3>
 <p>Bidirectional traceability is required: system requirements ↔ HLR ↔ LLR ↔ source code, and requirements ↔ test
 cases ↔ procedures ↔ results. Traceability shows that every requirement is implemented and verified, and that
 there is no unintended functionality.</p>
 <hr>
-<h2>4. Expert — topics that decide audits</h2>
-<h3>4.1 Level A: source-to-object code</h3>
+<h2 id="4-expert-topics-that-decide-audits" class="lvl lvl-expert"><span class="badge badge-expert">Expert</span> 4. Expert — topics that decide audits</h2>
+<h3 id="4-1-level-a-source-to-object-code">4.1 Level A: source-to-object code</h3>
 <p>At Level A, if the compiler or linker generates object code that isn&#39;t directly traceable to source code (for
 example inserted range checks, library calls or complex optimisations), <strong>additional verification</strong> is needed to
 establish the correctness of that generated code. Projects typically restrict compiler options and constructs, and
 analyse the object code for the remaining cases.</p>
-<h3>4.2 Tool qualification (DO-330)</h3>
+<h3 id="4-2-tool-qualification-do-330">4.2 Tool qualification (DO-330)</h3>
 <p>A tool needs qualification when it <strong>eliminates, reduces or automates</strong> a DO-178C process and its output is not
 verified. The <strong>Tool Qualification Level (TQL)</strong> depends on the tool&#39;s impact and the software level:</p>
 <table>
@@ -343,7 +541,7 @@ verified. The <strong>Tool Qualification Level (TQL)</strong> depends on the too
 <p>TQL-1 is the most rigorous. Compilers are normally <em>not</em> qualified: their output is verified instead, through
 testing of the executable object code (plus the Level A analysis above). Confirm the table against DO-178C
 section 12.2 and DO-330.</p>
-<h3>4.3 Supplements</h3>
+<h3 id="4-3-supplements">4.3 Supplements</h3>
 <table>
 <thead>
 <tr>
@@ -369,13 +567,13 @@ section 12.2 and DO-330.</p>
 </tr>
 </tbody></table>
 <p>DO-248C contains supporting information (FAQs and discussion papers). It explains DO-178C but adds no new objectives.</p>
-<h3>4.4 Previously developed software, COTS and RTOS</h3>
+<h3 id="4-4-previously-developed-software-cots-and-rtos">4.4 Previously developed software, COTS and RTOS</h3>
 <p>Reusing software (an RTOS, a library, a previous program&#39;s code) requires assessing the available life-cycle
 data against the objectives for the <strong>new</strong> software level and environment. Typical issues are missing low-level
 requirements, missing structural coverage, a changed compiler or target, and changed use. Gaps are filled by
 additional activities, or occasionally by alternative methods agreed in the PSAC. Changes to the software, its
 use or its environment need a <strong>change impact analysis</strong>.</p>
-<h3>4.5 Partitioning and multicore</h3>
+<h3 id="4-5-partitioning-and-multicore">4.5 Partitioning and multicore</h3>
 <ul>
 <li><strong>Partitioning</strong> (for example ARINC 653) can contain the effects of a lower-level application, but the
 partitioning mechanism itself must be developed and verified at the level of the most critical software it
@@ -383,7 +581,7 @@ protects, and shown to be robust against faults in the partitions (see <a href="
 <li><strong>Multicore processors</strong> need additional analysis of interference between cores. See CAST-32A and its
 successors, EASA AMC 20-193 and FAA AC 20-193, and agree the approach in the PSAC.</li>
 </ul>
-<h3>4.6 Configuration management in practice</h3>
+<h3 id="4-6-configuration-management-in-practice">4.6 Configuration management in practice</h3>
 <ul>
 <li>Two control categories, <strong>CC1</strong> (full SCM: baselines, change control, problem reporting, release, archiving)
 and <strong>CC2</strong> (a reduced set). Annex A says which category applies to each data item at each level.</li>
@@ -391,7 +589,7 @@ and <strong>CC2</strong> (a reduced set). Annex A says which category applies to
 version and options, linker files, test procedures, tool versions and parameter data.</li>
 <li>The build must be <strong>reproducible</strong> from the archived configuration.</li>
 </ul>
-<h3>4.7 Common findings and how to avoid them</h3>
+<h3 id="4-7-common-findings-and-how-to-avoid-them">4.7 Common findings and how to avoid them</h3>
 <table>
 <thead>
 <tr>
@@ -429,7 +627,7 @@ version and options, linker files, test procedures, tool versions and parameter 
 </tr>
 </tbody></table>
 <hr>
-<h2>How the other modules connect to DO-178C</h2>
+<h2 id="how-the-other-modules-connect-to-do-178c">How the other modules connect to DO-178C</h2>
 <table>
 <thead>
 <tr>
@@ -454,7 +652,7 @@ version and options, linker files, test procedures, tool versions and parameter 
 <td>WCET and schedulability evidence, partitioning, RTOS as previously developed software, multicore</td>
 </tr>
 </tbody></table>
-<h2>Key takeaways</h2>
+<h2 id="key-takeaways">Key takeaways</h2>
 <ul>
 <li>The safety assessment sets the software level, and the level sets the objectives, independence and coverage.</li>
 <li>Plan, follow the plans, and keep the evidence: plans, standards, traceability, reviews, tests, coverage, CM and SQA records.</li>
@@ -462,15 +660,18 @@ version and options, linker files, test procedures, tool versions and parameter 
 <li>Dead code is removed. Deactivated code is shown to be safely deactivated. Derived requirements go to safety.</li>
 <li>Tools that can insert errors, or that replace verification, may need qualification under DO-330.</li>
 </ul>
-<h2>Self-check</h2>
+<h2 id="self-check">Self-check</h2>
 <ol>
 <li>A Level B component reaches 100 % statement and decision coverage. Is MC/DC required?</li>
 <li>Coverage analysis finds an uncovered <code>else</code> branch that no requirement asks for. What are the possible resolutions?</li>
 <li>Which tool qualification criterion applies to a tool that generates C code from a model, for Level A software?</li>
 </ol>
-<p><a href="../quiz/index.html?module=do178c">Take the Module 5 quiz →</a></p>
+<p><a href="../quiz/index.html?module=do178c">Take the Module 5 quiz →</a> · <a href="../quiz/index.html?module=mcdc">Coverage &amp; MC/DC quiz →</a></p>
 
+<nav class="pager" aria-label="Module navigation"><a class="pager-prev" href="04-rtos.html"><small>← Previous</small>Module 4: RTOS Fundamentals</a><a class="pager-next" href="../quiz/index.html"><small>Finished?</small>Take the expert quiz →</a></nav>
 </main>
+</div>
+<script>try{if(window.matchMedia("(max-width: 1060px)").matches){var d=document.querySelector(".toc details");if(d)d.removeAttribute("open");}}catch(e){}</script>
 <footer class="site-footer">Embedded System Training · Copyright &copy; 2026 Gopu Sugumar · Licensed under <a href="../LICENSE">GPL-3.0-or-later</a></footer>
 </body>
 </html>

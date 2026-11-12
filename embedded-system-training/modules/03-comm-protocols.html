@@ -6,8 +6,13 @@
 <title>Module 3 — Communication Protocols</title>
 <link rel="stylesheet" href="../site.css">
 </head>
-<body>
-<header class="site-header"><a href="../index.html">Embedded System Training</a></header>
+<body class="module">
+<header class="site-header"><div class="bar">
+<a class="brand" href="../index.html"><span class="logo" aria-hidden="true">◆</span>Embedded System Training</a>
+<nav class="topnav" aria-label="Modules"><a href="../modules/01-embedded-c.html"><span class="nav-n">1</span>Embedded C</a><a href="../modules/02-mcu-peripherals.html"><span class="nav-n">2</span>MCU</a><a href="../modules/03-comm-protocols.html" aria-current="page"><span class="nav-n">3</span>Protocols</a><a href="../modules/04-rtos.html"><span class="nav-n">4</span>RTOS</a><a href="../modules/05-do178c.html"><span class="nav-n">5</span>DO-178C</a><a class="nav-quiz" href="../quiz/index.html">Expert quiz</a></nav>
+</div></header>
+<div class="layout has-toc">
+<nav class="toc" aria-label="On this page"><details open><summary>On this page</summary><ol><li><a href="#quick-comparison">Quick comparison</a><ol></ol></li><li><a href="#1-beginner-uart">Beginner — UART</a><ol></ol></li><li><a href="#2-intermediate-spi">Intermediate — SPI</a><ol></ol></li><li><a href="#3-intermediate-i2c">Intermediate — I2C</a><ol></ol></li><li><a href="#4-advanced-can">Advanced — CAN</a><ol></ol></li><li><a href="#5-choosing-a-protocol">Choosing a protocol</a><ol></ol></li><li><a href="#6-expert-robust-communication-and-avionics-data-buses">Expert: robust communication and avionics data buses</a><ol><li class="sub"><a href="#6-1-message-integrity-at-application-level">Message integrity at application level</a></li><li class="sub"><a href="#6-2-parsing-received-data-safely">Parsing received data safely</a></li><li class="sub"><a href="#6-3-throughput-and-drivers">Throughput and drivers</a></li><li class="sub"><a href="#6-4-can-in-depth">CAN in depth</a></li><li class="sub"><a href="#6-5-avionics-buses-you-will-meet">Avionics buses you will meet</a></li><li class="sub"><a href="#6-6-interface-control-documents-and-verification">Interface control documents and verification</a></li></ol></li><li><a href="#key-takeaways">Key takeaways</a><ol></ol></li><li><a href="#self-check">Self-check</a><ol></ol></li></ol></details></nav>
 <main class="content">
 <h1>Module 3 — Communication Protocols</h1>
 <p><a href="02-mcu-peripherals.html">← Module 2</a> · <a href="../index.html">Course home</a> · <a href="04-rtos.html">Next: RTOS →</a> · <a href="../quiz/index.html?module=comm">Take the quiz</a></p>
@@ -19,7 +24,7 @@
 <li><em>Expert:</em> design end-to-end message integrity, analyse CAN timing and failure modes, and work with ARINC 429, MIL-STD-1553B and AFDX.</li>
 </ul>
 <hr>
-<h2>Quick comparison</h2>
+<h2 id="quick-comparison">Quick comparison</h2>
 <table>
 <thead>
 <tr>
@@ -76,7 +81,7 @@
 <p>All of them need a <strong>common ground</strong> between devices, except where an isolated or
 differential physical layer is designed in.</p>
 <hr>
-<h2>1. Beginner — UART</h2>
+<h2 id="1-beginner-uart" class="lvl lvl-beginner"><span class="badge badge-beginner">Beginner</span> 1. Beginner — UART</h2>
 <ul>
 <li>Asynchronous: both sides must be set to the <strong>same baud rate</strong> and frame format.</li>
 <li>Frame: <strong>start bit (0)</strong>, 5–9 data bits sent <strong>LSB first</strong>, optional parity, then 1 or 2 <strong>stop bits (1)</strong>.
@@ -88,10 +93,13 @@ At 115 200 baud that is about 11 520 bytes/s.</li>
 roughly ±3 to ±15 V with inverted logic. Never connect RS-232 directly to an MCU pin; use a transceiver.</li>
 <li>Optional hardware flow control: RTS/CTS.</li>
 </ul>
+<figure class="diagram"><svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 172" role="img" aria-labelledby="uartframe-t"><title id="uartframe-t">UART 8N1 waveform for the character A</title><defs><marker id="uartframe-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><text class="txt-h" x="360" y="22" text-anchor="middle">UART 8N1 frame for 'A' = 0x41, sent LSB first</text><line class="ln dash thin" x1="80" y1="36" x2="80" y2="112" /><line class="ln dash thin" x1="132" y1="36" x2="132" y2="112" /><line class="ln dash thin" x1="184" y1="36" x2="184" y2="112" /><line class="ln dash thin" x1="236" y1="36" x2="236" y2="112" /><line class="ln dash thin" x1="288" y1="36" x2="288" y2="112" /><line class="ln dash thin" x1="340" y1="36" x2="340" y2="112" /><line class="ln dash thin" x1="392" y1="36" x2="392" y2="112" /><line class="ln dash thin" x1="444" y1="36" x2="444" y2="112" /><line class="ln dash thin" x1="496" y1="36" x2="496" y2="112" /><line class="ln dash thin" x1="548" y1="36" x2="548" y2="112" /><line class="ln dash thin" x1="600" y1="36" x2="600" y2="112" /><polyline class="wave" fill="none" points="20,50 80,50 80,50 80,100 132,100 132,50 184,50 184,100 444,100 444,50 496,50 496,100 548,100 548,50 600,50 690,50"/><text class="txt-s b" x="106.0" y="132" text-anchor="middle">start</text><text class="txt-s txt-m" x="106.0" y="94" text-anchor="middle">0</text><text class="txt-s" x="158.0" y="132" text-anchor="middle">D0</text><text class="txt-s txt-m" x="158.0" y="44" text-anchor="middle">1</text><text class="txt-s" x="210.0" y="132" text-anchor="middle">D1</text><text class="txt-s txt-m" x="210.0" y="94" text-anchor="middle">0</text><text class="txt-s" x="262.0" y="132" text-anchor="middle">D2</text><text class="txt-s txt-m" x="262.0" y="94" text-anchor="middle">0</text><text class="txt-s" x="314.0" y="132" text-anchor="middle">D3</text><text class="txt-s txt-m" x="314.0" y="94" text-anchor="middle">0</text><text class="txt-s" x="366.0" y="132" text-anchor="middle">D4</text><text class="txt-s txt-m" x="366.0" y="94" text-anchor="middle">0</text><text class="txt-s" x="418.0" y="132" text-anchor="middle">D5</text><text class="txt-s txt-m" x="418.0" y="94" text-anchor="middle">0</text><text class="txt-s" x="470.0" y="132" text-anchor="middle">D6</text><text class="txt-s txt-m" x="470.0" y="44" text-anchor="middle">1</text><text class="txt-s" x="522.0" y="132" text-anchor="middle">D7</text><text class="txt-s txt-m" x="522.0" y="94" text-anchor="middle">0</text><text class="txt-s b" x="574.0" y="132" text-anchor="middle">stop</text><text class="txt-s txt-m" x="574.0" y="44" text-anchor="middle">1</text><text class="txt-s txt-m" x="50" y="132" text-anchor="middle">idle</text><text class="txt-s txt-m" x="645" y="132" text-anchor="middle">idle</text><text class="txt-s" x="360" y="160" text-anchor="middle">10 bit times per byte: 1 start (0) + 8 data + 1 stop (1). Idle line is high.</text></svg> <figcaption><span class="fig-n">Figure 1.</span> One UART byte on the wire. The receiver re-synchronises on every start bit, which is why both sides must agree on the baud rate.</figcaption></figure>
+
+
 <p><strong>Common faults:</strong> baud mismatch (garbage characters), TX/RX not crossed,
 missing ground, 5 V device on a 3.3 V-only pin.</p>
 <hr>
-<h2>2. Intermediate — SPI</h2>
+<h2 id="2-intermediate-spi" class="lvl lvl-intermediate"><span class="badge badge-intermediate">Intermediate</span> 2. Intermediate — SPI</h2>
 <ul>
 <li>The controller (master) drives <strong>SCLK</strong> and selects one peripheral by pulling its <strong>CS</strong> (chip select) low.</li>
 <li>Data moves both ways on each clock: MOSI (controller → peripheral) and MISO (peripheral → controller).
@@ -132,7 +140,7 @@ Newer names are <strong>COPI/CIPO</strong> or <strong>SDO/SDI</strong>.</li>
 <li>No acknowledge and no standard error check. If you need integrity, add a CRC at protocol level.</li>
 <li>To read, the controller must still clock out bytes (often dummy <code>0xFF</code> or <code>0x00</code>).</li>
 </ul>
-<h2>3. Intermediate — I2C</h2>
+<h2 id="3-intermediate-i2c" class="lvl lvl-intermediate"><span class="badge badge-intermediate">Intermediate</span> 3. Intermediate — I2C</h2>
 <ul>
 <li>Two <strong>open-drain</strong> lines, <strong>SDA</strong> and <strong>SCL</strong>, each with a <strong>pull-up resistor</strong>.</li>
 <li>Speeds: Standard-mode 100 kbit/s, Fast-mode 400 kbit/s, Fast-mode Plus 1 Mbit/s.</li>
@@ -143,11 +151,14 @@ Newer names are <strong>COPI/CIPO</strong> or <strong>SDO/SDI</strong>.</li>
 <li>A <strong>repeated START</strong> lets you write a register address and then read it without releasing the bus.</li>
 </ul>
 <p>Typical register read: <code>START, addr+W, reg, REPEATED START, addr+R, data…, NACK, STOP</code>.</p>
+<figure class="diagram"><svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 222" role="img" aria-labelledby="i2ctransaction-t"><title id="i2ctransaction-t">I2C transaction: start, address, R/W, ACK, data, ACK, stop, with start and stop waveforms</title><defs><marker id="i2ctransaction-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><text class="txt-h" x="360" y="22" text-anchor="middle">I2C write of one byte</text><rect class="box box-a" x="38" y="36" width="44" height="46" rx="8"/><text class="txt-b" x="60.0" y="64.0" text-anchor="middle">S</text><rect class="box box-a" x="82" y="36" width="196" height="46" rx="8"/><text class="txt-b" x="180.0" y="64.0" text-anchor="middle">A6 … A0  (7-bit address)</text><rect class="box box-a" x="278" y="36" width="54" height="46" rx="8"/><text class="txt-b" x="305.0" y="64.0" text-anchor="middle">R/W</text><rect class="box box-b" x="332" y="36" width="54" height="46" rx="8"/><text class="txt-b" x="359.0" y="64.0" text-anchor="middle">ACK</text><rect class="box box-a" x="386" y="36" width="196" height="46" rx="8"/><text class="txt-b" x="484.0" y="64.0" text-anchor="middle">D7 … D0  (data)</text><rect class="box box-b" x="582" y="36" width="54" height="46" rx="8"/><text class="txt-b" x="609.0" y="64.0" text-anchor="middle">ACK</text><rect class="box box-a" x="636" y="36" width="44" height="46" rx="8"/><text class="txt-b" x="658.0" y="64.0" text-anchor="middle">P</text><rect class="box box-a" x="150" y="98" width="16" height="12" rx="2"/><text class="txt-s" x="172" y="109" text-anchor="start">driven by controller</text><rect class="box box-b" x="350" y="98" width="16" height="12" rx="2"/><text class="txt-s" x="372" y="109" text-anchor="start">driven by receiver (ACK = SDA low)</text><text class="txt-s b" x="180" y="142" text-anchor="middle">START: SDA falls while SCL high</text><text class="txt-s" x="70" y="170" text-anchor="end">SCL</text><polyline class="wave" fill="none" points="80,158 280,158"/><text class="txt-s" x="70" y="200" text-anchor="end">SDA</text><polyline class="wave" fill="none" points="80,188 180,188 190,210 280,210"/><text class="txt-s b" x="540" y="142" text-anchor="middle">STOP: SDA rises while SCL high</text><text class="txt-s" x="430" y="170" text-anchor="end">SCL</text><polyline class="wave" fill="none" points="440,158 640,158"/><text class="txt-s" x="430" y="200" text-anchor="end">SDA</text><polyline class="wave" fill="none" points="440,210 540,210 550,188 640,188"/></svg> <figcaption><span class="fig-n">Figure 2.</span> An I2C write: who drives each part of the frame, and the START and STOP conditions on SDA and SCL.</figcaption></figure>
+
+
 <p><strong>Common faults:</strong> missing or too-weak pull-ups (slow rising edges), address shifted by one bit
 (7-bit vs 8-bit notation in datasheets), two devices with the same address, and a bus held low
 after a reset in the middle of a transfer. To recover, toggle SCL about 9 times.</p>
 <hr>
-<h2>4. Advanced — CAN</h2>
+<h2 id="4-advanced-can" class="lvl lvl-advanced"><span class="badge badge-advanced">Advanced</span> 4. Advanced — CAN</h2>
 <ul>
 <li>Differential pair <strong>CAN_H / CAN_L</strong> that tolerates noise. A <strong>120 Ω termination</strong> is needed at
 <strong>each end</strong> of the bus (≈ 60 Ω measured between H and L with power off).</li>
@@ -157,13 +168,18 @@ after a reset in the middle of a transfer. To recover, toggle SCL about 9 times.
 </li>
 <li><strong>Arbitration</strong>: a dominant bit (0) overwrites a recessive bit (1). The frame with the
 <strong>lowest ID wins</strong> without being corrupted, so lower IDs mean higher priority.</li>
+</ul>
+<figure class="diagram"><svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 214" role="img" aria-labelledby="canarbitration-t"><title id="canarbitration-t">CAN bitwise arbitration between identifiers 0x100 and 0x0FF</title><defs><marker id="canarbitration-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><text class="txt-h" x="360" y="20" text-anchor="middle">CAN arbitration: IDs 0x100 (node A) and 0x0FF (node B) start together</text><rect class="hl" x="264" y="30" width="47" height="136" rx="4"/><text class="txt-s txt-m" x="193.5" y="46" text-anchor="middle">ID10</text><text class="txt-s txt-m" x="240.5" y="46" text-anchor="middle">ID9</text><text class="txt-s txt-m" x="287.5" y="46" text-anchor="middle">ID8</text><text class="txt-s txt-m" x="334.5" y="46" text-anchor="middle">ID7</text><text class="txt-s txt-m" x="381.5" y="46" text-anchor="middle">ID6</text><text class="txt-s txt-m" x="428.5" y="46" text-anchor="middle">ID5</text><text class="txt-s txt-m" x="475.5" y="46" text-anchor="middle">ID4</text><text class="txt-s txt-m" x="522.5" y="46" text-anchor="middle">ID3</text><text class="txt-s txt-m" x="569.5" y="46" text-anchor="middle">ID2</text><text class="txt-s txt-m" x="616.5" y="46" text-anchor="middle">ID1</text><text class="txt-s txt-m" x="663.5" y="46" text-anchor="middle">ID0</text><text class="txt-s b" x="160" y="78" text-anchor="end">Node A  (0x100)</text><rect class="box" x="172" y="56" width="43" height="30" rx="4"/><text class="txt-b" x="193.5" y="76" text-anchor="middle">0</text><rect class="box" x="219" y="56" width="43" height="30" rx="4"/><text class="txt-b" x="240.5" y="76" text-anchor="middle">0</text><rect class="box box-d" x="266" y="56" width="43" height="30" rx="4"/><text class="txt-b" x="287.5" y="76" text-anchor="middle">1</text><rect class="box dash" x="313" y="56" width="43" height="30" rx="4"/><text class="txt-m" x="334.5" y="76" text-anchor="middle">–</text><rect class="box dash" x="360" y="56" width="43" height="30" rx="4"/><text class="txt-m" x="381.5" y="76" text-anchor="middle">–</text><rect class="box dash" x="407" y="56" width="43" height="30" rx="4"/><text class="txt-m" x="428.5" y="76" text-anchor="middle">–</text><rect class="box dash" x="454" y="56" width="43" height="30" rx="4"/><text class="txt-m" x="475.5" y="76" text-anchor="middle">–</text><rect class="box dash" x="501" y="56" width="43" height="30" rx="4"/><text class="txt-m" x="522.5" y="76" text-anchor="middle">–</text><rect class="box dash" x="548" y="56" width="43" height="30" rx="4"/><text class="txt-m" x="569.5" y="76" text-anchor="middle">–</text><rect class="box dash" x="595" y="56" width="43" height="30" rx="4"/><text class="txt-m" x="616.5" y="76" text-anchor="middle">–</text><rect class="box dash" x="642" y="56" width="43" height="30" rx="4"/><text class="txt-m" x="663.5" y="76" text-anchor="middle">–</text><text class="txt-s b" x="160" y="114" text-anchor="end">Node B  (0x0FF)</text><rect class="box" x="172" y="92" width="43" height="30" rx="4"/><text class="txt-b" x="193.5" y="112" text-anchor="middle">0</text><rect class="box" x="219" y="92" width="43" height="30" rx="4"/><text class="txt-b" x="240.5" y="112" text-anchor="middle">0</text><rect class="box" x="266" y="92" width="43" height="30" rx="4"/><text class="txt-b" x="287.5" y="112" text-anchor="middle">0</text><rect class="box" x="313" y="92" width="43" height="30" rx="4"/><text class="txt-b" x="334.5" y="112" text-anchor="middle">1</text><rect class="box" x="360" y="92" width="43" height="30" rx="4"/><text class="txt-b" x="381.5" y="112" text-anchor="middle">1</text><rect class="box" x="407" y="92" width="43" height="30" rx="4"/><text class="txt-b" x="428.5" y="112" text-anchor="middle">1</text><rect class="box" x="454" y="92" width="43" height="30" rx="4"/><text class="txt-b" x="475.5" y="112" text-anchor="middle">1</text><rect class="box" x="501" y="92" width="43" height="30" rx="4"/><text class="txt-b" x="522.5" y="112" text-anchor="middle">1</text><rect class="box" x="548" y="92" width="43" height="30" rx="4"/><text class="txt-b" x="569.5" y="112" text-anchor="middle">1</text><rect class="box" x="595" y="92" width="43" height="30" rx="4"/><text class="txt-b" x="616.5" y="112" text-anchor="middle">1</text><rect class="box" x="642" y="92" width="43" height="30" rx="4"/><text class="txt-b" x="663.5" y="112" text-anchor="middle">1</text><text class="txt-s b" x="160" y="150" text-anchor="end">Bus level</text><rect class="box box-b" x="172" y="128" width="43" height="30" rx="4"/><text class="txt-b" x="193.5" y="148" text-anchor="middle">0</text><rect class="box box-b" x="219" y="128" width="43" height="30" rx="4"/><text class="txt-b" x="240.5" y="148" text-anchor="middle">0</text><rect class="box box-b" x="266" y="128" width="43" height="30" rx="4"/><text class="txt-b" x="287.5" y="148" text-anchor="middle">0</text><rect class="box box-b" x="313" y="128" width="43" height="30" rx="4"/><text class="txt-b" x="334.5" y="148" text-anchor="middle">1</text><rect class="box box-b" x="360" y="128" width="43" height="30" rx="4"/><text class="txt-b" x="381.5" y="148" text-anchor="middle">1</text><rect class="box box-b" x="407" y="128" width="43" height="30" rx="4"/><text class="txt-b" x="428.5" y="148" text-anchor="middle">1</text><rect class="box box-b" x="454" y="128" width="43" height="30" rx="4"/><text class="txt-b" x="475.5" y="148" text-anchor="middle">1</text><rect class="box box-b" x="501" y="128" width="43" height="30" rx="4"/><text class="txt-b" x="522.5" y="148" text-anchor="middle">1</text><rect class="box box-b" x="548" y="128" width="43" height="30" rx="4"/><text class="txt-b" x="569.5" y="148" text-anchor="middle">1</text><rect class="box box-b" x="595" y="128" width="43" height="30" rx="4"/><text class="txt-b" x="616.5" y="148" text-anchor="middle">1</text><rect class="box box-b" x="642" y="128" width="43" height="30" rx="4"/><text class="txt-b" x="663.5" y="148" text-anchor="middle">1</text><text class="txt-s" x="360" y="186" text-anchor="middle">At ID8, A sends recessive 1 but reads dominant 0 → A stops and becomes a receiver.</text><text class="txt-s" x="360" y="204" text-anchor="middle">B's frame continues undamaged: the lower identifier wins.</text></svg> <figcaption><span class="fig-n">Figure 3.</span> Bitwise arbitration. Every transmitter reads the bus while sending, and stops as soon as it reads a dominant bit it didn&#39;t send.</figcaption></figure>
+
+
+<ul>
 <li>Classic CAN: up to <strong>8 data bytes</strong>, up to 1 Mbit/s. <strong>CAN FD</strong>: up to <strong>64 data bytes</strong>,
 with a faster data phase.</li>
 <li>Built-in error handling: CRC, ACK slot, bit stuffing (after 5 equal bits, insert one opposite bit),
 and error counters that can drive a node to <strong>error-passive</strong> or <strong>bus-off</strong>.</li>
 <li>A node needs a <strong>CAN controller</strong> (often inside the MCU) <strong>and</strong> a <strong>CAN transceiver</strong> chip.</li>
 </ul>
-<h2>5. Choosing a protocol</h2>
+<h2 id="5-choosing-a-protocol">5. Choosing a protocol</h2>
 <table>
 <thead>
 <tr>
@@ -189,10 +205,10 @@ and error counters that can drive a node to <strong>error-passive</strong> or <s
 </tr>
 </tbody></table>
 <hr>
-<h2>6. Expert: robust communication and avionics data buses</h2>
+<h2 id="6-expert-robust-communication-and-avionics-data-buses" class="lvl lvl-expert"><span class="badge badge-expert">Expert</span> 6. Expert: robust communication and avionics data buses</h2>
 <p><em>For engineers with 3+ years of experience: designing interfaces that fail safely, analysing their timing,
 and the buses you meet in aircraft.</em></p>
-<h3>6.1 Message integrity at application level</h3>
+<h3 id="6-1-message-integrity-at-application-level">6.1 Message integrity at application level</h3>
 <p>The CRC or parity of a physical protocol only protects bits on the wire. A robust interface also needs to
 detect a sender that has failed in a way that still produces <em>valid</em> frames:</p>
 <table>
@@ -225,7 +241,7 @@ detect a sender that has failed in a way that still produces <em>valid</em> fram
 </tbody></table>
 <p>Each mechanism needs a requirement for detection time and for the safe reaction. That might be holding the last
 value for N cycles, then flagging the data invalid, then switching to a backup source.</p>
-<h3>6.2 Parsing received data safely</h3>
+<h3 id="6-2-parsing-received-data-safely">6.2 Parsing received data safely</h3>
 <p>Never overlay a <code>struct</code> on a receive buffer. Padding, endianness, alignment and strict aliasing all differ
 between platforms (see <a href="01-embedded-c.html">Module 1</a>). Decode explicitly:</p>
 <pre><code class="language-c">static uint16_t get_u16_be(const uint8_t *p) { return (uint16_t)(((uint16_t)p[0] &lt;&lt; 8) | p[1]); }
@@ -237,14 +253,14 @@ void decode(const uint8_t *buf, size_t len, msg_t *out) {
     if (out-&gt;mode &gt; MODE_MAX) { /* reject: out of range */ }
 }
 </code></pre>
-<h3>6.3 Throughput and drivers</h3>
+<h3 id="6-3-throughput-and-drivers">6.3 Throughput and drivers</h3>
 <ul>
 <li>At high UART rates, one interrupt per byte doesn&#39;t scale. Use DMA into a circular buffer with an
 <strong>idle-line</strong> or receive-timeout interrupt (available on many MCUs) to detect the end of a frame.</li>
 <li>Size buffers from the worst-case burst, not the average rate, and count overruns. An overrun counter that
 is always zero during testing is evidence. One that you never read is not.</li>
 </ul>
-<h3>6.4 CAN in depth</h3>
+<h3 id="6-4-can-in-depth">6.4 CAN in depth</h3>
 <ul>
 <li><strong>Error confinement:</strong> every node has a transmit and a receive error counter (TEC/REC). A node becomes
 <strong>error passive</strong> when either counter exceeds 127, and goes <strong>bus-off</strong> when TEC exceeds 255. The
@@ -258,7 +274,7 @@ the most interference, so they are the first to miss deadlines as bus load rises
 <li>Bit timing (sample point, synchronisation jump width) must be consistent across all nodes. Mismatches show up
 as errors that depend on temperature and cable length.</li>
 </ul>
-<h3>6.5 Avionics buses you will meet</h3>
+<h3 id="6-5-avionics-buses-you-will-meet">6.5 Avionics buses you will meet</h3>
 <table>
 <thead>
 <tr>
@@ -285,20 +301,20 @@ as errors that depend on temperature and cable length.</li>
 </tbody></table>
 <p>Figures above are from the respective standards as commonly summarised. Use the standard or your interface
 control document (ICD) as the authority for a real design.</p>
-<h3>6.6 Interface control documents and verification</h3>
+<h3 id="6-6-interface-control-documents-and-verification">6.6 Interface control documents and verification</h3>
 <p>Every external interface should be defined in an <strong>ICD</strong>: signal names, units, ranges, resolution, rates,
 encoding, validity rules and behaviour on loss of data. In DO-178C terms, the software requirements trace to it,
 and requirements-based tests must cover normal <em>and</em> robustness cases: invalid data, timeouts, out-of-range
 values and babbling inputs. See <a href="05-do178c.html">Module 5</a>.</p>
 <hr>
-<h2>Key takeaways</h2>
+<h2 id="key-takeaways">Key takeaways</h2>
 <ul>
 <li>UART: agree on the baud rate, cross TX/RX, 8N1 = 10 bits per byte.</li>
 <li>SPI: fast and simple. Match CPOL/CPHA. One CS per device.</li>
 <li>I2C: open-drain plus pull-ups, addresses, ACK/NACK.</li>
 <li>CAN: differential, terminated at both ends, lowest ID wins arbitration.</li>
 </ul>
-<h2>Self-check</h2>
+<h2 id="self-check">Self-check</h2>
 <ol>
 <li>How long does it take to send 100 bytes at 9600 baud, 8N1?</li>
 <li>A sensor&#39;s datasheet says its address is <code>0x90</code>/<code>0x91</code>. What is the 7-bit address?</li>
@@ -306,7 +322,10 @@ values and babbling inputs. See <a href="05-do178c.html">Module 5</a>.</p>
 </ol>
 <p><a href="../quiz/index.html?module=comm">Take the Module 3 quiz →</a></p>
 
+<nav class="pager" aria-label="Module navigation"><a class="pager-prev" href="02-mcu-peripherals.html"><small>← Previous</small>Module 2: MCU &amp; Peripherals</a><a class="pager-next" href="04-rtos.html"><small>Next →</small>Module 4: RTOS Fundamentals</a></nav>
 </main>
+</div>
+<script>try{if(window.matchMedia("(max-width: 1060px)").matches){var d=document.querySelector(".toc details");if(d)d.removeAttribute("open");}}catch(e){}</script>
 <footer class="site-footer">Embedded System Training · Copyright &copy; 2026 Gopu Sugumar · Licensed under <a href="../LICENSE">GPL-3.0-or-later</a></footer>
 </body>
 </html>

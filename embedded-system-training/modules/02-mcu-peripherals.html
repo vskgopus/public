@@ -6,8 +6,13 @@
 <title>Module 2 — MCU &amp; Peripherals</title>
 <link rel="stylesheet" href="../site.css">
 </head>
-<body>
-<header class="site-header"><a href="../index.html">Embedded System Training</a></header>
+<body class="module">
+<header class="site-header"><div class="bar">
+<a class="brand" href="../index.html"><span class="logo" aria-hidden="true">◆</span>Embedded System Training</a>
+<nav class="topnav" aria-label="Modules"><a href="../modules/01-embedded-c.html"><span class="nav-n">1</span>Embedded C</a><a href="../modules/02-mcu-peripherals.html" aria-current="page"><span class="nav-n">2</span>MCU</a><a href="../modules/03-comm-protocols.html"><span class="nav-n">3</span>Protocols</a><a href="../modules/04-rtos.html"><span class="nav-n">4</span>RTOS</a><a href="../modules/05-do178c.html"><span class="nav-n">5</span>DO-178C</a><a class="nav-quiz" href="../quiz/index.html">Expert quiz</a></nav>
+</div></header>
+<div class="layout has-toc">
+<nav class="toc" aria-label="On this page"><details open><summary>On this page</summary><ol><li><a href="#1-beginner">Beginner</a><ol><li class="sub"><a href="#1-1-memory-mapped-i-o">Memory-mapped I/O</a></li><li class="sub"><a href="#1-2-gpio">GPIO</a></li><li class="sub"><a href="#1-3-button-debouncing">Button debouncing</a></li><li class="sub"><a href="#1-4-clock">Clock</a></li></ol></li><li><a href="#2-intermediate">Intermediate</a><ol><li class="sub"><a href="#2-1-interrupts">Interrupts</a></li><li class="sub"><a href="#2-2-polling-vs-interrupt-vs-dma">Polling vs interrupt vs DMA</a></li><li class="sub"><a href="#2-3-timers">Timers</a></li><li class="sub"><a href="#2-4-pwm">PWM</a></li><li class="sub"><a href="#2-5-adc">ADC</a></li></ol></li><li><a href="#3-advanced">Advanced</a><ol><li class="sub"><a href="#3-1-watchdog-timer">Watchdog timer</a></li><li class="sub"><a href="#3-2-brown-out-and-reset-sources">Brown-out and reset sources</a></li><li class="sub"><a href="#3-3-critical-sections-and-atomicity">Critical sections and atomicity</a></li><li class="sub"><a href="#3-4-low-power-modes">Low-power modes</a></li><li class="sub"><a href="#3-5-cortex-m-interrupt-features">Cortex-M interrupt features</a></li></ol></li><li><a href="#4-expert-the-hardware-software-interface-in-high-integrity-systems">Expert: the hardware/software interface in high-integrity systems</a><ol><li class="sub"><a href="#4-1-caches-and-dma-coherency">Caches and DMA coherency</a></li><li class="sub"><a href="#4-2-memory-barriers-on-arm-cortex-m">Memory barriers on Arm Cortex-M</a></li><li class="sub"><a href="#4-3-races-on-peripheral-registers">Races on peripheral registers</a></li><li class="sub"><a href="#4-4-memory-protection-unit-mpu">Memory protection unit (MPU)</a></li><li class="sub"><a href="#4-5-timing-determinism-and-wcet">Timing determinism and WCET</a></li><li class="sub"><a href="#4-6-silicon-errata-and-documentation-discipline">Silicon errata and documentation discipline</a></li><li class="sub"><a href="#4-7-built-in-test-bit-and-fault-detection">Built-in test (BIT) and fault detection</a></li><li class="sub"><a href="#4-8-start-up-and-reset-behaviour">Start-up and reset behaviour</a></li></ol></li><li><a href="#key-takeaways">Key takeaways</a><ol></ol></li><li><a href="#self-check">Self-check</a><ol></ol></li></ol></details></nav>
 <main class="content">
 <h1>Module 2 — MCU &amp; Peripherals</h1>
 <p><a href="01-embedded-c.html">← Module 1</a> · <a href="../index.html">Course home</a> · <a href="03-comm-protocols.html">Next: Communication Protocols →</a> · <a href="../quiz/index.html?module=mcu">Take the quiz</a></p>
@@ -19,21 +24,20 @@
 <li>Choose between polling, interrupts and DMA.</li>
 <li><em>Expert:</em> handle cache/DMA coherency, barriers, register races, errata, BIT and timing determinism.</li>
 </ul>
-<blockquote>
-<p>Register names and formulas differ between MCU families. The examples use
+<aside class="callout callout-note"><p>Register names and formulas differ between MCU families. The examples use
 STM32-style timers and an ARM Cortex-M core. Always check the reference manual
 and datasheet for your part.</p>
-</blockquote>
+</aside>
 <hr>
-<h2>1. Beginner</h2>
-<h3>1.1 Memory-mapped I/O</h3>
+<h2 id="1-beginner" class="lvl lvl-beginner"><span class="badge badge-beginner">Beginner</span> 1. Beginner</h2>
+<h3 id="1-1-memory-mapped-i-o">1.1 Memory-mapped I/O</h3>
 <p>Peripherals are controlled through registers that sit at fixed addresses in the
 memory map. Writing to an address configures hardware:</p>
 <pre><code class="language-c">#define GPIOA_ODR (*(volatile uint32_t *)0x4001080CU)   /* example address only */
 GPIOA_ODR |= (1U &lt;&lt; 5);
 </code></pre>
 <p>In real projects, use the vendor&#39;s device header (CMSIS) rather than raw addresses.</p>
-<h3>1.2 GPIO</h3>
+<h3 id="1-2-gpio">1.2 GPIO</h3>
 <table>
 <thead>
 <tr>
@@ -61,17 +65,17 @@ GPIOA_ODR |= (1U &lt;&lt; 5);
 <p>A push-button wired between the pin and GND needs a <strong>pull-up</strong>. The pin reads 1 when
 the button is released and 0 when it is pressed.</p>
 <p><strong>Never leave inputs floating.</strong> They pick up noise and can increase power consumption.</p>
-<h3>1.3 Button debouncing</h3>
+<h3 id="1-3-button-debouncing">1.3 Button debouncing</h3>
 <p>Mechanical contacts bounce for a few milliseconds. To get one clean event, either sample
 the input periodically (for example every 5–10 ms) and accept a change only after several
 equal readings, or add an RC filter with a Schmitt-trigger input.</p>
-<h3>1.4 Clock</h3>
+<h3 id="1-4-clock">1.4 Clock</h3>
 <p>Every peripheral needs a clock. On most MCUs you must <strong>enable the peripheral clock</strong>
 (for example an <code>RCC</code> enable bit) before its registers respond. Forgetting this is one of the most
 common causes of &quot;my peripheral does nothing&quot;.</p>
 <hr>
-<h2>2. Intermediate</h2>
-<h3>2.1 Interrupts</h3>
+<h2 id="2-intermediate" class="lvl lvl-intermediate"><span class="badge badge-intermediate">Intermediate</span> 2. Intermediate</h2>
+<h3 id="2-1-interrupts">2.1 Interrupts</h3>
 <p>When an interrupt fires, the CPU saves its context, looks up the handler address in the
 <strong>vector table</strong>, runs the ISR, then returns. On Cortex-M the <strong>NVIC</strong> controls
 enabling and priorities. A <strong>lower</strong> priority number means <strong>higher</strong> urgency.</p>
@@ -82,7 +86,7 @@ enabling and priorities. A <strong>lower</strong> priority number means <strong>
 <li>Clear the peripheral&#39;s interrupt flag, otherwise the ISR re-enters straight away.</li>
 <li>Variables shared with main code must be <code>volatile</code> and accessed atomically.</li>
 </ul>
-<h3>2.2 Polling vs interrupt vs DMA</h3>
+<h3 id="2-2-polling-vs-interrupt-vs-dma">2.2 Polling vs interrupt vs DMA</h3>
 <table>
 <thead>
 <tr>
@@ -107,18 +111,18 @@ enabling and priorities. A <strong>lower</strong> priority number means <strong>
 <td>Moving blocks of data (ADC samples, UART/SPI buffers) without CPU involvement</td>
 </tr>
 </tbody></table>
-<h3>2.3 Timers</h3>
+<h3 id="2-3-timers">2.3 Timers</h3>
 <p>For an STM32-style timer:</p>
 <pre><code>f_update = f_timer_clock / ((PSC + 1) × (ARR + 1))
 </code></pre>
 <p>Example: 72 MHz clock, <code>PSC = 7199</code>, <code>ARR = 9999</code> → 72 000 000 / 7200 = 10 kHz tick, then
 10 000 / 10 000 = <strong>1 Hz</strong> update event.</p>
-<h3>2.4 PWM</h3>
+<h3 id="2-4-pwm">2.4 PWM</h3>
 <pre><code>duty cycle = CCR / (ARR + 1)
 </code></pre>
 <p>With <code>ARR = 999</code> and <code>CCR = 250</code> the duty cycle is 25 %. PWM is used for motor speed, LED dimming and
 servo control.</p>
-<h3>2.5 ADC</h3>
+<h3 id="2-5-adc">2.5 ADC</h3>
 <p>An <em>N</em>-bit ADC has 2ᴺ codes. For a 12-bit ADC with V_REF = 3.3 V:</p>
 <pre><code>1 LSB = 3.3 V / 4096 ≈ 0.806 mV
 V_in  = code × V_REF / 4096          (code 2048 ≈ 1.65 V)
@@ -127,27 +131,27 @@ V_in  = code × V_REF / 4096          (code 2048 ≈ 1.65 V)
 <p><strong>Nyquist:</strong> sample at more than twice the highest frequency in the signal, and use an
 anti-aliasing filter in front of the ADC.</p>
 <hr>
-<h2>3. Advanced</h2>
-<h3>3.1 Watchdog timer</h3>
+<h2 id="3-advanced" class="lvl lvl-advanced"><span class="badge badge-advanced">Advanced</span> 3. Advanced</h2>
+<h3 id="3-1-watchdog-timer">3.1 Watchdog timer</h3>
 <p>A watchdog resets the MCU if the software does not refresh (&quot;kick&quot;) it in time.
 Kick it from one place that only runs when the system is healthy, for example after all tasks
 have reported in. Never kick it from a timer ISR that keeps running while the main loop is stuck.</p>
-<h3>3.2 Brown-out and reset sources</h3>
+<h3 id="3-2-brown-out-and-reset-sources">3.2 Brown-out and reset sources</h3>
 <p>A brown-out detector (BOD/BOR) holds the MCU in reset while the supply voltage is too low
 for reliable operation. After a reset, read the reset-cause register (power-on, watchdog, brown-out,
 software, pin) and log it. It is very useful when debugging field failures.</p>
-<h3>3.3 Critical sections and atomicity</h3>
+<h3 id="3-3-critical-sections-and-atomicity">3.3 Critical sections and atomicity</h3>
 <pre><code class="language-c">uint32_t primask = __get_PRIMASK();   /* CMSIS intrinsics on Cortex-M */
 __disable_irq();
 shared_counter++;
 __set_PRIMASK(primask);               /* restore previous state */
 </code></pre>
 <p>Keep critical sections short, because they add to interrupt latency.</p>
-<h3>3.4 Low-power modes</h3>
+<h3 id="3-4-low-power-modes">3.4 Low-power modes</h3>
 <p>MCUs offer sleep or stop modes that turn off clocks to save energy. They wake on interrupts.
 Typical pattern: do the work, then <code>__WFI()</code> (wait for interrupt) in the idle loop.
 Disable unused peripherals and configure unused pins so they don&#39;t float.</p>
-<h3>3.5 Cortex-M interrupt features</h3>
+<h3 id="3-5-cortex-m-interrupt-features">3.5 Cortex-M interrupt features</h3>
 <ul>
 <li><strong>Tail-chaining</strong>: when one ISR ends and another is pending, the core skips the full
 context restore and save between them.</li>
@@ -156,10 +160,10 @@ context restore and save between them.</li>
 or a stack overflow. Inspect the stacked PC and the fault status registers.</li>
 </ul>
 <hr>
-<h2>4. Expert: the hardware/software interface in high-integrity systems</h2>
+<h2 id="4-expert-the-hardware-software-interface-in-high-integrity-systems" class="lvl lvl-expert"><span class="badge badge-expert">Expert</span> 4. Expert: the hardware/software interface in high-integrity systems</h2>
 <p><em>For engineers with 3+ years of experience. Most &quot;impossible&quot; field failures come from this boundary:
 caches, write buffers, races on registers, silicon errata and timing that only fails under load.</em></p>
-<h3>4.1 Caches and DMA coherency</h3>
+<h3 id="4-1-caches-and-dma-coherency">4.1 Caches and DMA coherency</h3>
 <p>On cores with a data cache (for example Arm Cortex-M7), the CPU and a DMA controller can see different
 contents for the same RAM:</p>
 <table>
@@ -181,11 +185,14 @@ contents for the same RAM:</p>
 <td><strong>Invalidate</strong> the buffer&#39;s cache lines after the transfer (and avoid touching the buffer during it)</td>
 </tr>
 </tbody></table>
+<figure class="diagram"><svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 265" role="img" aria-labelledby="cachedma-t"><title id="cachedma-t">Cache and DMA coherency: clean before transmit, invalidate after receive</title><defs><marker id="cachedma-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="box box-a" x="20" y="36" width="110" height="50" rx="8"/><text class="txt-b" x="75.0" y="66.0" text-anchor="middle">CPU</text><rect class="box box-a" x="170" y="36" width="120" height="50" rx="8"/><text class="txt-b" x="230.0" y="66.0" text-anchor="middle">D-cache</text><rect class="box" x="330" y="36" width="120" height="50" rx="8"/><text class="txt-b" x="390.0" y="66.0" text-anchor="middle">RAM</text><rect class="box" x="490" y="36" width="90" height="50" rx="8"/><text class="txt-b" x="535.0" y="66.0" text-anchor="middle">DMA</text><rect class="box" x="620" y="36" width="80" height="50" rx="8"/><text class="txt-b" x="660.0" y="66.0" text-anchor="middle">UART</text><line class="ln" x1="130" y1="61" x2="170" y2="61" /><line class="ln" x1="290" y1="61" x2="330" y2="61" /><line class="ln" x1="450" y1="61" x2="490" y2="61" /><line class="ln" x1="580" y1="61" x2="620" y2="61" /><line class="ln ok" x1="75" y1="128" x2="655" y2="128" marker-end="url(#cachedma-ah)"/><text class="txt-b ok" x="75" y="116" text-anchor="start">TRANSMIT</text><text class="txt-s ok" x="230" y="148" text-anchor="middle">① CLEAN cache lines</text><text class="txt-s" x="390" y="148" text-anchor="middle">② data now in RAM</text><text class="txt-s" x="560" y="148" text-anchor="middle">③ DMA reads RAM → UART</text><line class="ln bad" x1="655" y1="196" x2="75" y2="196" marker-end="url(#cachedma-ah)"/><text class="txt-b bad" x="655" y="184" text-anchor="end">RECEIVE</text><text class="txt-s" x="560" y="216" text-anchor="middle">① UART → DMA writes RAM</text><text class="txt-s" x="390" y="216" text-anchor="middle">② DMA complete</text><text class="txt-s bad" x="230" y="216" text-anchor="middle">③ INVALIDATE cache lines</text><text class="txt-s" x="120" y="216" text-anchor="middle">④ CPU reads</text><text class="txt-s txt-m" x="360" y="252" text-anchor="middle">Align DMA buffers to the cache line (32 bytes on Cortex-M7), or use a non-cacheable region</text></svg> <figcaption><span class="fig-n">Figure 1.</span> Keeping the CPU&#39;s view and the DMA&#39;s view of a buffer consistent on a core with a write-back data cache.</figcaption></figure>
+
+
 <p>Align DMA buffers to the cache-line size (32 bytes on Cortex-M7) and size them as a multiple of it. Otherwise
 invalidating a line can destroy neighbouring variables. Alternatives are a non-cacheable MPU region for DMA
 buffers, or tightly coupled memory. CMSIS provides helpers such as <code>SCB_CleanDCache_by_Addr()</code> and
 <code>SCB_InvalidateDCache_by_Addr()</code>. Confirm them in your device&#39;s CMSIS version.</p>
-<h3>4.2 Memory barriers on Arm Cortex-M</h3>
+<h3 id="4-2-memory-barriers-on-arm-cortex-m">4.2 Memory barriers on Arm Cortex-M</h3>
 <table>
 <thead>
 <tr>
@@ -209,21 +216,21 @@ buffers, or tightly coupled memory. CMSIS provides helpers such as <code>SCB_Cle
 <p>A classic symptom: an ISR runs <strong>twice</strong> for one event. The write that clears the peripheral&#39;s flag was still
 in a write buffer when the exception returned, so the interrupt was still pending. Fixes: read the register back,
 or use <code>__DSB()</code> before returning, as the vendor recommends.</p>
-<h3>4.3 Races on peripheral registers</h3>
+<h3 id="4-3-races-on-peripheral-registers">4.3 Races on peripheral registers</h3>
 <pre><code class="language-c">GPIOA-&gt;ODR |= (1U &lt;&lt; 5);   /* read-modify-write: an ISR that writes ODR between the read and
                               the write loses its update */
 </code></pre>
 <p>Use hardware atomic set/reset registers where they exist (for example <code>BSRR</code> on STM32), exclusive access
 instructions (<code>LDREX</code>/<code>STREX</code> on Armv7-M and Armv8-M Mainline; not available on Cortex-M0/M0+), or a short
 critical section.</p>
-<h3>4.4 Memory protection unit (MPU)</h3>
+<h3 id="4-4-memory-protection-unit-mpu">4.4 Memory protection unit (MPU)</h3>
 <ul>
 <li><strong>Stack guard:</strong> a no-access region at the end of each stack turns a silent overflow into an immediate fault.</li>
 <li><strong>Partitioning:</strong> keep tasks or partitions away from each other&#39;s data, and make code regions execute-only or
 read-only. This is the basis of space partitioning (see <a href="04-rtos.html">Module 4</a>).</li>
 <li><strong>Null-pointer trap:</strong> make address 0 inaccessible where the memory map allows it.</li>
 </ul>
-<h3>4.5 Timing determinism and WCET</h3>
+<h3 id="4-5-timing-determinism-and-wcet">4.5 Timing determinism and WCET</h3>
 <p>Caches, branch predictors, flash wait states with prefetch buffers, and DMA bus contention all make execution time
 depend on history. They improve <em>average</em> time but make <em>worst-case</em> analysis harder. Options:</p>
 <ul>
@@ -234,7 +241,7 @@ limiting DMA during critical windows.</li>
 </ul>
 <p>On <strong>multicore</strong> devices, shared buses, caches and memory controllers create <em>interference channels</em> between cores.
 See <a href="04-rtos.html">Module 4</a> and <a href="05-do178c.html">Module 5</a>.</p>
-<h3>4.6 Silicon errata and documentation discipline</h3>
+<h3 id="4-6-silicon-errata-and-documentation-discipline">4.6 Silicon errata and documentation discipline</h3>
 <p>Every MCU revision has an <strong>errata sheet</strong> that lists where the silicon doesn&#39;t match the datasheet or reference
 manual, usually with workarounds. In high-integrity projects:</p>
 <ul>
@@ -242,7 +249,7 @@ manual, usually with workarounds. In high-integrity projects:</p>
 <li>review the errata sheet for every peripheral you use, and record how each relevant erratum is handled,</li>
 <li>re-check when the hardware team moves to a new revision.</li>
 </ul>
-<h3>4.7 Built-in test (BIT) and fault detection</h3>
+<h3 id="4-7-built-in-test-bit-and-fault-detection">4.7 Built-in test (BIT) and fault detection</h3>
 <table>
 <thead>
 <tr>
@@ -272,7 +279,7 @@ manual, usually with workarounds. In high-integrity projects:</p>
 </tr>
 </tbody></table>
 <p>Each BIT needs requirements for what it detects, how quickly, and what the system does on failure.</p>
-<h3>4.8 Start-up and reset behaviour</h3>
+<h3 id="4-8-start-up-and-reset-behaviour">4.8 Start-up and reset behaviour</h3>
 <ul>
 <li>Initialise ECC RAM before any read of it, often in the start-up code, because reading uninitialised ECC RAM can fault.</li>
 <li>Decide the safe state of every output <strong>from reset until software configures it</strong>. That is a hardware/software
@@ -282,14 +289,14 @@ requirement, not an afterthought.</li>
 interrupted update must be specified and verified.</li>
 </ul>
 <hr>
-<h2>Key takeaways</h2>
+<h2 id="key-takeaways">Key takeaways</h2>
 <ul>
 <li>Enable the clock, configure the pin, then use the peripheral.</li>
 <li>Keep ISRs short, clear their flags, and protect shared data.</li>
 <li>Know the timer, PWM and ADC formulas for your MCU, and check them against the reference manual.</li>
 <li>Use DMA for bulk data and the watchdog for recovery.</li>
 </ul>
-<h2>Self-check</h2>
+<h2 id="self-check">Self-check</h2>
 <ol>
 <li>A 16 MHz timer clock with PSC = 15. What ARR value gives a 1 kHz update rate?</li>
 <li>Why does an I2C line need open-drain outputs?</li>
@@ -297,7 +304,10 @@ interrupted update must be specified and verified.</li>
 </ol>
 <p><a href="../quiz/index.html?module=mcu">Take the Module 2 quiz →</a></p>
 
+<nav class="pager" aria-label="Module navigation"><a class="pager-prev" href="01-embedded-c.html"><small>← Previous</small>Module 1: Embedded C Basics</a><a class="pager-next" href="03-comm-protocols.html"><small>Next →</small>Module 3: Communication Protocols</a></nav>
 </main>
+</div>
+<script>try{if(window.matchMedia("(max-width: 1060px)").matches){var d=document.querySelector(".toc details");if(d)d.removeAttribute("open");}}catch(e){}</script>
 <footer class="site-footer">Embedded System Training · Copyright &copy; 2026 Gopu Sugumar · Licensed under <a href="../LICENSE">GPL-3.0-or-later</a></footer>
 </body>
 </html>

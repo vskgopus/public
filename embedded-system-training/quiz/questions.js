@@ -3,8 +3,8 @@
  * (target audience: embedded software engineers with 3+ years of experience).
  *
  * Each question:
- *   id          unique string (prefix per module: c, m, p, r, d)
- *   module      "c" | "mcu" | "comm" | "rtos" | "do178c"
+ *   id          unique string (prefix per module: c, m, p, r, d, v)
+ *   module      "c" | "mcu" | "comm" | "rtos" | "do178c" | "mcdc"
  *   level       "expert"
  *   q           question text (`backticks` render as inline code)
  *   code        optional code snippet (shown in a <pre> block)
@@ -12,14 +12,15 @@
  *   answer      index (0-3) of the correct option in `options` (options are shuffled at run time)
  *   explanation shown on the results screen
  *
- * Run `npm run validate` after editing.
+ * Run `npm run validate` after editing. Verify every MC/DC test set with tools/mcdc.js.
  */
 window.QUIZ_MODULES = {
   c:      "Embedded C",
   mcu:    "MCU & Peripherals",
   comm:   "Communication Protocols",
   rtos:   "RTOS",
-  do178c: "DO-178C"
+  do178c: "DO-178C",
+  mcdc:   "Coverage & MC/DC"
 };
 
 window.QUIZ_QUESTIONS = [
@@ -736,5 +737,159 @@ window.QUIZ_QUESTIONS = [
     ],
     answer: 0,
     explanation: "The PSAC describes the software, its level, life cycle, means of compliance, tools and any additional considerations. The SAS at the end reports how compliance with the PSAC was achieved."
+  },
+  /* ---------------- Coverage & MC/DC (Module 5, sections 3.3-3.5) ----------------
+   * Every test set below was checked with: node tools/mcdc.js "<expr>" <tests...>   */
+  {
+    id: "v01", module: "mcdc", level: "expert",
+    q: "What is the minimum number of tests that achieves unique-cause MC/DC for `if (A || B || C)`?",
+    options: ["4", "3", "6", "8"],
+    answer: 0,
+    explanation: "N + 1 = 4: FFF (F), then TFF, FTF and FFT (all T). For OR, the other conditions are held FALSE so that one TRUE condition decides the outcome."
+  },
+  {
+    id: "v02", module: "mcdc", level: "expert",
+    q: "Which test set achieves MC/DC for `if (A || B)`? (Tests are written as values of A, B.)",
+    options: ["FF, TF, FT", "TT, FF", "TF, FT", "TT, TF, FT"],
+    answer: 0,
+    explanation: "FF (F) vs TF (T) shows A; FF vs FT (T) shows B. {TT, FF} gives decision coverage but no independence pair. {TF, FT} and {TT, TF, FT} never make the decision FALSE, so they don't even achieve decision coverage."
+  },
+  {
+    id: "v03", module: "mcdc", level: "expert",
+    q: "For `if (A && B)`, which test set achieves 100 % decision coverage but NOT MC/DC?",
+    options: ["TT, FF", "TT, FT, TF", "FT, TF", "TT"],
+    answer: 0,
+    explanation: "TT (T) and FF (F) exercise both outcomes, but both conditions change together, so neither condition's independent effect is shown. A wrong operator (|| instead of &&) would pass these two tests. {TT, FT, TF} achieves MC/DC; {FT, TF} and {TT} miss an outcome."
+  },
+  {
+    id: "v04", module: "mcdc", level: "expert",
+    q: "Which 4-test set achieves unique-cause MC/DC for `if ((A && B) || C)`? (Tests are written as A B C.)",
+    options: ["TTF, FTF, TFF, TFT", "TTT, TTF, FFF, TFF", "TTF, FTF, TFF, TTT", "FFF, TTT, FTT, TFF"],
+    answer: 0,
+    explanation: "A: FTF/TTF (B=T, C=F). B: TFF/TTF (A=T, C=F). C: TFF/TFT (A && B = F). The other sets each lack a pair: the second has none for A, the third none for C (TTF and TTT are both TRUE), and the fourth none for any condition."
+  },
+  {
+    id: "v05", module: "mcdc", level: "expert",
+    q: "A decision has 4 independent conditions. What are the minimum test counts for MC/DC and for multiple condition coverage (all combinations)?",
+    options: ["5 and 16", "4 and 8", "8 and 16", "5 and 32"],
+    answer: 0,
+    explanation: "MC/DC needs at least N + 1 = 5 tests; multiple condition coverage needs all 2^N = 16 combinations. DO-178C requires MC/DC for Level A, not multiple condition coverage."
+  },
+  {
+    id: "v06", module: "mcdc", level: "expert",
+    q: "In C, `if (A && B)` is tested with A = FALSE. How is B normally treated in the MC/DC analysis of that test?",
+    options: [
+      "As 'don't care': B isn't evaluated because of short-circuit evaluation, so TT vs F-x shows A's independence",
+      "B must be TRUE, otherwise the test is invalid",
+      "B must be FALSE, to make the test unique",
+      "The test must be discarded, because short-circuit code can't achieve MC/DC"
+    ],
+    answer: 0,
+    explanation: "With && the right operand isn't evaluated when the left one is FALSE, so B can't influence the outcome in that test. Coverage tools and analyses commonly mark it as 'don't care'. This is also why MISRA C forbids side effects in the right operand."
+  },
+  {
+    id: "v07", module: "mcdc", level: "expert",
+    q: "In `(A && B) || (A && C)`, the two occurrences of A always change together. How can MC/DC be shown for each occurrence?",
+    options: [
+      "Use masking MC/DC: other conditions may change if their effect is masked, for example C = FALSE masks the second A",
+      "It can't; coupled conditions are exempt from MC/DC",
+      "Add a test that changes only the first A",
+      "Use multiple condition coverage instead, as DO-178C requires for coupled conditions"
+    ],
+    answer: 0,
+    explanation: "Unique-cause pairs are impossible for coupled conditions. With masking MC/DC, (A=T, B=T, C=F) vs (A=F, B=T, C=F) shows the first A: the second A also changes, but A && C stays FALSE. State the MC/DC variant in your plans (see CAST-6)."
+  },
+  {
+    id: "v08", module: "mcdc", level: "expert",
+    q: "Is `alarm = valid && over_limit;` (an assignment, not an if statement) a decision for MC/DC purposes?",
+    options: [
+      "Yes, it is normally treated as a decision: a Boolean expression with a Boolean operator, whether or not it controls a branch",
+      "No, only conditions of if, while and for statements are decisions",
+      "Only at Level B",
+      "Only if the compiler turns it into a branch instruction"
+    ],
+    answer: 0,
+    explanation: "DO-178C defines a decision as a Boolean expression made of conditions and Boolean operators, without restricting it to branch points. CAST-10 discusses this. Agree the interpretation and the tool settings in your plans."
+  },
+  {
+    id: "v09", module: "mcdc", level: "expert",
+    q: "What does MC/DC require for `if (ready)`, which has a single condition?",
+    options: [
+      "Two tests, ready = TRUE and ready = FALSE: the same as decision coverage",
+      "Three tests (N + 1 with N = 2)",
+      "One test, because there's nothing to be independent of",
+      "Four tests, to cover all bit patterns of the variable"
+    ],
+    answer: 0,
+    explanation: "With one condition, showing its independent effect means seeing both outcomes, so MC/DC equals decision coverage: N + 1 = 2."
+  },
+  {
+    id: "v10", module: "mcdc", level: "expert",
+    q: "What is the minimum number of tests for unique-cause MC/DC of `if (!(A && B))`?",
+    options: ["3", "2", "4", "6"],
+    answer: 0,
+    explanation: "NOT doesn't add a condition. The decision has two conditions, so N + 1 = 3: TT (F), FT (T), TF (T)."
+  },
+  {
+    id: "v11", module: "mcdc", level: "expert",
+    q: "Level A coverage analysis shows no independence pair for condition B, and no requirement leads to a test with B = FALSE while the others allow B to decide. What is the correct first step?",
+    options: [
+      "Analyse why: a missing or incomplete requirement, an inadequate test, or a redundant condition in the code",
+      "Add a test that sets B = FALSE purely to complete the pair",
+      "Mark B as deactivated code",
+      "Lower the component to Level B so MC/DC isn't required"
+    ],
+    answer: 0,
+    explanation: "Coverage analysis checks the completeness of requirements-based testing. The gap is resolved by fixing the requirement, the test or the code. A structure-only test would hide the real cause, and the software level is set by the safety assessment, not by coverage results."
+  },
+  {
+    id: "v12", module: "mcdc", level: "expert",
+    q: "What is the minimum number of tests for unique-cause MC/DC of `if (a_ok != b_ok)`, where both operands are Booleans (an XOR)?",
+    options: ["3", "2", "4", "1"],
+    answer: 0,
+    explanation: "Changing either input of an XOR always flips the outcome. FF (F) vs TF (T) shows the first condition, and FF vs FT (T) shows the second: 3 tests."
+  },
+  {
+    id: "v13", module: "mcdc", level: "expert",
+    q: "For `if ((A && B) || C)`, what must hold in the two tests that show C's independent effect?",
+    options: [
+      "A && B must be FALSE in both tests (otherwise the OR is already TRUE and masks C)",
+      "A and B must both be TRUE",
+      "A must be TRUE and B FALSE, in that order only",
+      "Nothing; C always affects the outcome"
+    ],
+    answer: 0,
+    explanation: "If A && B is TRUE, the outcome is TRUE whatever C is. Any of FF, FT or TF for A, B works: FFF/FFT, FTF/FTT or TFF/TFT."
+  },
+  {
+    id: "v14", module: "mcdc", level: "expert",
+    q: "Code: `if (x > 10) { y = 1; }` with no else branch. A single test with x = 20 is run. What coverage does it give?",
+    options: [
+      "100 % statement coverage, but not decision coverage (the FALSE outcome wasn't exercised)",
+      "100 % statement and 100 % decision coverage",
+      "50 % statement coverage",
+      "Full MC/DC, because there's only one condition"
+    ],
+    answer: 0,
+    explanation: "Every statement executes, but the decision only took the TRUE outcome. Decision coverage (Levels A and B) also needs a test with x <= 10, even though it executes no extra statement."
+  },
+  {
+    id: "v15", module: "mcdc", level: "expert",
+    q: "Which 4-test set achieves unique-cause MC/DC for `if (A || (B && C))`? (Tests are written as A B C.)",
+    options: ["FTT, FFT, FTF, TTF", "TTT, FFF, FTT, TFF", "FTT, FFT, FTF, FFF", "TTT, TFF, FTT, FTF"],
+    answer: 0,
+    explanation: "B: FTT/FFT (A=F, C=T). C: FTT/FTF (A=F, B=T). A: FTF/TTF (B && C = F). The other sets lack a pair: the second for B and C, the third for A (A is never TRUE), and the fourth for A and B."
+  },
+  {
+    id: "v16", module: "mcdc", level: "expert",
+    q: "For `if ((x > 10) && (x > 5))`, no test can show an independence pair for `x > 5`. What does this most likely indicate?",
+    options: [
+      "A redundant condition: x > 10 already implies x > 5, so this is a design or code issue to fix",
+      "The coverage tool is faulty",
+      "More tests with larger x values are needed",
+      "The condition must be masked using masking MC/DC"
+    ],
+    answer: 0,
+    explanation: "Showing x > 5 independently needs x > 10 TRUE and x > 5 FALSE at the same time, which is impossible. Unachievable MC/DC often points to redundant or wrong logic. Review the requirement and the code rather than the tests."
   }
 ];

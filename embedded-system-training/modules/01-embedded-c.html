@@ -6,8 +6,13 @@
 <title>Module 1 — Embedded C Basics</title>
 <link rel="stylesheet" href="../site.css">
 </head>
-<body>
-<header class="site-header"><a href="../index.html">Embedded System Training</a></header>
+<body class="module">
+<header class="site-header"><div class="bar">
+<a class="brand" href="../index.html"><span class="logo" aria-hidden="true">◆</span>Embedded System Training</a>
+<nav class="topnav" aria-label="Modules"><a href="../modules/01-embedded-c.html" aria-current="page"><span class="nav-n">1</span>Embedded C</a><a href="../modules/02-mcu-peripherals.html"><span class="nav-n">2</span>MCU</a><a href="../modules/03-comm-protocols.html"><span class="nav-n">3</span>Protocols</a><a href="../modules/04-rtos.html"><span class="nav-n">4</span>RTOS</a><a href="../modules/05-do178c.html"><span class="nav-n">5</span>DO-178C</a><a class="nav-quiz" href="../quiz/index.html">Expert quiz</a></nav>
+</div></header>
+<div class="layout has-toc">
+<nav class="toc" aria-label="On this page"><details open><summary>On this page</summary><ol><li><a href="#1-beginner">Beginner</a><ol><li class="sub"><a href="#1-1-use-fixed-width-types">Use fixed-width types</a></li><li class="sub"><a href="#1-2-bit-manipulation">Bit manipulation</a></li><li class="sub"><a href="#1-3-hexadecimal-and-binary">Hexadecimal and binary</a></li></ol></li><li><a href="#2-intermediate">Intermediate</a><ol><li class="sub"><a href="#2-1-volatile">volatile</a></li><li class="sub"><a href="#2-2-const">const</a></li><li class="sub"><a href="#2-3-static">static</a></li><li class="sub"><a href="#2-4-integer-promotion">Integer promotion</a></li></ol></li><li><a href="#3-advanced">Advanced</a><ol><li class="sub"><a href="#3-1-memory-layout">Memory layout</a></li><li class="sub"><a href="#3-2-avoid-dynamic-allocation-in-real-time-code">Avoid dynamic allocation in real-time code</a></li><li class="sub"><a href="#3-3-implementation-defined-and-undefined-behaviour">Implementation-defined and undefined behaviour</a></li><li class="sub"><a href="#3-4-endianness">Endianness</a></li><li class="sub"><a href="#3-5-function-pointers-and-state-machines">Function pointers and state machines</a></li></ol></li><li><a href="#4-expert-c-for-safety-critical-software">Expert: C for safety-critical software</a><ol><li class="sub"><a href="#4-1-coding-standards-misra-c-and-cert-c">Coding standards: MISRA C and CERT C</a></li><li class="sub"><a href="#4-2-integer-traps-that-pass-code-review">Integer traps that pass code review</a></li><li class="sub"><a href="#4-3-strict-aliasing-alignment-and-type-punning">Strict aliasing, alignment and type punning</a></li><li class="sub"><a href="#4-4-concurrency-volatile-is-not-a-synchronisation-primitive">Concurrency: volatile is not a synchronisation primitive</a></li><li class="sub"><a href="#4-5-bounded-resources-stack-time-and-memory">Bounded resources: stack, time and memory</a></li><li class="sub"><a href="#4-6-fixed-point-arithmetic">Fixed-point arithmetic</a></li><li class="sub"><a href="#4-7-macros-sequence-points-and-evaluation-order">Macros, sequence points and evaluation order</a></li><li class="sub"><a href="#4-8-static-analysis-and-compiler-behaviour">Static analysis and compiler behaviour</a></li><li class="sub"><a href="#4-9-defensive-programming-and-certification">Defensive programming and certification</a></li></ol></li><li><a href="#key-takeaways">Key takeaways</a><ol></ol></li><li><a href="#self-check">Self-check</a><ol></ol></li></ol></details></nav>
 <main class="content">
 <h1>Module 1 — Embedded C Basics</h1>
 <p><a href="../index.html">← Course home</a> · <a href="02-mcu-peripherals.html">Next: MCU &amp; Peripherals →</a> · <a href="../quiz/index.html">Take the quiz</a></p>
@@ -20,8 +25,8 @@
 <li><em>Expert:</em> apply MISRA C, avoid integer, aliasing and concurrency traps, bound stack and time, and write code that survives certification review.</li>
 </ul>
 <hr>
-<h2>1. Beginner</h2>
-<h3>1.1 Use fixed-width types</h3>
+<h2 id="1-beginner" class="lvl lvl-beginner"><span class="badge badge-beginner">Beginner</span> 1. Beginner</h2>
+<h3 id="1-1-use-fixed-width-types">1.1 Use fixed-width types</h3>
 <p>The C standard only gives minimum sizes for <code>char</code>, <code>short</code>, <code>int</code> and <code>long</code>.
 <code>int</code> is 16 bits on some 8/16-bit MCUs and 32 bits on ARM Cortex-M.
 When the size matters (registers, protocols, file formats), include <code>&lt;stdint.h&gt;</code>:</p>
@@ -50,7 +55,7 @@ When the size matters (registers, protocols, file formats), include <code>&lt;st
 </tr>
 </tbody></table>
 <p><code>&lt;stdbool.h&gt;</code> gives you <code>bool</code>, <code>true</code> and <code>false</code>.</p>
-<h3>1.2 Bit manipulation</h3>
+<h3 id="1-2-bit-manipulation">1.2 Bit manipulation</h3>
 <p>Peripheral registers are controlled bit by bit. Learn these four forms by heart:</p>
 <pre><code class="language-c">#define LED_PIN 5U
 
@@ -67,12 +72,12 @@ shifting a 1 into the sign bit is undefined behaviour. <code>1U &lt;&lt; 31</cod
 
 reg = (reg &amp; ~MODE_MASK) | ((mode &lt;&lt; MODE_POS) &amp; MODE_MASK);
 </code></pre>
-<h3>1.3 Hexadecimal and binary</h3>
+<h3 id="1-3-hexadecimal-and-binary">1.3 Hexadecimal and binary</h3>
 <p>Registers are written in hex because each hex digit maps to exactly 4 bits:
 <code>0xA5</code> = <code>1010 0101</code>. Practise converting both ways until it is automatic.</p>
 <hr>
-<h2>2. Intermediate</h2>
-<h3>2.1 <code>volatile</code></h3>
+<h2 id="2-intermediate" class="lvl lvl-intermediate"><span class="badge badge-intermediate">Intermediate</span> 2. Intermediate</h2>
+<h3 id="2-1-volatile">2.1 <code>volatile</code></h3>
 <p><code>volatile</code> tells the compiler that a variable can change outside the normal flow of
 the program, so every read and write in the source must really happen.
 Without it, the optimiser may keep the value in a CPU register or delete a loop that seems to do nothing.</p>
@@ -90,18 +95,17 @@ int main(void) {
     while (!data_ready) { }   /* without volatile this could become an infinite loop */
 }
 </code></pre>
-<blockquote>
-<p><strong><code>volatile</code> does not make an operation atomic.</strong> <code>counter++</code> on a <code>volatile</code>
+<aside class="callout callout-note"><p><strong><code>volatile</code> does not make an operation atomic.</strong> <code>counter++</code> on a <code>volatile</code>
 variable is still read, modify and write. An interrupt can arrive between those steps.
 Protect shared data with a critical section or atomic instructions.</p>
-</blockquote>
-<h3>2.2 <code>const</code></h3>
+</aside>
+<h3 id="2-2-const">2.2 <code>const</code></h3>
 <ul>
 <li><code>const uint8_t table[] = {...};</code> usually ends up in Flash (<code>.rodata</code>), which saves RAM.</li>
 <li>A read-only hardware register: <code>volatile const uint32_t *status_reg;</code>
 The program must not write to it, but its value can still change.</li>
 </ul>
-<h3>2.3 <code>static</code></h3>
+<h3 id="2-3-static">2.3 <code>static</code></h3>
 <table>
 <thead>
 <tr>
@@ -118,7 +122,7 @@ The program must not write to it, but its value can still change.</li>
 <td>Visible only inside that <code>.c</code> file (internal linkage).</td>
 </tr>
 </tbody></table>
-<h3>2.4 Integer promotion</h3>
+<h3 id="2-4-integer-promotion">2.4 Integer promotion</h3>
 <p>Before arithmetic, types smaller than <code>int</code> are promoted to <code>int</code>:</p>
 <pre><code class="language-c">uint8_t a = 200, b = 100;
 uint8_t sum = a + b;    /* a + b is computed as int 300, then truncated to 44 */
@@ -126,8 +130,8 @@ uint8_t sum = a + b;    /* a + b is computed as int 300, then truncated to 44 */
 <p>Comparisons that mix signed and unsigned values are a common source of bugs.
 <code>-1 &lt; 0U</code> is <strong>false</strong>, because <code>-1</code> is converted to a large unsigned value.</p>
 <hr>
-<h2>3. Advanced</h2>
-<h3>3.1 Memory layout</h3>
+<h2 id="3-advanced" class="lvl lvl-advanced"><span class="badge badge-advanced">Advanced</span> 3. Advanced</h2>
+<h3 id="3-1-memory-layout">3.1 Memory layout</h3>
 <table>
 <thead>
 <tr>
@@ -167,13 +171,16 @@ uint8_t sum = a + b;    /* a + b is computed as int 300, then truncated to 44 */
 <td>RAM</td>
 </tr>
 </tbody></table>
+<figure class="diagram"><svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 305" role="img" aria-labelledby="memorylayout-t"><title id="memorylayout-t">Memory layout: Flash sections and RAM sections, with .data copied from Flash at startup</title><defs><marker id="memorylayout-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><text class="txt-h" x="150" y="28" text-anchor="middle">Flash (non-volatile)</text><text class="txt-h" x="570" y="28" text-anchor="middle">RAM</text><rect class="box box-a" x="40" y="42" width="220" height="62" rx="8"/><text class="txt-b" x="150.0" y="70.0" text-anchor="middle">.text</text><text class="txt-s" x="150.0" y="87.0" text-anchor="middle">program code</text><rect class="box box-a" x="40" y="104" width="220" height="52" rx="8"/><text class="txt-b" x="150.0" y="127.0" text-anchor="middle">.rodata</text><text class="txt-s" x="150.0" y="144.0" text-anchor="middle">const data, string literals</text><rect class="box box-c" x="40" y="156" width="220" height="52" rx="8"/><text class="txt-b" x="150.0" y="179.0" text-anchor="middle">.data initial values</text><text class="txt-s" x="150.0" y="196.0" text-anchor="middle">copy source</text><rect class="box box-d" x="460" y="42" width="220" height="52" rx="8"/><text class="txt-b" x="570.0" y="65.0" text-anchor="middle">Stack</text><text class="txt-s" x="570.0" y="82.0" text-anchor="middle">grows down from the top</text><rect class="box dash" x="460" y="94" width="220" height="40" rx="8"/><text class="txt-m" x="570" y="119" text-anchor="middle">free</text><rect class="box" x="460" y="134" width="220" height="40" rx="8"/><text class="txt-b" x="570.0" y="159.0" text-anchor="middle">Heap</text><rect class="box box-b" x="460" y="174" width="220" height="46" rx="8"/><text class="txt-b" x="570.0" y="194.0" text-anchor="middle">.bss</text><text class="txt-s" x="570.0" y="211.0" text-anchor="middle">zeroed by startup code</text><rect class="box box-c" x="460" y="220" width="220" height="52" rx="8"/><text class="txt-b" x="570.0" y="243.0" text-anchor="middle">.data</text><text class="txt-s" x="570.0" y="260.0" text-anchor="middle">initialised globals/statics</text><path class="ln accent" d="M260,182 C360,182 360,246 458,246" fill="none" marker-end="url(#memorylayout-ah)"/><text class="txt-s" x="360" y="205" text-anchor="middle">copied by</text><text class="txt-s" x="360" y="221" text-anchor="middle">startup code</text><text class="txt-s" x="360" y="292" text-anchor="middle">Reset → startup copies .data, zeroes .bss, sets up the stack → main()</text></svg> <figcaption><span class="fig-n">Figure 1.</span> How a C program is laid out in Flash and RAM, and what the startup code does before <code>main()</code>.</figcaption></figure>
+
+
 <p>The startup code copies <code>.data</code>, zeroes <code>.bss</code> and then calls <code>main()</code>.
 Read your toolchain&#39;s linker script and <code>.map</code> file to see where everything ends up.</p>
-<h3>3.2 Avoid dynamic allocation in real-time code</h3>
+<h3 id="3-2-avoid-dynamic-allocation-in-real-time-code">3.2 Avoid dynamic allocation in real-time code</h3>
 <p><code>malloc</code>/<code>free</code> can fragment the heap, and their run time is not easy to bound.
 Many safety-related coding standards (for example MISRA C) restrict or forbid
 dynamic allocation after initialisation. Prefer static buffers or fixed-size memory pools.</p>
-<h3>3.3 Implementation-defined and undefined behaviour</h3>
+<h3 id="3-3-implementation-defined-and-undefined-behaviour">3.3 Implementation-defined and undefined behaviour</h3>
 <table>
 <thead>
 <tr>
@@ -198,7 +205,7 @@ dynamic allocation after initialisation. Prefer static buffers or fixed-size mem
 <td>Undefined</td>
 </tr>
 </tbody></table>
-<h3>3.4 Endianness</h3>
+<h3 id="3-4-endianness">3.4 Endianness</h3>
 <p>In <strong>little-endian</strong> order the least-significant byte is stored at the lowest address.
 Most ARM Cortex-M devices are configured little-endian. Network protocols are often big-endian,
 so convert explicitly with shifts instead of casting pointers:</p>
@@ -207,7 +214,7 @@ so convert explicitly with shifts instead of casting pointers:</p>
            ((uint32_t)p[2] &lt;&lt; 8)  |  (uint32_t)p[3];
 }
 </code></pre>
-<h3>3.5 Function pointers and state machines</h3>
+<h3 id="3-5-function-pointers-and-state-machines">3.5 Function pointers and state machines</h3>
 <pre><code class="language-c">typedef void (*state_fn)(void);
 static void idle(void);
 static void run(void);
@@ -216,10 +223,10 @@ static state_fn state = idle;
 void tick(void) { state(); }   /* each state assigns the next state */
 </code></pre>
 <hr>
-<h2>4. Expert: C for safety-critical software</h2>
+<h2 id="4-expert-c-for-safety-critical-software" class="lvl lvl-expert"><span class="badge badge-expert">Expert</span> 4. Expert: C for safety-critical software</h2>
 <p><em>For engineers with 3+ years of experience. Here the focus moves from &quot;does it work?&quot; to &quot;can we prove it
 works, on this compiler, under every input, and show the evidence to an auditor?&quot;</em></p>
-<h3>4.1 Coding standards: MISRA C and CERT C</h3>
+<h3 id="4-1-coding-standards-misra-c-and-cert-c">4.1 Coding standards: MISRA C and CERT C</h3>
 <p>Most safety-related projects adopt a language subset. <strong>MISRA C</strong> is the most common in avionics, automotive
 and industrial work. <strong>SEI CERT C</strong> focuses on security. Your project&#39;s coding standard (in DO-178C terms, the
 <em>Software Code Standards</em>, see <a href="05-do178c.html">Module 5</a>) normally names one of them, plus project rules.</p>
@@ -248,7 +255,7 @@ and industrial work. <strong>SEI CERT C</strong> focuses on security. Your proje
 <td>A deviation records the rule, the location, the justification and the review or approval. Blanket &quot;turn the rule off&quot; is not a deviation.</td>
 </tr>
 </tbody></table>
-<h3>4.2 Integer traps that pass code review</h3>
+<h3 id="4-2-integer-traps-that-pass-code-review">4.2 Integer traps that pass code review</h3>
 <p>These look correct and compile without warnings at default settings:</p>
 <pre><code class="language-c">uint16_t a = 0xFFFFU, b = 1U;
 if ((a + b) == 0U) { ... }      /* 32-bit int: a+b is int 65536, so FALSE.
@@ -264,7 +271,7 @@ int32_t limit_check(int32_t a) {
 }
 </code></pre>
 <p>Write overflow checks <em>before</em> the operation: <code>if (a &gt; INT32_MAX - 100) { ... }</code>.</p>
-<h3>4.3 Strict aliasing, alignment and type punning</h3>
+<h3 id="4-3-strict-aliasing-alignment-and-type-punning">4.3 Strict aliasing, alignment and type punning</h3>
 <p>Accessing an object through a pointer to an incompatible type is <strong>undefined behaviour</strong> (the &quot;effective type&quot;
 rules). Optimising compilers rely on this:</p>
 <pre><code class="language-c">float f = 1.0f;
@@ -274,7 +281,7 @@ uint32_t good;  memcpy(&amp;good, &amp;f, sizeof good);   /* well defined; compi
 <p>Casting a <code>uint8_t</code> receive buffer to a <code>struct</code> pointer has three problems at once: aliasing, alignment
 (unaligned word access can fault on some cores) and padding or endianness. Parse messages field by field with
 shifts (see <a href="03-comm-protocols.html">Module 3</a>).</p>
-<h3>4.4 Concurrency: <code>volatile</code> is not a synchronisation primitive</h3>
+<h3 id="4-4-concurrency-volatile-is-not-a-synchronisation-primitive">4.4 Concurrency: <code>volatile</code> is not a synchronisation primitive</h3>
 <p><code>volatile</code> stops the compiler from removing or reordering <em>volatile</em> accesses relative to each other. It does
 <strong>not</strong>:</p>
 <ul>
@@ -285,7 +292,7 @@ shifts (see <a href="03-comm-protocols.html">Module 3</a>).</p>
 <p>For data shared between cores or threads, use C11 <code>&lt;stdatomic.h&gt;</code> (<code>atomic_store_explicit(..., memory_order_release)</code>
 paired with an acquire load), RTOS primitives, or explicit barriers (on Arm, <code>__DMB()</code> from CMSIS), as your
 platform documentation requires.</p>
-<h3>4.5 Bounded resources: stack, time and memory</h3>
+<h3 id="4-5-bounded-resources-stack-time-and-memory">4.5 Bounded resources: stack, time and memory</h3>
 <p>Certification-oriented projects must <em>show</em> that resources are bounded:</p>
 <ul>
 <li><strong>No recursion.</strong> Otherwise the maximum stack depth can&#39;t be bounded statically.</li>
@@ -295,7 +302,7 @@ plus the interrupt nesting depth. Function pointers and other indirect calls bre
 unless you annotate them.</li>
 <li><strong>Worst-case execution time (WCET)</strong> for time-critical code. See <a href="04-rtos.html">Module 4</a>.</li>
 </ul>
-<h3>4.6 Fixed-point arithmetic</h3>
+<h3 id="4-6-fixed-point-arithmetic">4.6 Fixed-point arithmetic</h3>
 <p>Many processors used in control software lack an FPU, or projects avoid floating point for determinism.
 In <strong>Q15</strong> format a 16-bit signed value represents −1 … +0.99997:</p>
 <pre><code class="language-c">int16_t q15_mul(int16_t a, int16_t b) {
@@ -306,14 +313,14 @@ In <strong>Q15</strong> format a 16-bit signed value represents −1 … +0.9999
 </code></pre>
 <p>Right shift of a negative value is implementation-defined. Document what your compiler does, or use a defined
 helper. Your requirements should state the range, resolution and rounding of every fixed-point quantity.</p>
-<h3>4.7 Macros, sequence points and evaluation order</h3>
+<h3 id="4-7-macros-sequence-points-and-evaluation-order">4.7 Macros, sequence points and evaluation order</h3>
 <pre><code class="language-c">#define MAX(a, b) ((a) &gt; (b) ? (a) : (b))
 m = MAX(i++, j);     /* i may be incremented twice. Use a static inline function instead. */
 
 i = i++ + 1;         /* undefined behaviour: i modified twice without sequencing */
 f(g(), h());         /* order of evaluating g() and h() is unspecified */
 </code></pre>
-<h3>4.8 Static analysis and compiler behaviour</h3>
+<h3 id="4-8-static-analysis-and-compiler-behaviour">4.8 Static analysis and compiler behaviour</h3>
 <ul>
 <li><strong>Pattern checkers</strong> (MISRA checkers, linters) find rule violations quickly but can miss real defects.</li>
 <li><strong>Sound analysers</strong> based on abstract interpretation aim to prove the absence of run-time errors such as
@@ -323,20 +330,20 @@ overflow, division by zero and out-of-bounds access, at the cost of false alarms
 DO-178C Level A also needs extra verification when the compiler generates object code that isn&#39;t directly
 traceable to source code (see <a href="05-do178c.html">Module 5</a>).</li>
 </ul>
-<h3>4.9 Defensive programming and certification</h3>
+<h3 id="4-9-defensive-programming-and-certification">4.9 Defensive programming and certification</h3>
 <p>Defensive checks, such as range checks on inputs or <code>default:</code> branches on enums that &quot;can&#39;t happen&quot;, are good
 engineering. In DO-178C projects they must be <strong>traceable to requirements</strong>, for example robustness requirements,
 and their coverage must be explained. Unreachable defensive code that isn&#39;t covered can show up as a coverage gap
 that needs analysis. Agree the approach in your plans and standards early.</p>
 <hr>
-<h2>Key takeaways</h2>
+<h2 id="key-takeaways">Key takeaways</h2>
 <ul>
 <li>Use <code>&lt;stdint.h&gt;</code> types and <code>U</code> suffixes for masks.</li>
 <li><code>volatile</code> means &quot;always really access this&quot;. It does <strong>not</strong> mean atomic.</li>
 <li>Know which sections live in Flash and which in RAM.</li>
 <li>Avoid undefined behaviour and heap use in time-critical code.</li>
 </ul>
-<h2>Self-check</h2>
+<h2 id="self-check">Self-check</h2>
 <ol>
 <li>Write one expression that clears bits 8–11 of <code>reg</code> and sets them to <code>0x5</code>.</li>
 <li>Why might <code>while (!flag);</code> hang forever with optimisation on?</li>
@@ -344,7 +351,10 @@ that needs analysis. Agree the approach in your plans and standards early.</p>
 </ol>
 <p><a href="../quiz/index.html?module=c">Take the Module 1 quiz →</a></p>
 
+<nav class="pager" aria-label="Module navigation"><span></span><a class="pager-next" href="02-mcu-peripherals.html"><small>Next →</small>Module 2: MCU &amp; Peripherals</a></nav>
 </main>
+</div>
+<script>try{if(window.matchMedia("(max-width: 1060px)").matches){var d=document.querySelector(".toc details");if(d)d.removeAttribute("open");}}catch(e){}</script>
 <footer class="site-footer">Embedded System Training · Copyright &copy; 2026 Gopu Sugumar · Licensed under <a href="../LICENSE">GPL-3.0-or-later</a></footer>
 </body>
 </html>

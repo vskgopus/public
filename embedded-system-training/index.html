@@ -6,75 +6,70 @@
 <title>Embedded System Training</title>
 <link rel="stylesheet" href="site.css">
 </head>
-<body>
-<header class="site-header"><a href="index.html">Embedded System Training</a></header>
+<body class="home">
+<header class="site-header"><div class="bar">
+<a class="brand" href="index.html"><span class="logo" aria-hidden="true">◆</span>Embedded System Training</a>
+<nav class="topnav" aria-label="Modules"><a href="modules/01-embedded-c.html"><span class="nav-n">1</span>Embedded C</a><a href="modules/02-mcu-peripherals.html"><span class="nav-n">2</span>MCU</a><a href="modules/03-comm-protocols.html"><span class="nav-n">3</span>Protocols</a><a href="modules/04-rtos.html"><span class="nav-n">4</span>RTOS</a><a href="modules/05-do178c.html"><span class="nav-n">5</span>DO-178C</a><a class="nav-quiz" href="quiz/index.html">Expert quiz</a></nav>
+</div></header>
+<div class="layout">
+
 <main class="content">
+<section class="hero">
 <h1>Embedded System Training</h1>
-<p>A course for <strong>embedded software engineers</strong>, from a refresher of the fundamentals up to <strong>expert</strong> topics for
-engineers with <strong>more than 3 years of experience</strong>, including <strong>DO-178C</strong> airborne software certification.</p>
-<p>Each of modules 1–4 has <strong>Beginner</strong>, <strong>Intermediate</strong> and <strong>Advanced</strong> sections as a refresher, followed by an
-<strong>Expert</strong> section on safety-critical and certification-oriented practice. Module 5 covers DO-178C from overview
-to audit-level detail.</p>
+<p>A course for embedded software engineers: a fundamentals refresher, then expert topics for engineers with 3+ years of experience, including DO-178C airborne software certification and MC/DC.</p>
+<div class="pills"><span>5 modules</span><span>12 diagrams</span><span>4 levels: Beginner → Expert</span><span>76 expert quiz questions</span><span>CSV and PDF result report</span></div>
+<a class="cta" href="modules/01-embedded-c.html">Start with Module 1 →</a>
+</section>
+
+<h2 id="modules">Modules</h2>
+<div class="cards">
+<a class="card" href="modules/01-embedded-c.html"><span class="num">1</span><h3 id="embedded-c">Embedded C</h3><p>Fixed-width types, bit manipulation, memory layout. Expert: MISRA C, integer and aliasing traps, <code>volatile</code> vs atomics, bounded stack and WCET, fixed point.</p></a>
+<a class="card" href="modules/02-mcu-peripherals.html"><span class="num">2</span><h3 id="mcu-peripherals">MCU &amp; Peripherals</h3><p>GPIO, interrupts, timers, PWM, ADC, DMA. Expert: cache/DMA coherency, memory barriers, register races, MPU, errata, built-in test.</p></a>
+<a class="card" href="modules/03-comm-protocols.html"><span class="num">3</span><h3 id="communication-protocols">Communication Protocols</h3><p>UART, SPI, I2C, CAN with frame diagrams. Expert: message integrity, CAN timing and failure modes, ARINC 429, MIL-STD-1553B, AFDX.</p></a>
+<a class="card" href="modules/04-rtos.html"><span class="num">4</span><h3 id="rtos">RTOS</h3><p>Tasks, scheduling, queues, mutexes, priority inversion. Expert: response-time analysis, priority ceiling, ARINC 653 partitioning, multicore.</p></a>
+<a class="card" href="modules/05-do178c.html"><span class="num">5</span><h3 id="do-178c-mc-dc">DO-178C &amp; MC/DC</h3><p>Software levels, plans, requirements-based testing, structural coverage, MC/DC in depth with worked truth tables, tool qualification (DO-330).</p></a>
+<a class="card quiz" href="quiz/index.html"><span class="num">?</span><h3 id="expert-quiz">Expert quiz</h3><p>76 scenario questions for engineers with 3+ years of experience, including a dedicated Coverage &amp; MC/DC set. Download your result as CSV or PDF.</p></a>
+</div>
+
+<h2 id="how-the-course-works">How the course works</h2>
 <table>
 <thead>
 <tr>
-<th>#</th>
-<th>Module</th>
-<th>Expert topics</th>
+<th>Level</th>
+<th>What it gives you</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>1</td>
-<td><a href="modules/01-embedded-c.html">Embedded C</a></td>
-<td>MISRA C and the essential type model, integer and aliasing traps, <code>volatile</code> vs atomics, bounded stack and WCET, fixed point, static analysis</td>
+<td><span class="badge badge-beginner">Beginner</span></td>
+<td>The core concepts, with diagrams</td>
 </tr>
 <tr>
-<td>2</td>
-<td><a href="modules/02-mcu-peripherals.html">MCU &amp; Peripherals</a></td>
-<td>Cache/DMA coherency, memory barriers, register races, MPU, errata, built-in test, ECC scrubbing</td>
+<td><span class="badge badge-intermediate">Intermediate</span></td>
+<td>Typical design and debugging practice</td>
 </tr>
 <tr>
-<td>3</td>
-<td><a href="modules/03-comm-protocols.html">Communication Protocols</a></td>
-<td>End-to-end message integrity, safe parsing, CAN error confinement and timing, ARINC 429, MIL-STD-1553B, AFDX</td>
+<td><span class="badge badge-advanced">Advanced</span></td>
+<td>Detail you need on real projects</td>
 </tr>
 <tr>
-<td>4</td>
-<td><a href="modules/04-rtos.html">RTOS</a></td>
-<td>Response-time analysis, priority ceiling, ARINC 653 partitioning, multicore interference, certified RTOS use</td>
-</tr>
-<tr>
-<td>5</td>
-<td><a href="modules/05-do178c.html">DO-178C</a></td>
-<td>Software levels, plans and standards, requirements-based testing, MC/DC, coverage gaps, tool qualification (DO-330), supplements</td>
+<td><span class="badge badge-expert">Expert</span></td>
+<td>Safety-critical and certification practice for engineers with 3+ years of experience</td>
 </tr>
 </tbody></table>
-<h2>Expert quiz</h2>
-<p><strong><a href="quiz/index.html">▶ Start the expert MCQ quiz</a></strong></p>
-<ul>
-<li><strong>60 scenario questions</strong> written for engineers with 3+ years of experience: 12 per module, including DO-178C.
-Many involve reading code, debugging a symptom or making a certification decision.</li>
-<li>Choose one module or all modules, and 10, 20, 30 or all questions. Questions and options are shuffled on every attempt.</li>
-<li>At the end you see your score, pass/fail status (pass mark 70 %), a per-module breakdown and an explanation
-for every question.</li>
-<li>Download your result as a <strong>CSV</strong> file or <strong>print / save it as a PDF</strong> report.</li>
-</ul>
-<blockquote>
-<p>Note: the result report is generated in your browser and is not stored on any server.
-It is a self-assessment record, not a tamper-proof certificate.</p>
-</blockquote>
-<blockquote>
-<p><strong>DO-178C disclaimer:</strong> this course summarises DO-178C for training only. It doesn&#39;t replace the RTCA/EUROCAE
-documents or your certification authority&#39;s guidance.</p>
-</blockquote>
-<h2>Suggested study path</h2>
-<ol>
-<li>Skim the Beginner to Advanced sections of each module as a refresher, and read the <strong>Expert</strong> section closely.</li>
-<li>Read Module 5 (DO-178C), then go back to the &quot;certification&quot; notes in modules 1–4.</li>
-<li>Take each module&#39;s quiz, then the combined 60-question quiz.</li>
-</ol>
+<p><strong>Suggested path:</strong> skim the Beginner to Advanced sections as a refresher, read each <strong>Expert</strong> section closely,
+then read Module 5 and go back to the certification notes in modules 1–4. Finish with the
+<a href="quiz/index.html">expert quiz</a>: take one module at a time, then all modules.</p>
+<aside class="callout callout-note"><p><strong>Note:</strong> the quiz result is generated in your browser and is not stored on any server. It is a
+self-assessment record, not a tamper-proof certificate.</p>
+</aside>
+<aside class="callout callout-warn"><p><strong>Warning:</strong> Module 5 summarises DO-178C for training only. It doesn&#39;t replace the RTCA/EUROCAE documents or
+your certification authority&#39;s guidance.</p>
+</aside>
+
 
 </main>
+</div>
+<script>try{if(window.matchMedia("(max-width: 1060px)").matches){var d=document.querySelector(".toc details");if(d)d.removeAttribute("open");}}catch(e){}</script>
 <footer class="site-footer">Embedded System Training · Copyright &copy; 2026 Gopu Sugumar · Licensed under <a href="LICENSE">GPL-3.0-or-later</a></footer>
 </body>
 </html>

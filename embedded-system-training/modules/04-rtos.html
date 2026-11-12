@@ -6,8 +6,13 @@
 <title>Module 4 — RTOS Fundamentals</title>
 <link rel="stylesheet" href="../site.css">
 </head>
-<body>
-<header class="site-header"><a href="../index.html">Embedded System Training</a></header>
+<body class="module">
+<header class="site-header"><div class="bar">
+<a class="brand" href="../index.html"><span class="logo" aria-hidden="true">◆</span>Embedded System Training</a>
+<nav class="topnav" aria-label="Modules"><a href="../modules/01-embedded-c.html"><span class="nav-n">1</span>Embedded C</a><a href="../modules/02-mcu-peripherals.html"><span class="nav-n">2</span>MCU</a><a href="../modules/03-comm-protocols.html"><span class="nav-n">3</span>Protocols</a><a href="../modules/04-rtos.html" aria-current="page"><span class="nav-n">4</span>RTOS</a><a href="../modules/05-do178c.html"><span class="nav-n">5</span>DO-178C</a><a class="nav-quiz" href="../quiz/index.html">Expert quiz</a></nav>
+</div></header>
+<div class="layout has-toc">
+<nav class="toc" aria-label="On this page"><details open><summary>On this page</summary><ol><li><a href="#1-beginner">Beginner</a><ol><li class="sub"><a href="#1-1-why-an-rtos">Why an RTOS?</a></li><li class="sub"><a href="#1-2-tasks-and-states">Tasks and states</a></li><li class="sub"><a href="#1-3-the-tick">The tick</a></li></ol></li><li><a href="#2-intermediate">Intermediate</a><ol><li class="sub"><a href="#2-1-pre-emptive-priority-scheduling">Pre-emptive priority scheduling</a></li><li class="sub"><a href="#2-2-inter-task-communication">Inter-task communication</a></li><li class="sub"><a href="#2-3-calling-rtos-functions-from-isrs">Calling RTOS functions from ISRs</a></li><li class="sub"><a href="#2-4-periodic-tasks">Periodic tasks</a></li></ol></li><li><a href="#3-advanced">Advanced</a><ol><li class="sub"><a href="#3-1-priority-inversion">Priority inversion</a></li><li class="sub"><a href="#3-2-deadlock">Deadlock</a></li><li class="sub"><a href="#3-3-stack-sizing">Stack sizing</a></li><li class="sub"><a href="#3-4-reentrancy-and-shared-code">Reentrancy and shared code</a></li><li class="sub"><a href="#3-5-schedulability-rate-monotonic-scheduling">Schedulability: rate-monotonic scheduling</a></li></ol></li><li><a href="#4-expert-real-time-analysis-partitioning-and-certified-rtos-use">Expert: real-time analysis, partitioning and certified RTOS use</a><ol><li class="sub"><a href="#4-1-response-time-analysis-fixed-priority-pre-emptive">Response-time analysis (fixed-priority, pre-emptive)</a></li><li class="sub"><a href="#4-2-wcet-in-practice">WCET in practice</a></li><li class="sub"><a href="#4-3-resource-access-protocols">Resource access protocols</a></li><li class="sub"><a href="#4-4-interrupts-and-the-kernel-freertos-on-cortex-m">Interrupts and the kernel (FreeRTOS on Cortex-M)</a></li><li class="sub"><a href="#4-5-deterministic-memory">Deterministic memory</a></li><li class="sub"><a href="#4-6-cyclic-executive-vs-pre-emptive-rtos">Cyclic executive vs pre-emptive RTOS</a></li><li class="sub"><a href="#4-7-partitioning-arinc-653-ima">Partitioning: ARINC 653 (IMA)</a></li><li class="sub"><a href="#4-8-multicore">Multicore</a></li><li class="sub"><a href="#4-9-using-an-rtos-in-a-certified-system">Using an RTOS in a certified system</a></li></ol></li><li><a href="#key-takeaways">Key takeaways</a><ol></ol></li><li><a href="#self-check">Self-check</a><ol></ol></li></ol></details></nav>
 <main class="content">
 <h1>Module 4 — RTOS Fundamentals</h1>
 <p><a href="03-comm-protocols.html">← Module 3</a> · <a href="../index.html">Course home</a> · <a href="05-do178c.html">Next: DO-178C →</a> · <a href="../quiz/index.html?module=rtos">Take the quiz</a></p>
@@ -18,14 +23,13 @@
 <li>Recognise and prevent priority inversion, deadlock and stack overflow.</li>
 <li><em>Expert:</em> run response-time analysis, choose resource protocols, and apply ARINC 653 partitioning and multicore guidance.</li>
 </ul>
-<blockquote>
-<p>The examples use <strong>FreeRTOS</strong> API names. Other RTOSes (Zephyr, ThreadX, RTX, embOS…)
+<aside class="callout callout-note"><p>The examples use <strong>FreeRTOS</strong> API names. Other RTOSes (Zephyr, ThreadX, RTX, embOS…)
 have the same concepts with different names. Check your RTOS documentation for exact
 signatures, because APIs change between versions.</p>
-</blockquote>
+</aside>
 <hr>
-<h2>1. Beginner</h2>
-<h3>1.1 Why an RTOS?</h3>
+<h2 id="1-beginner" class="lvl lvl-beginner"><span class="badge badge-beginner">Beginner</span> 1. Beginner</h2>
+<h3 id="1-1-why-an-rtos">1.1 Why an RTOS?</h3>
 <p>A &quot;super-loop&quot; (<code>while(1) { a(); b(); c(); }</code>) is fine for simple systems. As timing requirements
 grow, an RTOS lets you split the work into <strong>tasks</strong> with priorities, so urgent work is not held up by slow work.</p>
 <p><strong>Real-time</strong> means <em>predictable</em>, not <em>fast</em>:</p>
@@ -33,7 +37,7 @@ grow, an RTOS lets you split the work into <strong>tasks</strong> with prioritie
 <li><strong>Hard real-time</strong>: missing a deadline is a system failure (airbag, motor control).</li>
 <li><strong>Soft real-time</strong>: an occasional miss lowers quality (audio glitch, UI lag).</li>
 </ul>
-<h3>1.2 Tasks and states</h3>
+<h3 id="1-2-tasks-and-states">1.2 Tasks and states</h3>
 <p>Each task has its own <strong>stack</strong> and a <strong>priority</strong>. In FreeRTOS a task is in one of these states:</p>
 <table>
 <thead>
@@ -59,6 +63,9 @@ grow, an RTOS lets you split the work into <strong>tasks</strong> with prioritie
 <td>Removed from scheduling until explicitly resumed</td>
 </tr>
 </tbody></table>
+<figure class="diagram"><svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" role="img" aria-labelledby="taskstates-t"><title id="taskstates-t">RTOS task state diagram: Ready, Running, Blocked, Suspended</title><defs><marker id="taskstates-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="box box-a" x="80" y="40" width="150" height="54" rx="8"/><text class="txt-b" x="155.0" y="72.0" text-anchor="middle">Ready</text><rect class="box box-b" x="490" y="40" width="150" height="54" rx="8"/><text class="txt-b" x="565.0" y="72.0" text-anchor="middle">Running</text><rect class="box box-c" x="285" y="206" width="150" height="54" rx="8"/><text class="txt-b" x="360.0" y="238.0" text-anchor="middle">Blocked</text><rect class="box" x="520" y="206" width="150" height="54" rx="8"/><text class="txt-b" x="595.0" y="238.0" text-anchor="middle">Suspended</text><line class="ln" x1="230" y1="58" x2="488" y2="58" marker-end="url(#taskstates-ah)"/><text class="txt-s" x="360" y="48" text-anchor="middle">scheduled: highest-priority Ready task</text><line class="ln" x1="490" y1="80" x2="232" y2="80" marker-end="url(#taskstates-ah)"/><text class="txt-s" x="360" y="98" text-anchor="middle">pre-empted / time slice / yield</text><line class="ln" x1="530" y1="94" x2="402" y2="205" marker-end="url(#taskstates-ah)"/><text class="txt-s" x="520" y="158" text-anchor="start">waits for time,</text><text class="txt-s" x="520" y="173" text-anchor="start">queue, semaphore</text><line class="ln" x1="318" y1="206" x2="172" y2="96" marker-end="url(#taskstates-ah)"/><text class="txt-s" x="212" y="158" text-anchor="end">event or</text><text class="txt-s" x="212" y="173" text-anchor="end">timeout</text><line class="ln dash" x1="590" y1="94" x2="594" y2="204" marker-end="url(#taskstates-ah)"/><text class="txt-s" x="604" y="140" text-anchor="start">suspend</text><path class="ln dash" fill="none" d="M540,262 C430,318 140,314 130,96" marker-end="url(#taskstates-ah)"/><text class="txt-s" x="250" y="300" text-anchor="middle">resume</text></svg> <figcaption><span class="fig-n">Figure 1.</span> Task states and the events that move a task between them (FreeRTOS names).</figcaption></figure>
+
+
 <pre><code class="language-c">void led_task(void *arg) {
     for (;;) {
         toggle_led();
@@ -69,18 +76,18 @@ grow, an RTOS lets you split the work into <strong>tasks</strong> with prioritie
 xTaskCreate(led_task, &quot;LED&quot;, 128, NULL, 1, NULL);
 vTaskStartScheduler();
 </code></pre>
-<h3>1.3 The tick</h3>
+<h3 id="1-3-the-tick">1.3 The tick</h3>
 <p>A periodic timer interrupt (the <strong>tick</strong>, e.g. <code>configTICK_RATE_HZ = 1000</code> → 1 ms) drives
 time-outs and delays. When no task is ready, the <strong>idle task</strong> runs.</p>
 <hr>
-<h2>2. Intermediate</h2>
-<h3>2.1 Pre-emptive priority scheduling</h3>
+<h2 id="2-intermediate" class="lvl lvl-intermediate"><span class="badge badge-intermediate">Intermediate</span> 2. Intermediate</h2>
+<h3 id="2-1-pre-emptive-priority-scheduling">2.1 Pre-emptive priority scheduling</h3>
 <p>The scheduler always runs the <strong>highest-priority Ready task</strong>. If a higher-priority task becomes
 ready (for example an ISR gives it a semaphore), it <strong>pre-empts</strong> the running task immediately.
 Tasks of equal priority can share the CPU by <strong>time slicing</strong>.</p>
 <p>During a <strong>context switch</strong> the RTOS saves the CPU registers of the old task on its stack and restores
 those of the new task.</p>
-<h3>2.2 Inter-task communication</h3>
+<h3 id="2-2-inter-task-communication">2.2 Inter-task communication</h3>
 <table>
 <thead>
 <tr>
@@ -115,24 +122,27 @@ those of the new task.</p>
 <td></td>
 </tr>
 </tbody></table>
-<h3>2.3 Calling RTOS functions from ISRs</h3>
+<h3 id="2-3-calling-rtos-functions-from-isrs">2.3 Calling RTOS functions from ISRs</h3>
 <p>In an ISR use only the <strong>interrupt-safe</strong> variants, e.g. <code>xQueueSendFromISR()</code>,
 <code>xSemaphoreGiveFromISR()</code>. Request a context switch at the end of the ISR if a higher-priority
 task was woken (<code>portYIELD_FROM_ISR()</code>). Never call blocking functions from an ISR.</p>
-<h3>2.4 Periodic tasks</h3>
+<h3 id="2-4-periodic-tasks">2.4 Periodic tasks</h3>
 <p><code>vTaskDelay(n)</code> delays <em>relative to now</em>, so the period drifts by however long the work took.
 For a fixed period use <code>vTaskDelayUntil()</code> (newer FreeRTOS versions also provide
 <code>xTaskDelayUntil()</code>), which wakes at absolute multiples of the period.</p>
 <hr>
-<h2>3. Advanced</h2>
-<h3>3.1 Priority inversion</h3>
+<h2 id="3-advanced" class="lvl lvl-advanced"><span class="badge badge-advanced">Advanced</span> 3. Advanced</h2>
+<h3 id="3-1-priority-inversion">3.1 Priority inversion</h3>
 <p>A <strong>high</strong>-priority task waits for a mutex held by a <strong>low</strong>-priority task, while a
 <strong>medium</strong>-priority task pre-empts the low one. The high task is now effectively blocked
 by the medium task.</p>
+<figure class="diagram"><svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 280" role="img" aria-labelledby="priorityinversion-t"><title id="priorityinversion-t">Timeline of unbounded priority inversion between high, medium and low priority tasks</title><defs><marker id="priorityinversion-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><text class="txt-h" x="360" y="20" text-anchor="middle">Unbounded priority inversion (no priority inheritance)</text><text class="txt-s b" x="100" y="60" text-anchor="end">High (H)</text><text class="txt-s b" x="100" y="110" text-anchor="end">Medium (M)</text><text class="txt-s b" x="100" y="160" text-anchor="end">Low (L)</text><rect class="box box-b" x="110" y="140" width="116" height="30" rx="3"/><text class="txt-s" x="168.0" y="160" text-anchor="middle">runs</text><rect class="box box-b" x="284" y="140" width="58" height="30" rx="3"/><text class="txt-s" x="313.0" y="160" text-anchor="middle">runs</text><rect class="box box-b" x="516" y="140" width="58" height="30" rx="3"/><text class="txt-s" x="545.0" y="160" text-anchor="middle">runs</text><rect class="box box-c" x="168" y="174" width="406" height="8" rx="2"/><text class="txt-s" x="168" y="196" text-anchor="start">L holds the mutex (t1 → t8)</text><rect class="box box-b" x="226" y="40" width="58" height="30" rx="3"/><text class="txt-s" x="255.0" y="60" text-anchor="middle">runs</text><rect class="box box-d" x="284" y="40" width="290" height="30" rx="3"/><text class="txt-s" x="429.0" y="60" text-anchor="middle">blocked on mutex</text><rect class="box box-b" x="574" y="40" width="58" height="30" rx="3"/><text class="txt-s" x="603.0" y="60" text-anchor="middle">runs</text><rect class="box box-c" x="342" y="90" width="174" height="30" rx="3"/><text class="txt-s" x="429.0" y="110" text-anchor="middle">M runs</text><text class="txt-s txt-m" x="524" y="110" text-anchor="start">(doesn't use the mutex)</text><path class="ln bad" fill="none" d="M284,34 v-8 H574 v8"/><line class="ln" x1="110" y1="214" x2="642" y2="214" marker-end="url(#priorityinversion-ah)"/><text class="txt-s txt-m" x="110" y="230" text-anchor="middle">t0</text><text class="txt-s txt-m" x="168" y="230" text-anchor="middle">t1</text><text class="txt-s txt-m" x="226" y="230" text-anchor="middle">t2</text><text class="txt-s txt-m" x="284" y="230" text-anchor="middle">t3</text><text class="txt-s txt-m" x="342" y="230" text-anchor="middle">t4</text><text class="txt-s txt-m" x="400" y="230" text-anchor="middle">t5</text><text class="txt-s txt-m" x="458" y="230" text-anchor="middle">t6</text><text class="txt-s txt-m" x="516" y="230" text-anchor="middle">t7</text><text class="txt-s txt-m" x="574" y="230" text-anchor="middle">t8</text><text class="txt-s txt-m" x="632" y="230" text-anchor="middle">t9</text><text class="txt-s" x="360" y="252" text-anchor="middle">H effectively waits for M. With priority inheritance, L would run at H's</text><text class="txt-s" x="360" y="268" text-anchor="middle">priority from t3, so M couldn't pre-empt it and H would wait only for L's critical section.</text></svg> <figcaption><span class="fig-n">Figure 2.</span> The high-priority task is held up by an unrelated medium-priority task for as long as the medium task runs.</figcaption></figure>
+
+
 <p><strong>Fix:</strong> <strong>priority inheritance</strong>. The mutex holder temporarily gets the priority of the
 highest task waiting on it. A widely cited real case is the 1997 Mars Pathfinder lander,
 which suffered repeated resets until priority inheritance was enabled on a mutex.</p>
-<h3>3.2 Deadlock</h3>
+<h3 id="3-2-deadlock">3.2 Deadlock</h3>
 <p>Task A holds lock 1 and waits for lock 2, while task B holds lock 2 and waits for lock 1.
 Prevention:</p>
 <ul>
@@ -140,18 +150,18 @@ Prevention:</p>
 <li>Hold locks for as short a time as possible. Don&#39;t block while holding one.</li>
 <li>Use time-outs on <code>take</code> calls and handle failure.</li>
 </ul>
-<h3>3.3 Stack sizing</h3>
+<h3 id="3-3-stack-sizing">3.3 Stack sizing</h3>
 <p>Each task has its own stack. Overflow corrupts other memory silently.</p>
 <ul>
 <li>Enable <code>configCHECK_FOR_STACK_OVERFLOW</code> and implement the hook during development.</li>
 <li>Measure the remaining stack with <code>uxTaskGetStackHighWaterMark()</code> and keep a margin.</li>
 <li>Large local arrays and deep call chains or <code>printf</code> use a lot of stack.</li>
 </ul>
-<h3>3.4 Reentrancy and shared code</h3>
+<h3 id="3-4-reentrancy-and-shared-code">3.4 Reentrancy and shared code</h3>
 <p>A function is <strong>reentrant</strong> if it can be safely interrupted and called again before the first
 call finishes. That means it uses no unprotected static or global state. <code>strtok()</code> is a classic
 non-reentrant function.</p>
-<h3>3.5 Schedulability: rate-monotonic scheduling</h3>
+<h3 id="3-5-schedulability-rate-monotonic-scheduling">3.5 Schedulability: rate-monotonic scheduling</h3>
 <p>With fixed priorities and periodic independent tasks, giving <strong>shorter-period tasks higher
 priority</strong> (rate-monotonic) is optimal among fixed-priority schemes. A sufficient (not necessary)
 test is:</p>
@@ -159,10 +169,10 @@ test is:</p>
 </code></pre>
 <p>where Cᵢ is the worst-case execution time and Tᵢ is the period.</p>
 <hr>
-<h2>4. Expert: real-time analysis, partitioning and certified RTOS use</h2>
+<h2 id="4-expert-real-time-analysis-partitioning-and-certified-rtos-use" class="lvl lvl-expert"><span class="badge badge-expert">Expert</span> 4. Expert: real-time analysis, partitioning and certified RTOS use</h2>
 <p><em>For engineers with 3+ years of experience: proving deadlines are met, keeping applications of different
 criticality apart, and what changes when an RTOS is part of DO-178C evidence.</em></p>
-<h3>4.1 Response-time analysis (fixed-priority, pre-emptive)</h3>
+<h3 id="4-1-response-time-analysis-fixed-priority-pre-emptive">4.1 Response-time analysis (fixed-priority, pre-emptive)</h3>
 <p>The utilisation test in section 3.5 is only <em>sufficient</em>. <strong>Response-time analysis</strong> gives the exact
 worst-case response time Rᵢ of task <em>i</em> (independent periodic tasks, deadline ≤ period):</p>
 <pre><code>Rᵢ = Cᵢ + Bᵢ + Σ_{j ∈ hp(i)} ⌈ Rᵢ / Tⱼ ⌉ · Cⱼ
@@ -174,7 +184,7 @@ For τ3: R = 3+1+2 = 6 → 3 + ⌈6/4⌉·1 + ⌈6/6⌉·2 = 7 → 3 + 2 + 4 = 9
 R₃ = 10 ≤ 12, so τ3 meets its deadline.</p>
 <p>The analysis is only as good as the <strong>C</strong> values. WCET must be justified (see below), and the ISR load and
 RTOS overheads (tick, context switch) must be included.</p>
-<h3>4.2 WCET in practice</h3>
+<h3 id="4-2-wcet-in-practice">4.2 WCET in practice</h3>
 <ul>
 <li><strong>Measurement alone is not proof.</strong> Tests may never drive the worst path or the worst cache state. Use
 stress scenarios, coverage of the timing-relevant paths and a documented safety margin, or static WCET
@@ -182,7 +192,7 @@ analysis where a tool supports your processor.</li>
 <li>Design for analysability: bounded loops with a known maximum iteration count, no recursion, no unbounded
 waits, and limited use of caches in critical paths.</li>
 </ul>
-<h3>4.3 Resource access protocols</h3>
+<h3 id="4-3-resource-access-protocols">4.3 Resource access protocols</h3>
 <table>
 <thead>
 <tr>
@@ -203,16 +213,16 @@ waits, and limited use of caches in critical paths.</li>
 </tr>
 </tbody></table>
 <p>In FreeRTOS, a <strong>binary semaphore used as a lock has no priority inheritance</strong>. Use a mutex.</p>
-<h3>4.4 Interrupts and the kernel (FreeRTOS on Cortex-M)</h3>
+<h3 id="4-4-interrupts-and-the-kernel-freertos-on-cortex-m">4.4 Interrupts and the kernel (FreeRTOS on Cortex-M)</h3>
 <p>ISRs that call <code>...FromISR()</code> APIs must run at a priority <strong>logically at or below</strong>
 <code>configMAX_SYSCALL_INTERRUPT_PRIORITY</code>, which on Cortex-M means <em>numerically equal or higher</em>. Higher-urgency
 interrupts may pre-empt the kernel&#39;s critical sections, so they must not call the API at all. Getting this wrong
 corrupts kernel data structures intermittently. Enable <code>configASSERT()</code> during development, because the port
 can check this. Exact macro names vary between ports and versions, so check your port&#39;s documentation.</p>
-<h3>4.5 Deterministic memory</h3>
+<h3 id="4-5-deterministic-memory">4.5 Deterministic memory</h3>
 <p>Allocate statically: <code>xTaskCreateStatic()</code>, <code>xQueueCreateStatic()</code> and so on, with
 <code>configSUPPORT_DYNAMIC_ALLOCATION</code> set to 0 so that heap use fails at build time instead of in flight.</p>
-<h3>4.6 Cyclic executive vs pre-emptive RTOS</h3>
+<h3 id="4-6-cyclic-executive-vs-pre-emptive-rtos">4.6 Cyclic executive vs pre-emptive RTOS</h3>
 <table>
 <thead>
 <tr>
@@ -242,7 +252,7 @@ can check this. Exact macro names vary between ports and versions, so check your
 <td>Mixed workloads</td>
 </tr>
 </tbody></table>
-<h3>4.7 Partitioning: ARINC 653 (IMA)</h3>
+<h3 id="4-7-partitioning-arinc-653-ima">4.7 Partitioning: ARINC 653 (IMA)</h3>
 <p>Integrated Modular Avionics (IMA) runs applications of different software levels on one processor. <strong>ARINC 653</strong>
 defines the partitioning model and the APEX API:</p>
 <ul>
@@ -253,16 +263,19 @@ can&#39;t take time from the others.</li>
 response (restart a process, restart a partition, shut down, log).</li>
 <li>Communication between partitions goes through <strong>ports</strong> (sampling and queuing).</li>
 </ul>
+<figure class="diagram"><svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 158" role="img" aria-labelledby="arinc653schedule-t"><title id="arinc653schedule-t">ARINC 653 major frames divided into partition windows</title><defs><marker id="arinc653schedule-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><text class="txt-h" x="360" y="20" text-anchor="middle">ARINC 653 time partitioning (example schedule)</text><path class="ln" fill="none" d="M40,50 v-8 H370 v8"/><text class="txt-s b" x="205" y="36" text-anchor="middle">major frame n</text><rect class="box box-a" x="40" y="56" width="110" height="46" rx="3"/><text class="txt-b" x="95.0" y="84" text-anchor="middle">P1</text><rect class="box box-b" x="150" y="56" width="80" height="46" rx="3"/><text class="txt-b" x="190.0" y="84" text-anchor="middle">P2</text><rect class="box box-c" x="230" y="56" width="100" height="46" rx="3"/><text class="txt-b" x="280.0" y="84" text-anchor="middle">P3</text><rect class="box dash" x="330" y="56" width="40" height="46" rx="3"/><text class="txt-m" x="350.0" y="84" text-anchor="middle">spare</text><path class="ln" fill="none" d="M370,50 v-8 H700 v8"/><text class="txt-s b" x="535" y="36" text-anchor="middle">major frame n+1</text><rect class="box box-a" x="370" y="56" width="110" height="46" rx="3"/><text class="txt-b" x="425.0" y="84" text-anchor="middle">P1</text><rect class="box box-b" x="480" y="56" width="80" height="46" rx="3"/><text class="txt-b" x="520.0" y="84" text-anchor="middle">P2</text><rect class="box box-c" x="560" y="56" width="100" height="46" rx="3"/><text class="txt-b" x="610.0" y="84" text-anchor="middle">P3</text><rect class="box dash" x="660" y="56" width="40" height="46" rx="3"/><text class="txt-m" x="680.0" y="84" text-anchor="middle">spare</text><text class="txt-s" x="360" y="128" text-anchor="middle">Each partition runs only in its fixed windows (time partitioning) and only in its own memory (space partitioning).</text><text class="txt-s" x="360" y="146" text-anchor="middle">A partition that overruns can't take time from the next window; the health monitor handles the fault.</text></svg> <figcaption><span class="fig-n">Figure 3.</span> Time partitioning: a fixed, repeating schedule of partition windows.</figcaption></figure>
+
+
 <p>Robust partitioning is what allows, for example, a Level C application to share a processor with a Level A
 application without the Level C software being developed to Level A. The partitioning itself must be shown to
 be robust (see <a href="05-do178c.html">Module 5</a>).</p>
-<h3>4.8 Multicore</h3>
+<h3 id="4-8-multicore">4.8 Multicore</h3>
 <p>Cores interfere through shared caches, interconnects and memory controllers, so one core&#39;s WCET depends on
 what the others do. Certification guidance for multicore processors in airborne systems started as the
 position paper <strong>CAST-32A</strong> and has since been followed by <strong>EASA AMC 20-193</strong> and <strong>FAA AC 20-193</strong>. Check
 the current status with your certification authority. Expect to identify interference channels, mitigate them
 (for example by cache or bandwidth partitioning) and verify timing under worst-case interference.</p>
-<h3>4.9 Using an RTOS in a certified system</h3>
+<h3 id="4-9-using-an-rtos-in-a-certified-system">4.9 Using an RTOS in a certified system</h3>
 <ul>
 <li>An RTOS used in airborne software is part of that software. It needs DO-178C life-cycle data at the
 applicable software level, either from the vendor (a &quot;certification package&quot;) or produced by the project.</li>
@@ -272,14 +285,14 @@ configuration items.</li>
 watchdog only when all have reported within their deadlines.</li>
 </ul>
 <hr>
-<h2>Key takeaways</h2>
+<h2 id="key-takeaways">Key takeaways</h2>
 <ul>
 <li>The highest-priority Ready task runs. Blocked tasks consume no CPU.</li>
 <li>Use a queue for data, a semaphore for signals and a mutex for shared resources.</li>
 <li>Use only <code>...FromISR</code> APIs inside interrupts.</li>
 <li>Watch for priority inversion, deadlock and stack overflow.</li>
 </ul>
-<h2>Self-check</h2>
+<h2 id="self-check">Self-check</h2>
 <ol>
 <li>Why should a mutex not be given from an ISR?</li>
 <li>Task periods 10 ms and 50 ms with execution times 2 ms and 10 ms. Is U below the RM bound for n = 2 (≈ 0.828)?</li>
@@ -287,7 +300,10 @@ watchdog only when all have reported within their deadlines.</li>
 </ol>
 <p><a href="../quiz/index.html?module=rtos">Take the Module 4 quiz →</a></p>
 
+<nav class="pager" aria-label="Module navigation"><a class="pager-prev" href="03-comm-protocols.html"><small>← Previous</small>Module 3: Communication Protocols</a><a class="pager-next" href="05-do178c.html"><small>Next →</small>Module 5: DO-178C</a></nav>
 </main>
+</div>
+<script>try{if(window.matchMedia("(max-width: 1060px)").matches){var d=document.querySelector(".toc details");if(d)d.removeAttribute("open");}}catch(e){}</script>
 <footer class="site-footer">Embedded System Training · Copyright &copy; 2026 Gopu Sugumar · Licensed under <a href="../LICENSE">GPL-3.0-or-later</a></footer>
 </body>
 </html>
