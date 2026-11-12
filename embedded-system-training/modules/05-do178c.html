@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 5 — DO-178C: Airborne Software Certification</title>
+<link rel="stylesheet" href="../site.css">
+</head>
+<body>
+<header class="site-header"><a href="../index.html">Embedded System Training</a></header>
+<main class="content">
+<h1>Module 5 — DO-178C: Airborne Software Certification</h1>
+<p><a href="04-rtos.html">← Module 4</a> · <a href="../index.html">Course home</a> · <a href="../quiz/index.html?module=do178c">Take the quiz</a></p>
+<p><strong>Learning goals</strong></p>
+<ul>
+<li>Explain where DO-178C sits in aircraft certification, and how software levels are assigned.</li>
+<li>Name the planning documents, standards and life-cycle data a project produces.</li>
+<li>Apply requirements-based testing, structural coverage (including MC/DC) and traceability correctly.</li>
+<li>Handle the expert topics that cause most audit findings: derived requirements, dead and deactivated code,
+coverage gaps, tool qualification, previously developed software and multicore.</li>
+</ul>
+<blockquote>
+<p><strong>About this module.</strong> DO-178C is a copyrighted RTCA document (published in Europe by EUROCAE as ED-12C).
+This module is a summary for training. It is <strong>not</strong> a substitute for the document itself, for its Annex A
+objective tables, or for the guidance of your certification authority (FAA, EASA or others). Where a number or
+document revision is quoted, check it against the primary source before relying on it in a project.</p>
+</blockquote>
+<hr>
+<h2>1. Beginner — what DO-178C is</h2>
+<h3>1.1 Purpose</h3>
+<p>DO-178C, <em>Software Considerations in Airborne Systems and Equipment Certification</em> (RTCA, 2011), gives
+<strong>objectives</strong> for the software life cycle, the <strong>activities</strong> that satisfy them, and the <strong>evidence</strong> (life-cycle
+data) that shows they were satisfied. Certification authorities recognise it as an acceptable means of compliance
+for airborne software. In the US this is through an FAA Advisory Circular (AC 20-115, currently revision D;
+verify the current revision).</p>
+<p>DO-178C doesn&#39;t prescribe a language, a tool or a development model. It requires that you <strong>plan</strong> how you&#39;ll meet
+the objectives, <strong>do</strong> what you planned, and <strong>prove</strong> it.</p>
+<h3>1.2 Where it fits</h3>
+<pre><code>Aircraft / system level        ARP4754A (now ARP4754B) system development,  ARP4761 safety assessment
+        │  system requirements allocated to software + software level
+        ▼
+Software                       DO-178C  (+ supplements DO-330 tools, DO-331 models,
+                                         DO-332 object-oriented, DO-333 formal methods)
+Hardware (complex electronics) DO-254
+</code></pre>
+<h3>1.3 Software levels</h3>
+<p>The <strong>system safety assessment</strong>, not the software team, assigns the software level from the most severe
+failure condition the software can cause or contribute to:</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Failure condition category</th>
+<th>Structural coverage required</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>A</strong></td>
+<td>Catastrophic</td>
+<td>MC/DC + decision + statement</td>
+</tr>
+<tr>
+<td><strong>B</strong></td>
+<td>Hazardous / Severe-Major</td>
+<td>Decision + statement</td>
+</tr>
+<tr>
+<td><strong>C</strong></td>
+<td>Major</td>
+<td>Statement</td>
+</tr>
+<tr>
+<td><strong>D</strong></td>
+<td>Minor</td>
+<td>None</td>
+</tr>
+<tr>
+<td><strong>E</strong></td>
+<td>No safety effect</td>
+<td>DO-178C objectives don&#39;t apply</td>
+</tr>
+</tbody></table>
+<p>Higher levels have more objectives, and more of them must be satisfied <strong>with independence</strong> (verified by someone
+other than the author). Commonly cited objective counts for DO-178C are 71 (A), 69 (B), 62 (C) and 26 (D).
+Confirm them against the Annex A tables.</p>
+<hr>
+<h2>2. Intermediate — processes, plans and data</h2>
+<h3>2.1 Life-cycle processes</h3>
+<table>
+<thead>
+<tr>
+<th>Process</th>
+<th>Main content</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Planning</strong></td>
+<td>Defines how every objective will be met: life cycle, standards, tools, environment, transition criteria</td>
+</tr>
+<tr>
+<td><strong>Development</strong></td>
+<td>Requirements → design → coding → integration</td>
+</tr>
+<tr>
+<td><strong>Verification</strong></td>
+<td>Reviews, analyses and tests of every development output</td>
+</tr>
+<tr>
+<td><strong>Configuration management (SCM)</strong></td>
+<td>Identification, baselines, change control, problem reporting, archiving</td>
+</tr>
+<tr>
+<td><strong>Quality assurance (SQA)</strong></td>
+<td>Independent assurance that plans and standards were followed; conformity review</td>
+</tr>
+<tr>
+<td><strong>Certification liaison</strong></td>
+<td>Communication and agreement with the certification authority</td>
+</tr>
+</tbody></table>
+<h3>2.2 The five plans and three standards</h3>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>PSAC</strong>, Plan for Software Aspects of Certification</td>
+<td>The primary agreement with the authority: system overview, software level, life cycle, means of compliance, tools, additional considerations</td>
+</tr>
+<tr>
+<td><strong>SDP</strong>, Software Development Plan</td>
+<td>Development life cycle, standards and environment</td>
+</tr>
+<tr>
+<td><strong>SVP</strong>, Software Verification Plan</td>
+<td>Verification methods, independence, environment, coverage approach</td>
+</tr>
+<tr>
+<td><strong>SCMP</strong>, Software Configuration Management Plan</td>
+<td>Baselines, change control, problem reports, archiving</td>
+</tr>
+<tr>
+<td><strong>SQAP</strong>, Software Quality Assurance Plan</td>
+<td>SQA activities, audits, conformity review</td>
+</tr>
+<tr>
+<td>Software <strong>Requirements</strong>, <strong>Design</strong> and <strong>Code</strong> Standards</td>
+<td>Rules that the outputs must follow, and that reviews check</td>
+</tr>
+</tbody></table>
+<h3>2.3 Development outputs</h3>
+<pre><code>System requirements allocated to software
+   └─► High-level requirements (HLR)          what the software must do
+         └─► Software architecture + low-level requirements (LLR)   how, detailed enough to code from
+               └─► Source code
+                     └─► Executable object code (+ parameter data items)
+</code></pre>
+<ul>
+<li><strong>Derived requirements</strong> are requirements that don&#39;t trace directly to a higher-level requirement, for example
+a design decision such as &quot;the filter runs at 100 Hz&quot;. They must be identified and <strong>provided to the system
+safety assessment process</strong> so their safety impact is evaluated.</li>
+<li><strong>Parameter data items</strong> (new in DO-178C), such as configuration tables, are data that change behaviour without
+changing executable code. They have their own verification objectives.</li>
+</ul>
+<h3>2.4 Other key life-cycle data</h3>
+<p>Software Verification Cases and Procedures (SVCP), Software Verification Results (SVR), Software Configuration
+Index (SCI), Software Life Cycle Environment Configuration Index (SECI), Problem Reports, SCM and SQA Records,
+and finally the <strong>Software Accomplishment Summary (SAS)</strong>, which states how compliance with the PSAC was achieved.</p>
+<h3>2.5 Working with the authority</h3>
+<p>Authorities review progress at defined points. FAA practice calls these <strong>Stages of Involvement</strong> (SOI 1 planning,
+SOI 2 development, SOI 3 verification, SOI 4 final). The details come from authority guidance and orders, not
+from DO-178C itself, so check your authority&#39;s current procedures.</p>
+<hr>
+<h2>3. Advanced — verification</h2>
+<h3>3.1 Reviews and analyses</h3>
+<p>Each development output is reviewed or analysed for compliance with its parent, accuracy and consistency,
+compatibility with the target, verifiability, conformance to standards, traceability, and (for code and
+integration) algorithm correctness. Checklists in the plans make these reviews repeatable.</p>
+<h3>3.2 Requirements-based testing</h3>
+<ul>
+<li>Tests are derived from <strong>requirements</strong>, never from the code.</li>
+<li>Test both <strong>normal range</strong> (equivalence classes, boundary values, time-related functions, state transitions)
+and <strong>robustness</strong> (invalid inputs, out-of-range values, failure modes, abnormal timing).</li>
+<li>Test levels: hardware/software integration testing on the target, software integration testing, and low-level
+testing against LLRs.</li>
+<li>Run tests on the target hardware, or in an environment whose equivalence is justified.</li>
+</ul>
+<h3>3.3 Structural coverage analysis</h3>
+<p>Coverage measures how thoroughly the <strong>requirements-based tests</strong> exercised the code. It is an analysis of
+completeness, not a way of creating tests.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Statement</td>
+<td>Every statement executed at least once</td>
+</tr>
+<tr>
+<td>Decision</td>
+<td>Every decision took both outcomes, and every entry and exit point was invoked</td>
+</tr>
+<tr>
+<td><strong>MC/DC</strong></td>
+<td>Decision coverage, plus every condition took all outcomes and <strong>was shown to independently affect the decision&#39;s outcome</strong></td>
+</tr>
+</tbody></table>
+<p>MC/DC example for <code>if (A &amp;&amp; B &amp;&amp; C)</code>: a minimal set uses N+1 = 4 tests:</p>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>Result</th>
+<th>Shows independence of</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>T</td>
+<td>T</td>
+<td>T</td>
+<td>T</td>
+<td>(baseline)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>F</td>
+<td>T</td>
+<td>T</td>
+<td>F</td>
+<td>A (vs 1)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>T</td>
+<td>F</td>
+<td>T</td>
+<td>F</td>
+<td>B (vs 1)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>T</td>
+<td>T</td>
+<td>F</td>
+<td>F</td>
+<td>C (vs 1)</td>
+</tr>
+</tbody></table>
+<p>Also required at Levels A–C: analysis that the tests exercised the <strong>data coupling and control coupling</strong>
+between components, that is, the interfaces actually used in the integrated software.</p>
+<h3>3.4 Resolving coverage gaps</h3>
+<p>When code isn&#39;t covered, find out <strong>why</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Cause</th>
+<th>Resolution</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Missing or incomplete requirement</td>
+<td>Fix the requirements, then add requirements-based tests</td>
+</tr>
+<tr>
+<td>Inadequate test</td>
+<td>Add or improve requirements-based tests</td>
+</tr>
+<tr>
+<td><strong>Dead code</strong>: exists by mistake and doesn&#39;t trace to requirements</td>
+<td><strong>Remove it</strong>, and assess whether re-verification is needed</td>
+</tr>
+<tr>
+<td><strong>Deactivated code</strong>: intentional, but unused in this configuration</td>
+<td>Show by design and verification that it can&#39;t be activated by accident, and verify it for the configurations where it is used</td>
+</tr>
+<tr>
+<td>Defensive code that can&#39;t be reached</td>
+<td>Justify, with traceability to the requirement or standard that calls for it, as agreed in your plans</td>
+</tr>
+</tbody></table>
+<p><strong>Don&#39;t</strong> write a &quot;test&quot; whose only purpose is to execute uncovered code with no requirement behind it. That hides
+the real problem: either a missing requirement or unwanted code.</p>
+<h3>3.5 Traceability</h3>
+<p>Bidirectional traceability is required: system requirements ↔ HLR ↔ LLR ↔ source code, and requirements ↔ test
+cases ↔ procedures ↔ results. Traceability shows that every requirement is implemented and verified, and that
+there is no unintended functionality.</p>
+<hr>
+<h2>4. Expert — topics that decide audits</h2>
+<h3>4.1 Level A: source-to-object code</h3>
+<p>At Level A, if the compiler or linker generates object code that isn&#39;t directly traceable to source code (for
+example inserted range checks, library calls or complex optimisations), <strong>additional verification</strong> is needed to
+establish the correctness of that generated code. Projects typically restrict compiler options and constructs, and
+analyse the object code for the remaining cases.</p>
+<h3>4.2 Tool qualification (DO-330)</h3>
+<p>A tool needs qualification when it <strong>eliminates, reduces or automates</strong> a DO-178C process and its output is not
+verified. The <strong>Tool Qualification Level (TQL)</strong> depends on the tool&#39;s impact and the software level:</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Meaning</th>
+<th>Level A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>1</strong></td>
+<td>Its output is part of the airborne software, so it could <strong>insert an error</strong> (for example a code generator)</td>
+<td>TQL-1</td>
+<td>TQL-2</td>
+<td>TQL-3</td>
+<td>TQL-4</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td>Automates verification, <strong>and</strong> its output is used to justify eliminating or reducing other verification or development processes</td>
+<td>TQL-4</td>
+<td>TQL-4</td>
+<td>TQL-5</td>
+<td>TQL-5</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td>Automates verification, so it could only <strong>fail to detect</strong> an error</td>
+<td>TQL-5</td>
+<td>TQL-5</td>
+<td>TQL-5</td>
+<td>TQL-5</td>
+</tr>
+</tbody></table>
+<p>TQL-1 is the most rigorous. Compilers are normally <em>not</em> qualified: their output is verified instead, through
+testing of the executable object code (plus the Level A analysis above). Confirm the table against DO-178C
+section 12.2 and DO-330.</p>
+<h3>4.3 Supplements</h3>
+<table>
+<thead>
+<tr>
+<th>Supplement</th>
+<th>Use when</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>DO-330</td>
+<td>Qualifying software tools (also usable outside airborne software)</td>
+</tr>
+<tr>
+<td>DO-331</td>
+<td>Model-based development and verification, for example design models from which code is generated</td>
+</tr>
+<tr>
+<td>DO-332</td>
+<td>Object-oriented technology: inheritance, dynamic dispatch, dynamic memory, exceptions</td>
+</tr>
+<tr>
+<td>DO-333</td>
+<td>Formal methods used to replace or complement reviews, analyses or tests</td>
+</tr>
+</tbody></table>
+<p>DO-248C contains supporting information (FAQs and discussion papers). It explains DO-178C but adds no new objectives.</p>
+<h3>4.4 Previously developed software, COTS and RTOS</h3>
+<p>Reusing software (an RTOS, a library, a previous program&#39;s code) requires assessing the available life-cycle
+data against the objectives for the <strong>new</strong> software level and environment. Typical issues are missing low-level
+requirements, missing structural coverage, a changed compiler or target, and changed use. Gaps are filled by
+additional activities, or occasionally by alternative methods agreed in the PSAC. Changes to the software, its
+use or its environment need a <strong>change impact analysis</strong>.</p>
+<h3>4.5 Partitioning and multicore</h3>
+<ul>
+<li><strong>Partitioning</strong> (for example ARINC 653) can contain the effects of a lower-level application, but the
+partitioning mechanism itself must be developed and verified at the level of the most critical software it
+protects, and shown to be robust against faults in the partitions (see <a href="04-rtos.html">Module 4</a>).</li>
+<li><strong>Multicore processors</strong> need additional analysis of interference between cores. See CAST-32A and its
+successors, EASA AMC 20-193 and FAA AC 20-193, and agree the approach in the PSAC.</li>
+</ul>
+<h3>4.6 Configuration management in practice</h3>
+<ul>
+<li>Two control categories, <strong>CC1</strong> (full SCM: baselines, change control, problem reporting, release, archiving)
+and <strong>CC2</strong> (a reduced set). Annex A says which category applies to each data item at each level.</li>
+<li>Every item that affects the delivered software is under configuration control: source, build scripts, compiler
+version and options, linker files, test procedures, tool versions and parameter data.</li>
+<li>The build must be <strong>reproducible</strong> from the archived configuration.</li>
+</ul>
+<h3>4.7 Common findings and how to avoid them</h3>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Prevention</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Requirements that restate the code (&quot;set flag X to 1&quot;)</td>
+<td>HLR describe behaviour at the system interface. LLR are detailed design, but still verifiable without reading the code.</td>
+</tr>
+<tr>
+<td>Derived requirements not sent to safety</td>
+<td>Mark them in the requirements tool and track them in a regular safety-review loop</td>
+</tr>
+<tr>
+<td>Tests that check code structure instead of requirements</td>
+<td>Peer-review test cases against requirements and standards</td>
+</tr>
+<tr>
+<td>Coverage achieved, robustness missing</td>
+<td>Robustness tests are explicit in the SVP and checklists</td>
+</tr>
+<tr>
+<td>Plans not followed (or followed but not updated)</td>
+<td>Treat plans as living documents and update them through the CM process. SQA audits compare plans with practice.</td>
+</tr>
+<tr>
+<td>Tools used without qualification decision</td>
+<td>Keep a tool list with the qualification rationale for each tool in the PSAC/SECI</td>
+</tr>
+<tr>
+<td>Independence not demonstrated</td>
+<td>Record who authored and who verified each item</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>How the other modules connect to DO-178C</h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>DO-178C relevance</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="01-embedded-c.html">1 — Embedded C</a></td>
+<td>Software Code Standards (MISRA C), undefined behaviour, object-code traceability, defensive code</td>
+</tr>
+<tr>
+<td><a href="02-mcu-peripherals.html">2 — MCU &amp; Peripherals</a></td>
+<td>Hardware/software integration testing, errata, BIT requirements, timing determinism</td>
+</tr>
+<tr>
+<td><a href="03-comm-protocols.html">3 — Communication</a></td>
+<td>ICD-based requirements, robustness testing, data and control coupling</td>
+</tr>
+<tr>
+<td><a href="04-rtos.html">4 — RTOS</a></td>
+<td>WCET and schedulability evidence, partitioning, RTOS as previously developed software, multicore</td>
+</tr>
+</tbody></table>
+<h2>Key takeaways</h2>
+<ul>
+<li>The safety assessment sets the software level, and the level sets the objectives, independence and coverage.</li>
+<li>Plan, follow the plans, and keep the evidence: plans, standards, traceability, reviews, tests, coverage, CM and SQA records.</li>
+<li>Coverage analysis checks the completeness of requirements-based tests. It doesn&#39;t create tests.</li>
+<li>Dead code is removed. Deactivated code is shown to be safely deactivated. Derived requirements go to safety.</li>
+<li>Tools that can insert errors, or that replace verification, may need qualification under DO-330.</li>
+</ul>
+<h2>Self-check</h2>
+<ol>
+<li>A Level B component reaches 100 % statement and decision coverage. Is MC/DC required?</li>
+<li>Coverage analysis finds an uncovered <code>else</code> branch that no requirement asks for. What are the possible resolutions?</li>
+<li>Which tool qualification criterion applies to a tool that generates C code from a model, for Level A software?</li>
+</ol>
+<p><a href="../quiz/index.html?module=do178c">Take the Module 5 quiz →</a></p>
+
+</main>
+<footer class="site-footer">Embedded System Training · Copyright &copy; 2026 Gopu Sugumar · Licensed under <a href="../LICENSE">GPL-3.0-or-later</a></footer>
+</body>
+</html>

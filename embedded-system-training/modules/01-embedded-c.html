@@ -17,6 +17,7 @@
 <li>Set, clear, toggle and test bits in registers safely.</li>
 <li>Explain what <code>volatile</code>, <code>const</code> and <code>static</code> do on an embedded target.</li>
 <li>Describe how a C program is laid out in Flash and RAM.</li>
+<li><em>Expert:</em> apply MISRA C, avoid integer, aliasing and concurrency traps, bound stack and time, and write code that survives certification review.</li>
 </ul>
 <hr>
 <h2>1. Beginner</h2>
@@ -214,6 +215,119 @@ static state_fn state = idle;
 
 void tick(void) { state(); }   /* each state assigns the next state */
 </code></pre>
+<hr>
+<h2>4. Expert: C for safety-critical software</h2>
+<p><em>For engineers with 3+ years of experience. Here the focus moves from &quot;does it work?&quot; to &quot;can we prove it
+works, on this compiler, under every input, and show the evidence to an auditor?&quot;</em></p>
+<h3>4.1 Coding standards: MISRA C and CERT C</h3>
+<p>Most safety-related projects adopt a language subset. <strong>MISRA C</strong> is the most common in avionics, automotive
+and industrial work. <strong>SEI CERT C</strong> focuses on security. Your project&#39;s coding standard (in DO-178C terms, the
+<em>Software Code Standards</em>, see <a href="05-do178c.html">Module 5</a>) normally names one of them, plus project rules.</p>
+<p>Key MISRA C:2012 concepts (check the edition your project uses: amendments and a consolidated MISRA C:2023 exist):</p>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>What it means in practice</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Rule categories</td>
+<td><strong>Mandatory</strong> (no deviation allowed), <strong>Required</strong> (deviation needs a formal, documented record), <strong>Advisory</strong></td>
+</tr>
+<tr>
+<td>Decidable vs undecidable rules</td>
+<td>Some rules can be checked fully by a tool, while others need review or deeper analysis</td>
+</tr>
+<tr>
+<td><strong>Essential type model</strong></td>
+<td>Treats <code>bool</code>, character, signed, unsigned, enum and floating values as separate categories. It flags implicit conversions that plain C allows, for example mixing signed and unsigned, or assigning to a narrower type.</td>
+</tr>
+<tr>
+<td>Deviations</td>
+<td>A deviation records the rule, the location, the justification and the review or approval. Blanket &quot;turn the rule off&quot; is not a deviation.</td>
+</tr>
+</tbody></table>
+<h3>4.2 Integer traps that pass code review</h3>
+<p>These look correct and compile without warnings at default settings:</p>
+<pre><code class="language-c">uint16_t a = 0xFFFFU, b = 1U;
+if ((a + b) == 0U) { ... }      /* 32-bit int: a+b is int 65536, so FALSE.
+                                   16-bit int: unsigned arithmetic wraps to 0, so TRUE. */
+
+uint8_t x = 0x0FU;
+if ((uint8_t)~x == 0xF0U) { ... }  /* correct */
+if (~x == 0xF0U)          { ... }  /* FALSE: ~x is computed as int 0xFFFFFFF0 */
+
+int32_t limit_check(int32_t a) {
+    if (a + 100 &lt; a) { /* &quot;overflow check&quot; */ }  /* signed overflow is UB: the compiler may delete this branch */
+    return a;
+}
+</code></pre>
+<p>Write overflow checks <em>before</em> the operation: <code>if (a &gt; INT32_MAX - 100) { ... }</code>.</p>
+<h3>4.3 Strict aliasing, alignment and type punning</h3>
+<p>Accessing an object through a pointer to an incompatible type is <strong>undefined behaviour</strong> (the &quot;effective type&quot;
+rules). Optimising compilers rely on this:</p>
+<pre><code class="language-c">float f = 1.0f;
+uint32_t bad  = *(uint32_t *)&amp;f;     /* UB: violates strict aliasing */
+uint32_t good;  memcpy(&amp;good, &amp;f, sizeof good);   /* well defined; compilers optimise it to a move */
+</code></pre>
+<p>Casting a <code>uint8_t</code> receive buffer to a <code>struct</code> pointer has three problems at once: aliasing, alignment
+(unaligned word access can fault on some cores) and padding or endianness. Parse messages field by field with
+shifts (see <a href="03-comm-protocols.html">Module 3</a>).</p>
+<h3>4.4 Concurrency: <code>volatile</code> is not a synchronisation primitive</h3>
+<p><code>volatile</code> stops the compiler from removing or reordering <em>volatile</em> accesses relative to each other. It does
+<strong>not</strong>:</p>
+<ul>
+<li>order ordinary (non-volatile) memory accesses around it,</li>
+<li>stop the CPU or memory system from reordering accesses (this matters on multicore and on cores with write buffers), or</li>
+<li>make read-modify-write sequences atomic.</li>
+</ul>
+<p>For data shared between cores or threads, use C11 <code>&lt;stdatomic.h&gt;</code> (<code>atomic_store_explicit(..., memory_order_release)</code>
+paired with an acquire load), RTOS primitives, or explicit barriers (on Arm, <code>__DMB()</code> from CMSIS), as your
+platform documentation requires.</p>
+<h3>4.5 Bounded resources: stack, time and memory</h3>
+<p>Certification-oriented projects must <em>show</em> that resources are bounded:</p>
+<ul>
+<li><strong>No recursion.</strong> Otherwise the maximum stack depth can&#39;t be bounded statically.</li>
+<li><strong>No dynamic allocation after initialisation</strong> (or none at all).</li>
+<li><strong>Worst-case stack usage</strong> comes from static call-graph analysis (many toolchains and analysers report it),
+plus the interrupt nesting depth. Function pointers and other indirect calls break automatic call graphs
+unless you annotate them.</li>
+<li><strong>Worst-case execution time (WCET)</strong> for time-critical code. See <a href="04-rtos.html">Module 4</a>.</li>
+</ul>
+<h3>4.6 Fixed-point arithmetic</h3>
+<p>Many processors used in control software lack an FPU, or projects avoid floating point for determinism.
+In <strong>Q15</strong> format a 16-bit signed value represents −1 … +0.99997:</p>
+<pre><code class="language-c">int16_t q15_mul(int16_t a, int16_t b) {
+    int32_t p = ((int32_t)a * b) &gt;&gt; 15;          /* product fits in 32 bits */
+    if (p &gt; INT16_MAX) p = INT16_MAX;            /* -1 * -1 = +1 doesn&#39;t fit: saturate */
+    return (int16_t)p;
+}
+</code></pre>
+<p>Right shift of a negative value is implementation-defined. Document what your compiler does, or use a defined
+helper. Your requirements should state the range, resolution and rounding of every fixed-point quantity.</p>
+<h3>4.7 Macros, sequence points and evaluation order</h3>
+<pre><code class="language-c">#define MAX(a, b) ((a) &gt; (b) ? (a) : (b))
+m = MAX(i++, j);     /* i may be incremented twice. Use a static inline function instead. */
+
+i = i++ + 1;         /* undefined behaviour: i modified twice without sequencing */
+f(g(), h());         /* order of evaluating g() and h() is unspecified */
+</code></pre>
+<h3>4.8 Static analysis and compiler behaviour</h3>
+<ul>
+<li><strong>Pattern checkers</strong> (MISRA checkers, linters) find rule violations quickly but can miss real defects.</li>
+<li><strong>Sound analysers</strong> based on abstract interpretation aim to prove the absence of run-time errors such as
+overflow, division by zero and out-of-bounds access, at the cost of false alarms that must be justified.</li>
+<li>Turn on and review compiler warnings at the strictest practical level, and treat new warnings as defects.</li>
+<li><strong>The compiler is part of the evidence.</strong> Optimisation level and compiler options are configuration items.
+DO-178C Level A also needs extra verification when the compiler generates object code that isn&#39;t directly
+traceable to source code (see <a href="05-do178c.html">Module 5</a>).</li>
+</ul>
+<h3>4.9 Defensive programming and certification</h3>
+<p>Defensive checks, such as range checks on inputs or <code>default:</code> branches on enums that &quot;can&#39;t happen&quot;, are good
+engineering. In DO-178C projects they must be <strong>traceable to requirements</strong>, for example robustness requirements,
+and their coverage must be explained. Unreachable defensive code that isn&#39;t covered can show up as a coverage gap
+that needs analysis. Agree the approach in your plans and standards early.</p>
 <hr>
 <h2>Key takeaways</h2>
 <ul>

@@ -17,6 +17,7 @@
 <li>Explain how interrupts and the vector table work.</li>
 <li>Calculate timer periods, PWM duty cycle and ADC results.</li>
 <li>Choose between polling, interrupts and DMA.</li>
+<li><em>Expert:</em> handle cache/DMA coherency, barriers, register races, errata, BIT and timing determinism.</li>
 </ul>
 <blockquote>
 <p>Register names and formulas differ between MCU families. The examples use
@@ -153,6 +154,132 @@ context restore and save between them.</li>
 <li><strong>Nesting</strong>: a higher-priority interrupt can pre-empt a running lower-priority ISR.</li>
 <li><strong>HardFault</strong>: usually caused by invalid memory access, an unaligned access where it is not allowed,
 or a stack overflow. Inspect the stacked PC and the fault status registers.</li>
+</ul>
+<hr>
+<h2>4. Expert: the hardware/software interface in high-integrity systems</h2>
+<p><em>For engineers with 3+ years of experience. Most &quot;impossible&quot; field failures come from this boundary:
+caches, write buffers, races on registers, silicon errata and timing that only fails under load.</em></p>
+<h3>4.1 Caches and DMA coherency</h3>
+<p>On cores with a data cache (for example Arm Cortex-M7), the CPU and a DMA controller can see different
+contents for the same RAM:</p>
+<table>
+<thead>
+<tr>
+<th>Direction</th>
+<th>Problem</th>
+<th>Typical fix</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CPU → DMA (transmit)</td>
+<td>Data still sits in the cache, so the DMA sends stale RAM</td>
+<td><strong>Clean</strong> the buffer&#39;s cache lines before starting the DMA</td>
+</tr>
+<tr>
+<td>DMA → CPU (receive)</td>
+<td>The CPU reads old cached data</td>
+<td><strong>Invalidate</strong> the buffer&#39;s cache lines after the transfer (and avoid touching the buffer during it)</td>
+</tr>
+</tbody></table>
+<p>Align DMA buffers to the cache-line size (32 bytes on Cortex-M7) and size them as a multiple of it. Otherwise
+invalidating a line can destroy neighbouring variables. Alternatives are a non-cacheable MPU region for DMA
+buffers, or tightly coupled memory. CMSIS provides helpers such as <code>SCB_CleanDCache_by_Addr()</code> and
+<code>SCB_InvalidateDCache_by_Addr()</code>. Confirm them in your device&#39;s CMSIS version.</p>
+<h3>4.2 Memory barriers on Arm Cortex-M</h3>
+<table>
+<thead>
+<tr>
+<th>Barrier</th>
+<th>Use it when</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>__DMB()</code></td>
+<td>Ordering memory accesses, for example before signalling another bus master or core that data is ready</td>
+</tr>
+<tr>
+<td><code>__DSB()</code></td>
+<td>You need earlier memory accesses to be <strong>complete</strong>, for example after clearing an interrupt flag just before returning, or before <code>__WFI()</code></td>
+</tr>
+<tr>
+<td><code>__ISB()</code></td>
+<td>After changing system configuration (MPU, <code>VTOR</code>, <code>CONTROL</code>) so that later instructions use the new settings</td>
+</tr>
+</tbody></table>
+<p>A classic symptom: an ISR runs <strong>twice</strong> for one event. The write that clears the peripheral&#39;s flag was still
+in a write buffer when the exception returned, so the interrupt was still pending. Fixes: read the register back,
+or use <code>__DSB()</code> before returning, as the vendor recommends.</p>
+<h3>4.3 Races on peripheral registers</h3>
+<pre><code class="language-c">GPIOA-&gt;ODR |= (1U &lt;&lt; 5);   /* read-modify-write: an ISR that writes ODR between the read and
+                              the write loses its update */
+</code></pre>
+<p>Use hardware atomic set/reset registers where they exist (for example <code>BSRR</code> on STM32), exclusive access
+instructions (<code>LDREX</code>/<code>STREX</code> on Armv7-M and Armv8-M Mainline; not available on Cortex-M0/M0+), or a short
+critical section.</p>
+<h3>4.4 Memory protection unit (MPU)</h3>
+<ul>
+<li><strong>Stack guard:</strong> a no-access region at the end of each stack turns a silent overflow into an immediate fault.</li>
+<li><strong>Partitioning:</strong> keep tasks or partitions away from each other&#39;s data, and make code regions execute-only or
+read-only. This is the basis of space partitioning (see <a href="04-rtos.html">Module 4</a>).</li>
+<li><strong>Null-pointer trap:</strong> make address 0 inaccessible where the memory map allows it.</li>
+</ul>
+<h3>4.5 Timing determinism and WCET</h3>
+<p>Caches, branch predictors, flash wait states with prefetch buffers, and DMA bus contention all make execution time
+depend on history. They improve <em>average</em> time but make <em>worst-case</em> analysis harder. Options:</p>
+<ul>
+<li>static WCET analysis tools that model the processor (only for supported cores),</li>
+<li>measurement-based WCET with stress conditions and a documented margin,</li>
+<li>reducing variability: cache locking or partitioning, running critical code from tightly coupled memory, and
+limiting DMA during critical windows.</li>
+</ul>
+<p>On <strong>multicore</strong> devices, shared buses, caches and memory controllers create <em>interference channels</em> between cores.
+See <a href="04-rtos.html">Module 4</a> and <a href="05-do178c.html">Module 5</a>.</p>
+<h3>4.6 Silicon errata and documentation discipline</h3>
+<p>Every MCU revision has an <strong>errata sheet</strong> that lists where the silicon doesn&#39;t match the datasheet or reference
+manual, usually with workarounds. In high-integrity projects:</p>
+<ul>
+<li>record which silicon revision you designed and tested against,</li>
+<li>review the errata sheet for every peripheral you use, and record how each relevant erratum is handled,</li>
+<li>re-check when the hardware team moves to a new revision.</li>
+</ul>
+<h3>4.7 Built-in test (BIT) and fault detection</h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Typical method</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Power-up RAM test</td>
+<td><strong>March</strong> algorithms (for example March C−). They detect stuck-at, transition and many coupling faults that simple write/read patterns miss.</td>
+</tr>
+<tr>
+<td>Program memory integrity</td>
+<td>CRC over flash at start-up, and periodically in the background</td>
+</tr>
+<tr>
+<td>Clock monitoring</td>
+<td>Clock-security or clock-monitor features, or cross-checking against an independent oscillator</td>
+</tr>
+<tr>
+<td>Watchdog</td>
+<td><strong>Windowed</strong> watchdog: refreshing too <em>early</em> also causes a reset, which catches code that kicks it from a runaway loop</td>
+</tr>
+<tr>
+<td>Memory errors</td>
+<td>ECC/EDAC RAM with <strong>scrubbing</strong>: periodically read and correct memory so that single-bit upsets (for example from radiation at altitude) don&#39;t build up into uncorrectable multi-bit errors</td>
+</tr>
+</tbody></table>
+<p>Each BIT needs requirements for what it detects, how quickly, and what the system does on failure.</p>
+<h3>4.8 Start-up and reset behaviour</h3>
+<ul>
+<li>Initialise ECC RAM before any read of it, often in the start-up code, because reading uninitialised ECC RAM can fault.</li>
+<li>Decide the safe state of every output <strong>from reset until software configures it</strong>. That is a hardware/software
+requirement, not an afterthought.</li>
+<li>Record the reset cause and keep a small non-volatile fault log for maintenance.</li>
+<li>Bootloaders and software loading are part of the certified configuration in avionics. Their behaviour after an
+interrupted update must be specified and verified.</li>
 </ul>
 <hr>
 <h2>Key takeaways</h2>

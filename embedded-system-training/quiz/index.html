@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Embedded Systems Quiz</title>
+  <title>Embedded Systems Expert Quiz</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,8 +14,9 @@
   <main id="app">
     <!-- Setup screen -->
     <section id="screen-setup" class="card">
-      <h1>Embedded Systems MCQ Quiz</h1>
-      <p class="muted">Choose a module and level. Questions and options are shuffled on every attempt.
+      <h1>Embedded Systems Expert Quiz</h1>
+      <p class="muted">Expert level, for embedded software engineers with 3+ years of experience. Covers Embedded C, MCU &amp; peripherals, communication protocols, RTOS and DO-178C.
+        Choose a module and the number of questions. Questions and options are shuffled on every attempt.
         Pass mark: <strong><span id="pass-mark"></span>%</strong>.</p>
       <form id="setup-form" novalidate>
         <label for="learner-name">Your name <span class="req">*</span></label>
@@ -25,19 +26,11 @@
         <label for="module-select">Module</label>
         <select id="module-select"></select>
 
-        <label for="level-select">Level</label>
-        <select id="level-select">
-          <option value="all">All levels</option>
-          <option value="beginner">Beginner</option>
-          <option value="intermediate">Intermediate</option>
-          <option value="advanced">Advanced</option>
-        </select>
-
         <label for="count-select">Number of questions</label>
         <select id="count-select">
-          <option value="5">5</option>
-          <option value="10" selected>10</option>
-          <option value="20">20</option>
+          <option value="10">10</option>
+          <option value="20" selected>20</option>
+          <option value="30">30</option>
           <option value="0">All available</option>
         </select>
         <p id="pool-info" class="muted small"></p>

@@ -2,7 +2,7 @@
   "use strict";
 
   var PASS_MARK = 70; // percent
-  var LEVEL_NAMES = { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced", all: "All levels" };
+  var LEVEL_NAMES = { expert: "Expert (3+ years)" };
   var MODULES = window.QUIZ_MODULES;
   var BANK = window.QUIZ_QUESTIONS;
 
@@ -36,10 +36,8 @@
   }
 
   function filteredPool() {
-    var m = $("module-select").value, l = $("level-select").value;
-    return BANK.filter(function (q) {
-      return (m === "all" || q.module === m) && (l === "all" || q.level === l);
-    });
+    var m = $("module-select").value;
+    return BANK.filter(function (q) { return m === "all" || q.module === m; });
   }
 
   function updatePoolInfo() {
@@ -58,7 +56,7 @@
     var params = new URLSearchParams(window.location.search);
     if (params.get("module") && MODULES[params.get("module")]) sel.value = params.get("module");
 
-    ["module-select", "level-select"].forEach(function (id) { $(id).addEventListener("change", updatePoolInfo); });
+    $("module-select").addEventListener("change", updatePoolInfo);
     updatePoolInfo();
 
     $("setup-form").addEventListener("submit", function (e) {
@@ -75,7 +73,7 @@
       state = {
         name: name,
         moduleKey: $("module-select").value,
-        levelKey: $("level-select").value,
+        levelKey: "expert",
         questions: pool.map(function (q) { return { src: q, order: shuffle([0, 1, 2, 3]) }; }),
         answers: pool.map(function () { return null; }), // index into ORIGINAL options
         index: 0,

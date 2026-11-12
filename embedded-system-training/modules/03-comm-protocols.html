@@ -16,6 +16,7 @@
 <li>Describe the framing, wiring and timing of UART, SPI, I2C and CAN.</li>
 <li>Choose a suitable protocol for a given application.</li>
 <li>Diagnose common wiring and configuration mistakes.</li>
+<li><em>Expert:</em> design end-to-end message integrity, analyse CAN timing and failure modes, and work with ARINC 429, MIL-STD-1553B and AFDX.</li>
 </ul>
 <hr>
 <h2>Quick comparison</h2>
@@ -187,6 +188,108 @@ and error counters that can drive a node to <strong>error-passive</strong> or <s
 <td>CAN</td>
 </tr>
 </tbody></table>
+<hr>
+<h2>6. Expert: robust communication and avionics data buses</h2>
+<p><em>For engineers with 3+ years of experience: designing interfaces that fail safely, analysing their timing,
+and the buses you meet in aircraft.</em></p>
+<h3>6.1 Message integrity at application level</h3>
+<p>The CRC or parity of a physical protocol only protects bits on the wire. A robust interface also needs to
+detect a sender that has failed in a way that still produces <em>valid</em> frames:</p>
+<table>
+<thead>
+<tr>
+<th>Mechanism</th>
+<th>Detects</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CRC over the application payload</td>
+<td>Corruption in buffers, gateways and software, not only on the wire</td>
+</tr>
+<tr>
+<td>Sequence or alive counter</td>
+<td>Lost, repeated, out-of-order and <strong>stale</strong> frames, for example a sender stuck sending the same valid frame</td>
+</tr>
+<tr>
+<td>Timeout / freshness monitoring</td>
+<td>Loss of communication</td>
+</tr>
+<tr>
+<td>Data ID or source ID in the CRC</td>
+<td>Frames delivered to the wrong consumer, or masquerading</td>
+</tr>
+<tr>
+<td>Range and plausibility checks</td>
+<td>Valid frames that contain wrong values</td>
+</tr>
+</tbody></table>
+<p>Each mechanism needs a requirement for detection time and for the safe reaction. That might be holding the last
+value for N cycles, then flagging the data invalid, then switching to a backup source.</p>
+<h3>6.2 Parsing received data safely</h3>
+<p>Never overlay a <code>struct</code> on a receive buffer. Padding, endianness, alignment and strict aliasing all differ
+between platforms (see <a href="01-embedded-c.html">Module 1</a>). Decode explicitly:</p>
+<pre><code class="language-c">static uint16_t get_u16_be(const uint8_t *p) { return (uint16_t)(((uint16_t)p[0] &lt;&lt; 8) | p[1]); }
+
+void decode(const uint8_t *buf, size_t len, msg_t *out) {
+    if (len &lt; MSG_LEN) { /* reject, count error */ return; }
+    out-&gt;speed = get_u16_be(&amp;buf[0]);
+    out-&gt;mode  = buf[2];
+    if (out-&gt;mode &gt; MODE_MAX) { /* reject: out of range */ }
+}
+</code></pre>
+<h3>6.3 Throughput and drivers</h3>
+<ul>
+<li>At high UART rates, one interrupt per byte doesn&#39;t scale. Use DMA into a circular buffer with an
+<strong>idle-line</strong> or receive-timeout interrupt (available on many MCUs) to detect the end of a frame.</li>
+<li>Size buffers from the worst-case burst, not the average rate, and count overruns. An overrun counter that
+is always zero during testing is evidence. One that you never read is not.</li>
+</ul>
+<h3>6.4 CAN in depth</h3>
+<ul>
+<li><strong>Error confinement:</strong> every node has a transmit and a receive error counter (TEC/REC). A node becomes
+<strong>error passive</strong> when either counter exceeds 127, and goes <strong>bus-off</strong> when TEC exceeds 255. The
+application must decide how and when to recover from bus-off.</li>
+<li><strong>Babbling idiot:</strong> error confinement does <strong>not</strong> stop a faulty node that keeps sending <em>valid</em>
+high-priority frames, and that starves every lower-priority message. Mitigations include bus guardians,
+separate buses for critical traffic, and time-triggered schedules.</li>
+<li><strong>Timing analysis:</strong> frame length varies with the data because of <strong>bit stuffing</strong>. Worst-case response-time
+analysis therefore uses the worst-case stuffed frame length. The lowest-priority (highest-ID) messages suffer
+the most interference, so they are the first to miss deadlines as bus load rises.</li>
+<li>Bit timing (sample point, synchronisation jump width) must be consistent across all nodes. Mismatches show up
+as errors that depend on temperature and cable length.</li>
+</ul>
+<h3>6.5 Avionics buses you will meet</h3>
+<table>
+<thead>
+<tr>
+<th>Bus</th>
+<th>Key facts</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>ARINC 429</strong></td>
+<td>Unidirectional: one transmitter, multiple receivers (the specification allows up to 20). 32-bit words: an 8-bit <strong>label</strong> (bits 1–8) identifies the parameter, followed by SDI, data, SSM (sign/status matrix) and an <strong>odd parity</strong> bit (bit 32). Speeds: 100 kbit/s (high) or 12.5 kbit/s (low).</td>
+</tr>
+<tr>
+<td><strong>MIL-STD-1553B</strong></td>
+<td>1 Mbit/s, command/response, with a <strong>bus controller</strong> and up to 31 remote terminals. Usually <strong>dual-redundant</strong> (bus A/B). Common in military aircraft.</td>
+</tr>
+<tr>
+<td><strong>AFDX</strong> (ARINC 664 Part 7)</td>
+<td>Deterministic switched Ethernet. Traffic flows through <strong>virtual links</strong> whose bandwidth is limited by a <strong>Bandwidth Allocation Gap</strong> (BAG), which bounds latency. Usually two redundant networks (A and B).</td>
+</tr>
+<tr>
+<td><strong>CAN / ARINC 825</strong></td>
+<td>ARINC 825 defines how CAN is used in airborne systems</td>
+</tr>
+</tbody></table>
+<p>Figures above are from the respective standards as commonly summarised. Use the standard or your interface
+control document (ICD) as the authority for a real design.</p>
+<h3>6.6 Interface control documents and verification</h3>
+<p>Every external interface should be defined in an <strong>ICD</strong>: signal names, units, ranges, resolution, rates,
+encoding, validity rules and behaviour on loss of data. In DO-178C terms, the software requirements trace to it,
+and requirements-based tests must cover normal <em>and</em> robustness cases: invalid data, timeouts, out-of-range
+values and babbling inputs. See <a href="05-do178c.html">Module 5</a>.</p>
 <hr>
 <h2>Key takeaways</h2>
 <ul>

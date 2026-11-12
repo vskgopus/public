@@ -10,12 +10,13 @@
 <header class="site-header"><a href="../index.html">Embedded System Training</a></header>
 <main class="content">
 <h1>Module 4 — RTOS Fundamentals</h1>
-<p><a href="03-comm-protocols.html">← Module 3</a> · <a href="../index.html">Course home</a> · <a href="../quiz/index.html?module=rtos">Take the quiz</a></p>
+<p><a href="03-comm-protocols.html">← Module 3</a> · <a href="../index.html">Course home</a> · <a href="05-do178c.html">Next: DO-178C →</a> · <a href="../quiz/index.html?module=rtos">Take the quiz</a></p>
 <p><strong>Learning goals</strong></p>
 <ul>
 <li>Explain tasks, task states and pre-emptive priority scheduling.</li>
 <li>Choose between a queue, a semaphore and a mutex.</li>
 <li>Recognise and prevent priority inversion, deadlock and stack overflow.</li>
+<li><em>Expert:</em> run response-time analysis, choose resource protocols, and apply ARINC 653 partitioning and multicore guidance.</li>
 </ul>
 <blockquote>
 <p>The examples use <strong>FreeRTOS</strong> API names. Other RTOSes (Zephyr, ThreadX, RTX, embOS…)
@@ -157,6 +158,119 @@ test is:</p>
 <pre><code>U = Σ (Cᵢ / Tᵢ) ≤ n(2^(1/n) − 1)      → about 0.693 for large n
 </code></pre>
 <p>where Cᵢ is the worst-case execution time and Tᵢ is the period.</p>
+<hr>
+<h2>4. Expert: real-time analysis, partitioning and certified RTOS use</h2>
+<p><em>For engineers with 3+ years of experience: proving deadlines are met, keeping applications of different
+criticality apart, and what changes when an RTOS is part of DO-178C evidence.</em></p>
+<h3>4.1 Response-time analysis (fixed-priority, pre-emptive)</h3>
+<p>The utilisation test in section 3.5 is only <em>sufficient</em>. <strong>Response-time analysis</strong> gives the exact
+worst-case response time Rᵢ of task <em>i</em> (independent periodic tasks, deadline ≤ period):</p>
+<pre><code>Rᵢ = Cᵢ + Bᵢ + Σ_{j ∈ hp(i)} ⌈ Rᵢ / Tⱼ ⌉ · Cⱼ
+</code></pre>
+<p>hp(i) is the set of higher-priority tasks and Bᵢ the worst-case blocking from lower-priority tasks (shared
+resources). Iterate from Rᵢ = Cᵢ + Bᵢ until the value stops changing. The task is schedulable if Rᵢ ≤ Dᵢ.</p>
+<p><strong>Worked example</strong> (B = 0): τ1 C=1 T=4, τ2 C=2 T=6, τ3 C=3 T=12 (priorities in that order).
+For τ3: R = 3+1+2 = 6 → 3 + ⌈6/4⌉·1 + ⌈6/6⌉·2 = 7 → 3 + 2 + 4 = 9 → 3 + 3 + 4 = 10 → 3 + 3 + 4 = 10.
+R₃ = 10 ≤ 12, so τ3 meets its deadline.</p>
+<p>The analysis is only as good as the <strong>C</strong> values. WCET must be justified (see below), and the ISR load and
+RTOS overheads (tick, context switch) must be included.</p>
+<h3>4.2 WCET in practice</h3>
+<ul>
+<li><strong>Measurement alone is not proof.</strong> Tests may never drive the worst path or the worst cache state. Use
+stress scenarios, coverage of the timing-relevant paths and a documented safety margin, or static WCET
+analysis where a tool supports your processor.</li>
+<li>Design for analysability: bounded loops with a known maximum iteration count, no recursion, no unbounded
+waits, and limited use of caches in critical paths.</li>
+</ul>
+<h3>4.3 Resource access protocols</h3>
+<table>
+<thead>
+<tr>
+<th>Protocol</th>
+<th>Behaviour</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Priority inheritance</td>
+<td>The mutex holder inherits the priority of the highest waiter</td>
+<td>Bounds inversion, but chained blocking is possible, and it does not prevent deadlock</td>
+</tr>
+<tr>
+<td><strong>Priority ceiling</strong> (original and <em>immediate ceiling</em>)</td>
+<td>The holder runs at the resource&#39;s ceiling priority (the highest priority of any task that uses it)</td>
+<td>On a single core it <strong>prevents deadlock</strong> and limits blocking to at most one critical section. OSEK/AUTOSAR OS use the immediate-ceiling form.</td>
+</tr>
+</tbody></table>
+<p>In FreeRTOS, a <strong>binary semaphore used as a lock has no priority inheritance</strong>. Use a mutex.</p>
+<h3>4.4 Interrupts and the kernel (FreeRTOS on Cortex-M)</h3>
+<p>ISRs that call <code>...FromISR()</code> APIs must run at a priority <strong>logically at or below</strong>
+<code>configMAX_SYSCALL_INTERRUPT_PRIORITY</code>, which on Cortex-M means <em>numerically equal or higher</em>. Higher-urgency
+interrupts may pre-empt the kernel&#39;s critical sections, so they must not call the API at all. Getting this wrong
+corrupts kernel data structures intermittently. Enable <code>configASSERT()</code> during development, because the port
+can check this. Exact macro names vary between ports and versions, so check your port&#39;s documentation.</p>
+<h3>4.5 Deterministic memory</h3>
+<p>Allocate statically: <code>xTaskCreateStatic()</code>, <code>xQueueCreateStatic()</code> and so on, with
+<code>configSUPPORT_DYNAMIC_ALLOCATION</code> set to 0 so that heap use fails at build time instead of in flight.</p>
+<h3>4.6 Cyclic executive vs pre-emptive RTOS</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Cyclic executive (time-triggered)</th>
+<th>Pre-emptive priority RTOS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Determinism</td>
+<td>Fixed schedule table, easy to analyse and test</td>
+<td>Depends on analysis (RTA)</td>
+</tr>
+<tr>
+<td>Change impact</td>
+<td>Fragile: long tasks must be split by hand to fit minor frames</td>
+<td>Flexible</td>
+</tr>
+<tr>
+<td>Shared data</td>
+<td>Often no locking needed, because nothing pre-empts</td>
+<td>Needs mutexes or ceilings</td>
+</tr>
+<tr>
+<td>Typical use</td>
+<td>Many high-criticality control loops</td>
+<td>Mixed workloads</td>
+</tr>
+</tbody></table>
+<h3>4.7 Partitioning: ARINC 653 (IMA)</h3>
+<p>Integrated Modular Avionics (IMA) runs applications of different software levels on one processor. <strong>ARINC 653</strong>
+defines the partitioning model and the APEX API:</p>
+<ul>
+<li><strong>Time partitioning:</strong> a fixed <em>major frame</em> is divided into partition windows. A partition that overruns
+can&#39;t take time from the others.</li>
+<li><strong>Space partitioning:</strong> each partition has its own memory, enforced by the MMU or MPU.</li>
+<li><strong>Health monitor:</strong> detects errors at process, partition and module level and applies the configured
+response (restart a process, restart a partition, shut down, log).</li>
+<li>Communication between partitions goes through <strong>ports</strong> (sampling and queuing).</li>
+</ul>
+<p>Robust partitioning is what allows, for example, a Level C application to share a processor with a Level A
+application without the Level C software being developed to Level A. The partitioning itself must be shown to
+be robust (see <a href="05-do178c.html">Module 5</a>).</p>
+<h3>4.8 Multicore</h3>
+<p>Cores interfere through shared caches, interconnects and memory controllers, so one core&#39;s WCET depends on
+what the others do. Certification guidance for multicore processors in airborne systems started as the
+position paper <strong>CAST-32A</strong> and has since been followed by <strong>EASA AMC 20-193</strong> and <strong>FAA AC 20-193</strong>. Check
+the current status with your certification authority. Expect to identify interference channels, mitigate them
+(for example by cache or bandwidth partitioning) and verify timing under worst-case interference.</p>
+<h3>4.9 Using an RTOS in a certified system</h3>
+<ul>
+<li>An RTOS used in airborne software is part of that software. It needs DO-178C life-cycle data at the
+applicable software level, either from the vendor (a &quot;certification package&quot;) or produced by the project.</li>
+<li>Use only the subset of RTOS features covered by that data, and document configuration settings as
+configuration items.</li>
+<li>Supervise task health: a supervisor task collects check-ins from every critical task and kicks the
+watchdog only when all have reported within their deadlines.</li>
+</ul>
 <hr>
 <h2>Key takeaways</h2>
 <ul>
