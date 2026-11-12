@@ -44,6 +44,20 @@ def data_dir() -> Path:
 SETTINGS_FILE = config_dir() / "settings.json"
 
 
+def code_version() -> str:
+    """A fingerprint of the app's code, so the launcher can tell an older running copy apart.
+    NCERT_CODE_VERSION overrides it (tests)."""
+    import hashlib
+    if os.environ.get("NCERT_CODE_VERSION"):
+        return os.environ["NCERT_CODE_VERSION"]
+    here = Path(__file__).resolve().parent
+    h = hashlib.sha1()
+    for path in sorted([*here.glob("*.py"), *here.glob("templates/*.html")]):
+        h.update(path.name.encode())
+        h.update(path.read_bytes())
+    return h.hexdigest()[:12]
+
+
 def load() -> dict:
     try:
         data = json.loads(SETTINGS_FILE.read_text())

@@ -109,8 +109,38 @@ class UsageLimit(RuntimeError):
     """The Claude subscription's usage limit was reached."""
 
 
+class Cancelled(RuntimeError):
+    """The person pressed Stop."""
+
+
+def _wait(args: list[str], cwd: str, timeout: int, progress=None, cancel=None) -> subprocess.CompletedProcess:
+    """Run Claude Code, showing a timer and stopping it when the person presses Stop."""
+    import time
+    flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
+    proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding="utf-8",
+                            errors="replace", env=_env(), creationflags=flags, cwd=cwd)
+    started = time.time()
+    while True:
+        try:
+            out, err = proc.communicate(timeout=1)
+            return subprocess.CompletedProcess(args, proc.returncode, out, err)
+        except subprocess.TimeoutExpired:
+            elapsed = int(time.time() - started)
+            if cancel is not None and cancel.is_set():
+                proc.kill()
+                proc.communicate()
+                raise Cancelled("Stopped.")
+            if elapsed > timeout:
+                proc.kill()
+                proc.communicate()
+                raise subprocess.TimeoutExpired(args, timeout)
+            if progress:
+                progress(f"Claude Code is reading the chapter and writing … {elapsed // 60} min {elapsed % 60:02d} s "
+                         "so far (it shows nothing until it finishes)")
+
+
 def run_structured(pdf_bytes: bytes, prompt: str, system: str, schema: dict,
-                   timeout: int = 2400) -> dict:
+                   timeout: int = 2400, progress=None, cancel=None) -> dict:
     """Have Claude read the PDF and return JSON matching `schema`."""
     exe = find()
     if not exe:
@@ -122,7 +152,7 @@ def run_structured(pdf_bytes: bytes, prompt: str, system: str, schema: dict,
                 "--system-prompt", system, "--tools", "Read", "--allowedTools", "Read",
                 "--permission-mode", "dontAsk", "--no-session-persistence", "--effort", "high"]
         try:
-            proc = _run(args, timeout=timeout, cwd=work)
+            proc = _wait(args, work, timeout, progress=progress, cancel=cancel)
         except subprocess.TimeoutExpired:
             raise RuntimeError("Claude took too long. Try a smaller page range or split the chapter in Settings.")
     try:

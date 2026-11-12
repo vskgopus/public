@@ -13,6 +13,9 @@ if argv[:1] == ["--version"]:
 elif argv[:2] == ["auth", "status"]:
     print(json.dumps({"loggedIn": True, "authMethod": "claude.ai"}))
 elif "-p" in argv:
+    if os.environ.get("FAKE_CLAUDE_SLEEP"):        # a slow run, to test Stop
+        import time
+        time.sleep(float(os.environ["FAKE_CLAUDE_SLEEP"]))
     assert Path("chapter.pdf").read_bytes().startswith(b"%PDF"), "PDF missing in working folder"
     here = Path(__file__).parent
     sample = json.loads((here.parent / "samples" / "class10_science_ch1.json").read_text())

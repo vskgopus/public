@@ -58,13 +58,49 @@ MODELS_PAGE2 = {"models": [
 
 
 class Resp:
-    def __init__(self, status, body):
-        self.status_code, self._body = status, body
+    """A response. For streamed answers, `events` are sent as server-sent events."""
+    def __init__(self, status, body, events=None):
+        self.status_code, self._body, self.events = status, body, events
         self.ok = status < 400
         self.text = json.dumps(body)
 
     def json(self):
         return self._body
+
+    def iter_lines(self, decode_unicode=False):
+        for ev in self.events if self.events is not None else [self._body]:
+            yield "data: " + json.dumps(ev, ensure_ascii=False)
+            yield ""
+
+    def close(self):
+        pass
+
+
+def answer(text, finish="STOP", pieces=3):
+    """Streamed answer: the text in a few chunks, finish reason and usage in the last one."""
+    size = max(1, len(text) // pieces + 1)
+    chunks = [text[i:i + size] for i in range(0, len(text), size)] or [""]
+    events = [{"candidates": [{"content": {"parts": [{"text": c}]}}]} for c in chunks]
+    events[-1]["candidates"][0]["finishReason"] = finish
+    events[-1]["usageMetadata"] = {"promptTokenCount": 1200, "candidatesTokenCount": 9000}
+    return Resp(200, None, events)
+
+
+class SlowResp(Resp):
+    """Google says nothing for a long time (thinking) until the connection is closed."""
+    def __init__(self):
+        super().__init__(200, None, [])
+        self.closed = False
+
+    def iter_lines(self, decode_unicode=False):
+        for _ in range(600):
+            if self.closed:
+                raise __import__("requests").exceptions.ConnectionError("closed")
+            time.sleep(0.05)
+            yield ""
+
+    def close(self):
+        self.closed = True
 
 
 def err(status, code, msg):
@@ -82,14 +118,14 @@ class Stub:
             return err(400, "INVALID_ARGUMENT", "API key not valid. Please pass a valid API key.")
         return Resp(200, MODELS_PAGE2 if (params or {}).get("pageToken") == "p2" else MODELS_PAGE1)
 
-    def post(self, url, json=None, headers=None, timeout=None):
+    def post(self, url, json=None, headers=None, timeout=None, stream=False):
+        assert stream, "answers must be streamed"
         self.posts.append({"url": url, "body": __import__("copy").deepcopy(json), "headers": headers})
         if self.script:
             return self.script.pop(0)
         required = json["generationConfig"]["responseJsonSchema"]["required"]
         text = __import__("json").dumps({k: v for k, v in FULL.items() if k in required}, ensure_ascii=False)
-        return Resp(200, {"candidates": [{"content": {"parts": [{"text": text}]}, "finishReason": "STOP"}],
-                          "usageMetadata": {"promptTokenCount": 1200, "candidatesTokenCount": 9000}})
+        return answer(text)
 
 
 stub = Stub()
@@ -108,7 +144,7 @@ def run_job(**extra):
     job = r.get_json()["id"]
     for _ in range(120):
         st = client.get(f"/api/jobs/{job}", base_url=BASE).get_json()
-        if st["status"] in ("done", "error"):
+        if st["status"] in ("done", "error", "stopped"):
             return st, job
         time.sleep(0.5)
     raise TimeoutError(st)
@@ -153,7 +189,7 @@ st, job = run_job()
 print("\n".join(st["log"]))
 assert st["status"] == "done", st
 first, retry = stub.posts[0], stub.posts[1]
-assert first["url"].endswith("/v1beta/models/gemini-2.5-flash:generateContent"), first["url"]
+assert first["url"].endswith("/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse"), first["url"]
 assert first["headers"]["x-goog-api-key"] == KEY
 body = first["body"]
 part = body["contents"][0]["parts"][0]["inlineData"]
@@ -166,6 +202,11 @@ assert "additionalProperties" in json.dumps(cfg["responseJsonSchema"])
 assert "additionalProperties" not in json.dumps(retry["body"]["generationConfig"]["responseJsonSchema"]), \
     "the retry should use the simplified schema"
 assert any("Google Gemini (gemini-2.5-flash)" in l for l in st["log"])
+import re  # noqa: E402
+assert all(re.match(r"^\d\d:\d\d:\d\d  ", l) for l in st["log"]), "console lines need a time"
+for words in ("Sending the chapter PDF", "simpler one", "Google accepted the request", "Gemini started writing",
+              "Gemini finished writing"):
+    assert any(words in l for l in st["log"]), words
 assert client.get(st["download"], base_url=BASE).data.startswith(b"%PDF")
 print("OK - Gemini engine, all sections, schema fallback")
 
@@ -176,12 +217,12 @@ orig_post = stub.post
 calls = {"n": 0}
 
 
-def post_second_limited(url, json=None, headers=None, timeout=None):
+def post_second_limited(url, json=None, headers=None, timeout=None, stream=False):
     calls["n"] += 1
     if calls["n"] == 2:
         stub.posts.append({"url": url, "body": json, "headers": headers})
         return err(429, "RESOURCE_EXHAUSTED", "Quota exceeded for requests per day")
-    return orig_post(url, json=json, headers=headers, timeout=timeout)
+    return orig_post(url, json=json, headers=headers, timeout=timeout, stream=stream)
 
 
 stub.post = post_second_limited
@@ -196,7 +237,7 @@ print("OK - rate limit keeps finished parts and resumes")
 
 # --- MAX_TOKENS and safety stops give clear messages
 settings_post({"split_pages": 0})
-stub.script = [Resp(200, {"candidates": [{"content": {"parts": [{"text": "{\"chap"}]}, "finishReason": "MAX_TOKENS"}]})]
+stub.script = [answer('{"chap', finish="MAX_TOKENS")]
 st, _ = run_job(sections=["long_answer"], chapter_from="2", chapter_to="2")
 assert st["status"] == "error" and "split the chapter" in st["error"], st
 stub.script = [Resp(200, {"promptFeedback": {"blockReason": "SAFETY"}})]
@@ -204,3 +245,36 @@ st, _ = run_job(sections=["case_based"], chapter_from="2", chapter_to="2")
 assert st["status"] == "error" and "declined" in st["error"], st
 
 print("OK - Gemini error messages")
+
+# --- Google busy (503) is retried and shown in the console
+stub.script = [err(503, "UNAVAILABLE", "The model is overloaded. Please try again later.")]
+st, _ = run_job(sections=["key_points"], chapter_from="3", chapter_to="3")
+assert st["status"] == "done", st
+assert any("Google is busy (HTTP 503" in l for l in st["log"]), st["log"]
+
+# --- a stream error object (quota) during the answer is a usage limit
+stub.script = [Resp(200, None, [{"error": {"code": 429, "status": "RESOURCE_EXHAUSTED", "message": "Quota exceeded"}}])]
+st, _ = run_job(sections=["key_points"], chapter_from="4", chapter_to="4")
+assert st["status"] == "error" and "Gemini usage limit" in st["error"], st
+
+# --- Stop while Gemini is silent: the live line says it is thinking, then the job stops
+slow = SlowResp()
+stub.script = [slow]
+r = client.post("/api/jobs", json={"cls": "10", "subject": "Science", "book": "jesc1", "chapter_from": "5",
+                                   "chapter_to": "5", "sections": ["key_points"]}, headers=H, base_url=BASE)
+job = r.get_json()["id"]
+for _ in range(100):
+    st = client.get(f"/api/jobs/{job}", base_url=BASE).get_json()
+    if "thinking" in st["progress"]:
+        break
+    time.sleep(0.1)
+assert "thinking" in st["progress"], st
+assert client.post(f"/api/jobs/{job}/stop", headers=H, base_url=BASE).status_code == 200
+for _ in range(100):
+    st = client.get(f"/api/jobs/{job}", base_url=BASE).get_json()
+    if st["status"] != "running":
+        break
+    time.sleep(0.1)
+assert st["status"] == "stopped" and slow.closed, st
+assert any("Stopped" in l for l in st["log"])
+print("OK - console lines, busy retry, stream errors, Stop")

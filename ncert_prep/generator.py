@@ -4,6 +4,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+import time
 
 import anthropic
 
@@ -236,7 +237,12 @@ def _client(api_key: str | None = None) -> anthropic.Anthropic:
     return anthropic.Anthropic(api_key=api_key or None, max_retries=4, timeout=1800)
 
 
-def _via_api(pdf_bytes: bytes, prompt: str, title: str, api_key: str, schema: dict) -> tuple[dict, str]:
+class Cancelled(RuntimeError):
+    """The person pressed Stop."""
+
+
+def _via_api(pdf_bytes: bytes, prompt: str, title: str, api_key: str, schema: dict,
+             log=print, progress=None, cancel=None) -> tuple[dict, str]:
     content = [
         {"type": "document",
          "source": {"type": "base64", "media_type": "application/pdf",
@@ -257,7 +263,25 @@ def _via_api(pdf_bytes: bytes, prompt: str, title: str, api_key: str, schema: di
             fallbacks="default",
             messages=[{"role": "user", "content": content}],
         ) as stream:
+            log("Claude accepted the request and is reading the chapter …")
+            started, chars, thinking, last = time.time(), 0, 0, 0.0
+            for event in stream:
+                if cancel is not None and cancel.is_set():
+                    raise Cancelled("Stopped.")
+                if event.type == "content_block_delta":
+                    if event.delta.type == "text_delta":
+                        if not chars:
+                            log(f"Claude started writing the answer after {int(time.time() - started)} s.")
+                        chars += len(event.delta.text)
+                    elif event.delta.type == "thinking_delta":
+                        thinking += len(event.delta.thinking)
+                now = time.time()
+                if progress and now - last >= 1:
+                    last = now
+                    progress(f"Receiving the answer from Claude: {chars:,} characters, {int(now - started)} s so far"
+                             if chars else f"Claude is reading and thinking … {int(now - started)} s so far")
             message = stream.get_final_message()
+            log(f"Claude finished writing: {chars:,} characters in {int(time.time() - started)} s.")
     except anthropic.AuthenticationError:
         raise RuntimeError("The API key was rejected. Check it in Settings.")
     except anthropic.RateLimitError:
@@ -277,7 +301,7 @@ def _via_api(pdf_bytes: bytes, prompt: str, title: str, api_key: str, schema: di
 def generate_chapter(pdf_bytes: bytes, *, cls: str, subject: str, book: str, chapter: int,
                      page_note: str = "", engine: str = "api_key", api_key: str = "",
                      sections=None, gemini_model: str = "", gemini_output_limit: int = 0,
-                     log=print) -> dict:
+                     log=print, progress=None, cancel=None) -> dict:
     """Return the study material (dict matching build_schema(sections)) for one chapter PDF.
 
     engine="claude_login": the signed-in Claude Pro/Max account via Claude Code.
@@ -293,13 +317,19 @@ def generate_chapter(pdf_bytes: bytes, *, cls: str, subject: str, book: str, cha
                           pages_note=page_note)
     if engine == "claude_login":
         import claude_cli
-        data, usage = claude_cli.run_structured(pdf_bytes, prompt, SYSTEM, schema), "Claude login"
+        log("Sending the chapter to Claude Code (your Claude login). Claude Code reports nothing "
+            "until it finishes; the timer below shows it is still working.")
+        data, usage = claude_cli.run_structured(pdf_bytes, prompt, SYSTEM, schema,
+                                                progress=progress, cancel=cancel), "Claude login"
     elif engine == "gemini":
         import gemini
         data, usage = gemini.generate(pdf_bytes, prompt, SYSTEM, schema, api_key=api_key,
-                                      model=gemini_model, output_limit=gemini_output_limit)
+                                      model=gemini_model, output_limit=gemini_output_limit,
+                                      log=log, progress=progress, cancel=cancel)
     else:
-        data, usage = _via_api(pdf_bytes, prompt, f"{book} - Chapter {chapter}", api_key, schema)
+        log(f"Sending the chapter PDF ({len(pdf_bytes) / 1e6:.1f} MB) to the Claude API ({MODEL}) …")
+        data, usage = _via_api(pdf_bytes, prompt, f"{book} - Chapter {chapter}", api_key, schema,
+                               log=log, progress=progress, cancel=cancel)
     for key in sections:
         data.setdefault(key, [])
     data.setdefault("chapter_title", f"Chapter {chapter}")

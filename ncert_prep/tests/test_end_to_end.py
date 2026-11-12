@@ -83,7 +83,7 @@ def run_job(**extra):
     job = r.get_json()["id"]
     for _ in range(180):
         st = client.get(f"/api/jobs/{job}", base_url=BASE).get_json()
-        if st["status"] in ("done", "error"):
+        if st["status"] in ("done", "error", "stopped"):
             return st
         time.sleep(1)
     raise TimeoutError
@@ -109,6 +109,8 @@ assert b["thinking"] == {"type": "adaptive"} and b["fallbacks"] == "default"
 hdr = captured["headers"]
 assert "sk-ant-test-1234567890" in (hdr.get("x-api-key", "") + hdr.get("authorization", "")), "saved key not sent"
 assert b["messages"][0]["content"][0]["source"]["media_type"] == "application/pdf"
+for words in ("Sending the chapter PDF", "Claude accepted the request", "Claude started writing", "Claude finished writing"):
+    assert any(words in l for l in st["log"]), words
 print("OK - API key engine\n")
 
 # --- 2. Claude login engine, split into 8-page parts
@@ -187,3 +189,25 @@ paper = pdf_render.practice_paper([FULL], ["one_mark", "long_answer"])
 assert [h for h, _m, _q in paper] == ["Section A: 1 mark each", "Section B: 5 marks each"], paper
 assert len(paper[0][2]) == 10 and len(paper[1][2]) == 3
 print(f"OK - selectable sections; PDF {pdf.name}")
+
+# --- Stop while Claude Code is working: the process is ended and the job says so
+os.environ["FAKE_CLAUDE_SLEEP"] = "60"
+r = client.post("/api/jobs", json={"cls": "10", "subject": "Science", "book": "jesc1", "chapter_from": "2",
+                                   "chapter_to": "2", "sections": ["key_points"]}, headers=H, base_url=BASE)
+job = r.get_json()["id"]
+for _ in range(100):
+    st = client.get(f"/api/jobs/{job}", base_url=BASE).get_json()
+    if "Claude Code is reading" in st["progress"]:
+        break
+    time.sleep(0.2)
+assert "Claude Code is reading" in st["progress"], st
+t0 = time.time()
+client.post(f"/api/jobs/{job}/stop", headers=H, base_url=BASE)
+for _ in range(50):
+    st = client.get(f"/api/jobs/{job}", base_url=BASE).get_json()
+    if st["status"] != "running":
+        break
+    time.sleep(0.2)
+os.environ.pop("FAKE_CLAUDE_SLEEP")
+assert st["status"] == "stopped" and time.time() - t0 < 10, st
+print("OK - Stop ends a running Claude Code request")

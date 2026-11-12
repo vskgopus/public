@@ -110,9 +110,26 @@ def _simplify(schema):
     return schema
 
 
+class Cancelled(RuntimeError):
+    """The person pressed Stop."""
+
+
+def _mins(seconds: float) -> str:
+    s = int(seconds)
+    return f"{s // 60} min {s % 60:02d} s" if s >= 60 else f"{s} s"
+
+
 def generate(pdf_bytes: bytes, prompt: str, system: str, schema: dict, *, api_key: str, model: str,
-             output_limit: int = 0, attempts: int = 4) -> tuple[dict, str]:
-    """Have Gemini read the PDF and return JSON matching `schema`. Returns (data, usage text)."""
+             output_limit: int = 0, attempts: int = 4, log=None, progress=None, cancel=None,
+             idle_timeout: int = 600) -> tuple[dict, str]:
+    """Have Gemini read the PDF and return JSON matching `schema`. Returns (data, usage text).
+
+    The answer is streamed (streamGenerateContent, server-sent events), so `progress`
+    can show it arriving. log(msg): a line for the job console. progress(msg): the
+    current state, replaced as it changes. cancel: a threading.Event set by Stop.
+    idle_timeout: give up if Google sends nothing for this many seconds."""
+    log = log or (lambda m: None)
+    progress = progress or (lambda m: None)
     if not model:
         raise RuntimeError("No Gemini model chosen. Open Settings, save your key and pick a model.")
     config = {"responseMimeType": "application/json", "responseJsonSchema": schema}
@@ -126,20 +143,33 @@ def generate(pdf_bytes: bytes, prompt: str, system: str, schema: dict, *, api_ke
         ]}],
         "generationConfig": config,
     }
-    url = f"{BASE}/models/{model}:generateContent"
+    url = f"{BASE}/models/{model}:streamGenerateContent?alt=sse"
     simplified = False
+    r = None
     for attempt in range(1, attempts + 1):
+        if cancel is not None and cancel.is_set():
+            raise Cancelled("Stopped.")
+        try_note = f" (attempt {attempt} of {attempts})" if attempt > 1 else ""
+        log(f"Sending the chapter PDF ({len(pdf_bytes) / 1e6:.1f} MB) to Google Gemini ({model}){try_note} …")
+        progress("Waiting for Google to accept the request …")
         try:
-            r = SESSION.post(url, json=body, headers={"x-goog-api-key": api_key}, timeout=(20, 1800))
+            r = SESSION.post(url, json=body, headers={"x-goog-api-key": api_key}, stream=True,
+                             timeout=(20, idle_timeout))
         except requests.RequestException as e:
             if attempt == attempts:
                 raise RuntimeError(f"Could not reach the Gemini API. Check your internet connection ({e}).")
-            _sleep(5 * attempt)
+            wait = 5 * attempt
+            log(f"Could not reach Google ({type(e).__name__}). Trying again in {wait} s …")
+            _sleep(wait)
             continue
         if r.status_code in (500, 502, 503, 504) and attempt < attempts:   # overloaded: wait and retry
-            _sleep(10 * attempt)
+            wait = 10 * attempt
+            log(f"Google is busy (HTTP {r.status_code}: {_error(r)[1][:120] or 'no details'}). "
+                f"Trying again in {wait} s …")
+            _sleep(wait)
             continue
         if r.status_code == 400 and not simplified and re.search(r"schema", _error(r)[1], re.I):
+            log("Google did not accept the detailed output format; retrying with a simpler one …")
             body["generationConfig"]["responseJsonSchema"] = _simplify(schema)
             simplified = True
             continue
@@ -148,26 +178,131 @@ def generate(pdf_bytes: bytes, prompt: str, system: str, schema: dict, *, api_ke
                                f"smaller parts in Settings ({_error(r)[1]}).")
         _check(r)
         break
-    data = r.json()
-    block = (data.get("promptFeedback") or {}).get("blockReason")
-    if block:
-        raise RuntimeError(f"Gemini declined this request ({block}).")
-    cands = data.get("candidates") or []
-    if not cands:
-        raise RuntimeError("Gemini returned no answer. Try again, or split the chapter in Settings.")
-    cand = cands[0]
-    finish = cand.get("finishReason", "")
+    else:
+        _check(r)
+
+    log("Google accepted the request. Gemini is reading the chapter and thinking; "
+        "the answer starts to arrive after that.")
+    data, text, usage = _read_stream(r, progress=progress, log=log, cancel=cancel, idle_timeout=idle_timeout)
+    finish = data.get("finishReason", "")
+    if data.get("blockReason"):
+        raise RuntimeError(f"Gemini declined this request ({data['blockReason']}).")
     if finish == "MAX_TOKENS":
         raise RuntimeError("The output was too long for Gemini; split the chapter into smaller parts in Settings.")
     if finish not in ("", "STOP"):
         raise RuntimeError(f"Gemini stopped early ({finish}). Try again, or split the chapter in Settings.")
-    text = "".join(p.get("text", "") for p in (cand.get("content") or {}).get("parts", []) if not p.get("thought"))
+    if not text:
+        raise RuntimeError("Gemini returned no answer. Try again, or split the chapter in Settings.")
     try:
         result = json.loads(text)
     except ValueError:
         raise RuntimeError("Gemini returned incomplete material. Try again, or split the chapter in Settings.")
     if not isinstance(result, dict):
         raise RuntimeError("Gemini returned material in an unexpected shape. Try again.")
-    u = data.get("usageMetadata") or {}
-    usage = f"Gemini {model}: {u.get('promptTokenCount', '?')} in / {u.get('candidatesTokenCount', '?')} out tokens"
-    return result, usage
+    return result, f"Gemini {model}: {usage.get('promptTokenCount', '?')} in / {usage.get('candidatesTokenCount', '?')} out tokens"
+
+
+def _read_stream(r, *, progress, log, cancel, idle_timeout: int) -> tuple[dict, str, dict]:
+    """Read the server-sent events; report progress; return (finish info, answer text, usage)."""
+    import threading
+
+    started = time.time()
+    state = {"chars": 0, "first": None, "done": False, "last": time.time()}
+    info, usage, pieces = {}, {}, []
+
+    def ticker():   # keeps the console alive while Google is silent, and handles Stop
+        while not state["done"]:
+            if cancel is not None and cancel.is_set():
+                try:
+                    r.close()
+                finally:
+                    return
+            now = time.time()
+            if state["first"] is None:
+                progress(f"Gemini is reading the chapter and thinking … {_mins(now - started)} so far "
+                         f"(nothing is sent back until it starts writing)")
+            else:
+                progress(f"Receiving the answer from Gemini: {state['chars']:,} characters, "
+                         f"{_mins(now - started)} so far")
+            time.sleep(1)
+
+    threading.Thread(target=ticker, daemon=True).start()
+    buffer: list[str] = []
+    try:
+        for line in r.iter_lines(decode_unicode=True):
+            if cancel is not None and cancel.is_set():
+                raise Cancelled("Stopped.")
+            if line:
+                if line.startswith("data: "):
+                    buffer.append(line[6:])
+                elif line.strip().startswith(("{", "[", "}", "]", '"')):
+                    buffer.append(line)        # an error object sent without the "data:" prefix
+                continue
+            if not buffer:
+                continue
+            chunk, buffer = "\n".join(buffer), []
+            _take(chunk, info, usage, pieces, state, log, started)
+        if buffer:
+            _take("\n".join(buffer), info, usage, pieces, state, log, started)
+    except Cancelled:
+        raise
+    except requests.exceptions.ConnectionError as e:
+        if cancel is not None and cancel.is_set():
+            raise Cancelled("Stopped.")
+        if "timed out" in str(e).lower() or "Read timed out" in str(e):
+            raise RuntimeError(f"Google sent nothing for {idle_timeout // 60} minutes, so the app stopped waiting. "
+                               "Try again, choose another model in Settings, or split the chapter.")
+        raise RuntimeError(f"The connection to Google dropped while Gemini was answering ({e}). "
+                           "Click Prepare again; finished parts are kept.")
+    except (requests.exceptions.Timeout, requests.exceptions.ChunkedEncodingError) as e:
+        if cancel is not None and cancel.is_set():
+            raise Cancelled("Stopped.")
+        raise RuntimeError(f"Google sent nothing for {idle_timeout // 60} minutes, or the connection broke "
+                           f"({type(e).__name__}). Try again, choose another model in Settings, or split the chapter.")
+    except (AttributeError, ValueError, OSError):
+        if cancel is not None and cancel.is_set():
+            raise Cancelled("Stopped.")
+        raise
+    finally:
+        state["done"] = True
+        try:
+            r.close()          # release the connection in every case (done, error or Stop)
+        except Exception:
+            pass
+    if cancel is not None and cancel.is_set():
+        raise Cancelled("Stopped.")
+    text = "".join(pieces)
+    log(f"Gemini finished writing: {len(text):,} characters in {_mins(time.time() - started)}.")
+    return info, text, usage
+
+
+def _take(chunk: str, info: dict, usage: dict, pieces: list, state: dict, log, started: float) -> None:
+    try:
+        data = json.loads(chunk)
+    except ValueError:
+        return
+    if isinstance(data, list):           # some servers send a JSON array of responses
+        for d in data:
+            _take(json.dumps(d), info, usage, pieces, state, log, started)
+        return
+    if "error" in data:
+        err = data["error"]
+        status, msg = str(err.get("status", "")), str(err.get("message", ""))[:300]
+        if status == "RESOURCE_EXHAUSTED" or err.get("code") == 429:
+            raise UsageLimit(msg or "rate limit reached")
+        raise RuntimeError(f"Gemini reported an error while answering: {status} {msg}")
+    block = (data.get("promptFeedback") or {}).get("blockReason")
+    if block:
+        info["blockReason"] = block
+    usage.update(data.get("usageMetadata") or {})
+    for cand in data.get("candidates") or []:
+        for p in (cand.get("content") or {}).get("parts", []):
+            if p.get("text") and not p.get("thought"):
+                if state["first"] is None:
+                    state["first"] = time.time()
+                    log(f"Gemini started writing the answer after {_mins(state['first'] - started)}.")
+                pieces.append(p["text"])
+                state["chars"] += len(p["text"])
+        if cand.get("finishReason"):
+            info["finishReason"] = cand["finishReason"]
+        break

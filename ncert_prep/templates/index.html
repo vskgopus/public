@@ -51,8 +51,15 @@
   label.chk.off { opacity: .55; cursor: not-allowed; }
   @media (max-width: 560px) { .checks { grid-template-columns: 1fr; } }
   #status { margin-top: 20px; }
-  #log { margin: 0; padding-left: 20px; font-size: .9rem; color: var(--muted); }
-  #log li:last-child { color: var(--ink); }
+  .statebar { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .statebar p { margin: 0; font-weight: 600; }
+  #stop { padding: 6px 14px; }
+  #progress { margin: 6px 0 10px; min-height: 1.3em; }
+  .consolehead { display: flex; justify-content: space-between; align-items: baseline; font-size: .8rem; color: var(--muted); margin-bottom: 4px; }
+  .consolehead .follow { margin: 0; font-size: .8rem; color: var(--muted); }
+  #console { background: #0f1720; color: #d7e0ea; border-radius: 8px; padding: 10px 12px; height: 220px; overflow-y: auto;
+             font: 12.5px/1.5 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; white-space: pre-wrap; word-break: break-word; }
+  #console .err { color: #ff9b8f; } #console .ok { color: #7ee2a8; } #console .live { color: #f5d38a; }
   .error { color: var(--err); font-weight: 600; }
   .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
   .actions a { padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: 600; border: 1px solid var(--accent); color: var(--accent); }
@@ -152,8 +159,11 @@
     <button id="go" class="primary" type="submit">Prepare exam material</button>
 
     <div id="status" hidden>
-      <p id="state"></p>
-      <ol id="log"></ol>
+      <div class="statebar"><p id="state"></p><button class="secondary" id="stop" type="button" hidden>Stop</button></div>
+      <p id="progress" class="hint" aria-live="polite"></p>
+      <div class="consolehead"><span>What the app is doing</span>
+        <label class="chk follow"><input type="checkbox" id="follow" checked> Follow new lines</label></div>
+      <div id="console" role="log" aria-label="What the app is doing"></div>
       <div id="actions" class="actions"></div>
     </div>
   </form>
@@ -349,30 +359,44 @@ refresh().then(() => { const c = ST.claude, s = ST.settings;
 $("f").onsubmit = async e => {
   e.preventDefault();
   if (!checkSections()) { $("secmsg").scrollIntoView({ block: "center" }); return; }
-  $("go").disabled = true; $("status").hidden = false; $("actions").innerHTML = ""; $("log").innerHTML = "";
+  $("go").disabled = true; $("status").hidden = false; $("actions").innerHTML = ""; $("console").innerHTML = ""; $("progress").textContent = "";
   $("state").innerHTML = '<span class="spinner"></span>Starting…';
   try {
     const j = await post("/api/jobs", { cls: $("cls").value, subject: $("subject").value, book: $("book").value,
       chapter_from: $("chf").value, chapter_to: $("cht").value, page_from: $("pf").value, page_to: $("pt").value,
       sections: chosen() });
+    JOB = j.id; $("stop").hidden = false; $("stop").disabled = false;
     poll(j.id);
   } catch (err) { fail(err.message); }
 };
-function fail(msg) { $("state").innerHTML = `<span class="error">${esc(msg)}</span>`; $("go").disabled = false; }
+let JOB = null;
+$("stop").onclick = async () => { if (!JOB) return; $("stop").disabled = true; await post(`/api/jobs/${JOB}/stop`).catch(() => {}); };
+function fail(msg) { $("state").innerHTML = `<span class="error">${esc(msg)}</span>`; $("go").disabled = false;
+  $("stop").hidden = true; $("progress").textContent = ""; }
+function showConsole(lines, live) {
+  const c = $("console");
+  c.innerHTML = lines.map(l => {
+    const cls = /  Error: /.test(l) ? "err" : /  (Done\.|Gemini finished|Claude finished)/.test(l) ? "ok" : "";
+    return `<div class="${cls}">${esc(l)}</div>`; }).join("") + (live ? `<div class="live">… ${esc(live)}</div>` : "");
+  if ($("follow").checked) c.scrollTop = c.scrollHeight;
+}
 async function poll(id) {
-  const j = await fetch(`/api/jobs/${id}`).then(r => r.json());
-  $("log").innerHTML = j.log.map(l => `<li>${esc(l)}</li>`).join("");
-  if (j.status === "error") return fail(j.error);
+  let j;
+  try { j = await fetch(`/api/jobs/${id}`).then(r => r.json()); }
+  catch (e) { $("progress").textContent = "Lost contact with the app; retrying …"; return setTimeout(() => poll(id), 3000); }
+  showConsole(j.log, j.status === "running" || j.status === "queued" ? j.progress : "");
+  $("progress").textContent = "";
+  if (j.status === "error" || j.status === "stopped") return fail(j.error);
   if (j.status === "done") {
     $("state").textContent = `Ready (took ${Math.max(1, Math.round(j.elapsed / 60))} min).`;
     $("actions").innerHTML = `<a class="primary" href="${j.download}" target="_blank">Open PDF to print</a>
       <a href="${j.download}?download=1">Download PDF</a><a href="#" id="folder2">Open PDF folder</a>`;
     $("folder2").onclick = ev => { ev.preventDefault(); post("/api/open-folder"); };
-    $("go").disabled = false; return;
+    $("go").disabled = false; $("stop").hidden = true; $("progress").textContent = ""; return;
   }
   const m = Math.floor(j.elapsed / 60), s = j.elapsed % 60;
   $("state").innerHTML = `<span class="spinner"></span>Working… ${m}:${String(s).padStart(2, "0")}`;
-  setTimeout(() => poll(id), 3000);
+  setTimeout(() => poll(id), 1500);
 }
 </script>
 </body>

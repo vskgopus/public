@@ -56,6 +56,8 @@ curl -fsSL https://raw.githubusercontent.com/vskgopus/public/ncert-prep/ncert_pr
 ```
 
 Run the same command again any time to update. Your login, settings and PDFs are kept.
+After an update, the next start of the app stops a still-running older copy and starts the new
+version (unless the older copy is busy preparing a PDF; then it is left to finish).
 Or do it by hand:
 
 ```bash
@@ -88,7 +90,10 @@ The Settings panel opens. Choose one:
 - **API key**: paste your `sk-ant-…` key and click **Save**.
 
 Then choose the book and chapters and click **Prepare exam material**. A chapter takes a
-few minutes. Click **Open PDF to print** when it's done. PDFs are also kept in:
+few minutes. A console under the button shows each step with the time, and a live line shows
+what is happening now (for example "Gemini is reading the chapter and thinking … 2 min" or
+"Receiving the answer: 12,000 characters"). **Stop** ends the current job; parts already
+finished are kept. If the app was started from a terminal, the same lines are printed there. Click **Open PDF to print** when it's done. PDFs are also kept in:
 - Linux: `~/.local/share/ncert-prep/output`
 - Windows: `%LOCALAPPDATA%\ncert-prep\output`
 
@@ -105,7 +110,7 @@ few minutes. Click **Open PDF to print** when it's done. PDFs are also kept in:
 
 | File | Role |
 |---|---|
-| `launcher.py` | Starts the app on this computer only (127.0.0.1) and opens it in an app window |
+| `launcher.py` | Starts the app on this computer only (127.0.0.1) and opens it in an app window; reuses a running copy of the same version and restarts an older one |
 | `app.py`, `templates/index.html` | The page, settings, background jobs |
 | `ncert.py` | Reads NCERT's catalogue into `catalog.json`; downloads chapter PDFs; cuts page ranges |
 | `generator.py` | The selectable sections (prompt and output schema for each), and the API-key engine |
@@ -129,6 +134,7 @@ Notes:
 ```bash
 .venv/bin/python tests/test_end_to_end.py
 .venv/bin/python tests/test_gemini.py
+.venv/bin/python tests/test_launcher.py
 ```
 
 This tests both engines without spending money. It uses real NCERT downloads, with Claude

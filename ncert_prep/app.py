@@ -38,6 +38,7 @@ JOBS: dict[str, dict] = {}
 CATALOG = ncert.load_catalog()
 shutdown_event = threading.Event()        # set by the Quit button; launcher.py waits on it
 TOKEN = secrets.token_urlsafe(24)         # web pages from other sites can't read this, so they can't act
+VERSION = settings.code_version()         # reported in /api/status; the launcher restarts older copies
 
 
 @app.before_request
@@ -73,7 +74,9 @@ def index():
 def api_status():
     s = settings.load()
     has_env_key = bool(os.environ.get("ANTHROPIC_API_KEY"))
-    return jsonify(settings=settings.public(s) | {"env_key": has_env_key, "env_gemini_key": bool(_env_gemini_key())},
+    busy = any(j["status"] in ("queued", "running") for j in JOBS.values())
+    return jsonify(version=VERSION, busy=busy,
+                   settings=settings.public(s) | {"env_key": has_env_key, "env_gemini_key": bool(_env_gemini_key())},
                    claude=claude_cli.status(), output_dir=str(OUT_DIR))
 
 
@@ -227,7 +230,8 @@ def create_job():
         return jsonify(error="No API key saved. Add one in Settings, or switch to Claude login."), 400
 
     job_id = uuid.uuid4().hex[:12]
-    JOBS[job_id] = {"status": "queued", "log": [], "file": None, "error": None, "started": time.time()}
+    JOBS[job_id] = {"status": "queued", "log": [], "file": None, "error": None, "started": time.time(),
+                    "progress": "", "cancel": threading.Event()}
     params = dict(cls=cls, subject=subject, book=book, ch_from=ch_from, ch_to=ch_to, p_from=p_from,
                   p_to=p_to, engine=s["engine"], split=s["split_pages"], sections=sections,
                   api_key=(s["gemini_api_key"] or _env_gemini_key()) if s["engine"] == "gemini" else s["api_key"],
@@ -269,7 +273,22 @@ def _saved_result(code: str, part: ncert.ChapterPart, needed: list[str], model: 
 
 def _run_job(job_id: str, p: dict) -> None:
     job = JOBS[job_id]
-    log = job["log"].append
+    cancel = job["cancel"]
+
+    def log(msg: str) -> None:
+        """A line for the console on the page (and the terminal, if the app was started from one)."""
+        line = f"{time.strftime('%H:%M:%S')}  {msg}"
+        job["log"].append(line)
+        job["progress"] = ""
+        print(line, flush=True)
+
+    def progress(msg: str) -> None:
+        job["progress"] = msg
+
+    def check_stop() -> None:
+        if cancel.is_set():
+            raise generator.Cancelled("Stopped.")
+
     try:
         job["status"] = "running"
         book = p["book"]
@@ -293,6 +312,7 @@ def _run_job(job_id: str, p: dict) -> None:
                     log(f"Chapter {piece.number}{note}: using the result saved earlier.")
                     results.append(earlier)
                     continue
+                check_stop()
                 label = f" (part {i} of {len(pieces)})" if len(pieces) > 1 else ""
                 log(f"Writing notes and questions for chapter {piece.number}{label}{note} with {engine_name}. "
                     "This takes a few minutes …")
@@ -300,7 +320,8 @@ def _run_job(job_id: str, p: dict) -> None:
                                                   book=book["title"], chapter=piece.number, page_note=note,
                                                   engine=p["engine"], api_key=p["api_key"],
                                                   sections=needed, gemini_model=p["gemini_model"],
-                                                  gemini_output_limit=p["gemini_output_limit"], log=log)
+                                                  gemini_output_limit=p["gemini_output_limit"], log=log,
+                                                  progress=progress, cancel=cancel)
                 _result_path(book["code"], piece, needed, model).write_text(json.dumps(data, ensure_ascii=False))
                 results.append(data)
             data = generator.merge_parts(results) if len(results) > 1 else results[0]
@@ -310,6 +331,7 @@ def _run_job(job_id: str, p: dict) -> None:
             data.update(number=part.number, url=part.url, page_note=note)
             chapters.append(data)
 
+        check_stop()
         log("Building the printable PDF …")
         name = p["subject"] if book["title"].lower() == p["subject"].lower() else f"{p['subject']}_{book['title']}"
         chs = f"Ch{p['ch_from']}" + (f"-{p['ch_to']}" if p["ch_to"] != p["ch_from"] else "")
@@ -319,6 +341,9 @@ def _run_job(job_id: str, p: dict) -> None:
                    chapters, out, p["sections"])
         job.update(status="done", file=str(out), filename=out.name)
         log(f"Done. Saved to {out}")
+    except (generator.Cancelled, gemini.Cancelled, claude_cli.Cancelled):
+        log("Stopped. Parts finished before Stop are saved; Prepare continues from them.")
+        job.update(status="stopped", error="Stopped. Parts finished before Stop are saved; click Prepare to continue.")
     except gemini.UsageLimit as e:
         job.update(status="error", error=f"The Gemini usage limit for your key was reached ({str(e)[:160]}). "
                    "Free keys have per-minute and daily limits. Finished parts are saved: click Prepare again "
@@ -330,16 +355,31 @@ def _run_job(job_id: str, p: dict) -> None:
                    "where it stopped. Splitting chapters into smaller parts in Settings also helps.")
     except Exception as e:  # show every failure on the page
         traceback.print_exc()
-        job.update(status="error", error=str(e) if isinstance(e, RuntimeError) else f"{type(e).__name__}: {e}")
+        msg = str(e) if isinstance(e, RuntimeError) else f"{type(e).__name__}: {e}"
+        log(f"Error: {msg}")
+        job.update(status="error", error=msg)
+    finally:
+        job["progress"] = ""
+        if job["status"] == "error" and not job["log"][-1].split("  ", 1)[-1].startswith("Error"):
+            log(f"Error: {job['error']}")
 
 
 @app.get("/api/jobs/<job_id>")
 def job_status(job_id):
     job = JOBS.get(job_id) or abort(404)
-    return jsonify({k: job[k] for k in ("status", "log", "error")} | {
+    return jsonify({k: job[k] for k in ("status", "log", "error", "progress")} | {
         "elapsed": int(time.time() - job["started"]),
         "file": job["file"],
         "download": f"/api/jobs/{job_id}/pdf" if job["status"] == "done" else None})
+
+
+@app.post("/api/jobs/<job_id>/stop")
+def job_stop(job_id):
+    """Stop button: the running request is abandoned; finished parts stay saved."""
+    job = JOBS.get(job_id) or abort(404)
+    job["cancel"].set()
+    job["progress"] = "Stopping …"
+    return jsonify(ok=True)
 
 
 @app.get("/api/jobs/<job_id>/pdf")
