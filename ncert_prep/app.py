@@ -1,8 +1,9 @@
 """NCERT Exam Prep - local web app (started by launcher.py, or `python app.py`).
 
-Pick class / subject / book / chapters; chapters are downloaded from ncert.nic.in, Claude
-writes notes and question banks, and a printable PDF is produced. Claude is used either
-through the person's own Claude login (Pro/Max, via Claude Code) or an Anthropic API key.
+Pick class / subject / book / chapters; chapters are downloaded from ncert.nic.in, the AI
+writes notes and question banks, and a printable PDF is produced. The AI is Claude, through
+the person's own Claude login (Pro/Max, via Claude Code) or an Anthropic API key, or Google
+Gemini with the person's own (free) Gemini API key.
 """
 from __future__ import annotations
 
@@ -19,6 +20,7 @@ import uuid
 from flask import Flask, abort, jsonify, render_template, request, send_file
 
 import claude_cli
+import gemini
 import generator
 import ncert
 import settings
@@ -71,7 +73,7 @@ def index():
 def api_status():
     s = settings.load()
     has_env_key = bool(os.environ.get("ANTHROPIC_API_KEY"))
-    return jsonify(settings=settings.public(s) | {"env_key": has_env_key},
+    return jsonify(settings=settings.public(s) | {"env_key": has_env_key, "env_gemini_key": bool(_env_gemini_key())},
                    claude=claude_cli.status(), output_dir=str(OUT_DIR))
 
 
@@ -79,8 +81,33 @@ def api_status():
 def api_settings():
     f = request.get_json(force=True)
     changes = {}
-    if f.get("engine") in ("claude_login", "api_key"):
+    if f.get("engine") in ("claude_login", "api_key", "gemini"):
         changes["engine"] = f["engine"]
+    models = None
+    if "gemini_api_key" in f:
+        gkey = str(f["gemini_api_key"]).strip()
+        if gkey and (len(gkey) < 20 or re.search(r"\s", gkey)):
+            return jsonify(error="That doesn't look like a Gemini API key. Copy it again from Google AI Studio."), 400
+        changes.update(gemini_api_key=gkey, gemini_model="", gemini_output_limit=0)
+        if gkey:   # check the key now and pick a model it can use
+            try:
+                models = gemini.list_models(gkey)
+            except (RuntimeError, gemini.UsageLimit) as e:
+                return jsonify(error=str(e)), 400
+            if not models:
+                return jsonify(error="This key works but Google lists no Gemini text models for it."), 400
+            best = gemini.default_model(models)
+            changes.update(gemini_model=best["id"], gemini_output_limit=best["output_limit"])
+    if "gemini_model" in f:
+        key = changes.get("gemini_api_key", settings.load()["gemini_api_key"]) or _env_gemini_key()
+        try:
+            models = models or gemini.list_models(key)
+        except (RuntimeError, gemini.UsageLimit) as e:
+            return jsonify(error=str(e)), 400
+        chosen = next((m for m in models if m["id"] == f["gemini_model"]), None)
+        if not chosen:
+            return jsonify(error="That Gemini model is not available for this key."), 400
+        changes.update(gemini_model=chosen["id"], gemini_output_limit=chosen["output_limit"])
     if "api_key" in f:
         key = str(f["api_key"]).strip()
         if key and not key.startswith("sk-ant-"):
@@ -96,7 +123,26 @@ def api_settings():
             changes["split_pages"] = max(0, min(50, int(f["split_pages"] or 0)))
         except ValueError:
             return jsonify(error="Pages per part must be a number."), 400
-    return jsonify(settings=settings.public(settings.save(changes)))
+    out = {"settings": settings.public(settings.save(changes))}
+    if models is not None:
+        out["gemini_models"] = models
+    return jsonify(out)
+
+
+def _env_gemini_key() -> str:
+    return next((os.environ[k] for k in gemini.ENV_KEYS if os.environ.get(k)), "")
+
+
+@app.post("/api/gemini/models")
+def api_gemini_models():
+    """The Gemini models the saved key can use (for the model list in Settings)."""
+    key = settings.load()["gemini_api_key"] or _env_gemini_key()
+    if not key:
+        return jsonify(error="Save a Gemini API key first."), 400
+    try:
+        return jsonify(models=gemini.list_models(key), current=settings.load()["gemini_model"])
+    except (RuntimeError, gemini.UsageLimit) as e:
+        return jsonify(error=str(e)), 400
 
 
 @app.post("/api/claude/login")
@@ -172,35 +218,46 @@ def create_job():
             return jsonify(error="Claude Code is not installed. Open Settings to install it, or switch to an API key."), 400
         if not st["logged_in"]:
             return jsonify(error="You are not logged in to Claude. Open Settings and click 'Log in with Claude'."), 400
+    elif s["engine"] == "gemini":
+        if not (s["gemini_api_key"] or _env_gemini_key()):
+            return jsonify(error="No Gemini API key saved. Add one in Settings, or choose Claude."), 400
+        if not s["gemini_model"]:
+            return jsonify(error="No Gemini model chosen. Open Settings and save your Gemini key again."), 400
     elif not (s["api_key"] or os.environ.get("ANTHROPIC_API_KEY")):
         return jsonify(error="No API key saved. Add one in Settings, or switch to Claude login."), 400
 
     job_id = uuid.uuid4().hex[:12]
     JOBS[job_id] = {"status": "queued", "log": [], "file": None, "error": None, "started": time.time()}
     params = dict(cls=cls, subject=subject, book=book, ch_from=ch_from, ch_to=ch_to, p_from=p_from,
-                  p_to=p_to, engine=s["engine"], api_key=s["api_key"], split=s["split_pages"],
-                  sections=sections)
+                  p_to=p_to, engine=s["engine"], split=s["split_pages"], sections=sections,
+                  api_key=(s["gemini_api_key"] or _env_gemini_key()) if s["engine"] == "gemini" else s["api_key"],
+                  gemini_model=s["gemini_model"], gemini_output_limit=s["gemini_output_limit"])
     threading.Thread(target=_run_job, args=(job_id, params), daemon=True).start()
     return jsonify(id=job_id)
 
 
-def _result_stem(code: str, part: ncert.ChapterPart) -> str:
-    key = f"{code}-{part.number}-{part.first_page}-{part.last_page}-{generator.MODEL}"
+def _model_tag(p: dict) -> str:
+    """Which model wrote a result: Claude results keep the old key, so earlier saves are reused."""
+    return f"gemini-{p['gemini_model']}" if p["engine"] == "gemini" else generator.MODEL
+
+
+def _result_stem(code: str, part: ncert.ChapterPart, model: str = generator.MODEL) -> str:
+    key = f"{code}-{part.number}-{part.first_page}-{part.last_page}-{model}"
     return f"{code}{part.number:02d}_p{part.first_page}-{part.last_page}_{hashlib.sha1(key.encode()).hexdigest()[:8]}"
 
 
-def _result_path(code: str, part: ncert.ChapterPart, needed: list[str]) -> "os.PathLike":
-    """Where to save Claude's result for this part and set of sections."""
+def _result_path(code: str, part: ncert.ChapterPart, needed: list[str], model: str) -> "os.PathLike":
+    """Where to save the AI's result for this part and set of sections."""
     tag = hashlib.sha1(",".join(needed).encode()).hexdigest()[:6]
-    return RESULTS / f"{_result_stem(code, part)}_{tag}.json"
+    return RESULTS / f"{_result_stem(code, part, model)}_{tag}.json"
 
 
-def _saved_result(code: str, part: ncert.ChapterPart, needed: list[str]) -> dict | None:
+def _saved_result(code: str, part: ncert.ChapterPart, needed: list[str], model: str) -> dict | None:
     """A result saved earlier for this part that already has every needed section.
 
     Results made before sections were selectable have no tag in the name and hold the
     original five sections; they are reused whenever those are enough."""
-    for path in sorted(RESULTS.glob(_result_stem(code, part) + "*.json")):
+    for path in sorted(RESULTS.glob(_result_stem(code, part, model) + "*.json")):
         try:
             data = json.loads(path.read_text())
         except (OSError, ValueError):
@@ -216,7 +273,9 @@ def _run_job(job_id: str, p: dict) -> None:
     try:
         job["status"] = "running"
         book = p["book"]
-        engine_name = "your Claude login" if p["engine"] == "claude_login" else "the Claude API"
+        engine_name = {"claude_login": "your Claude login", "gemini": f"Google Gemini ({p['gemini_model']})"}.get(
+            p["engine"], "the Claude API")
+        model = _model_tag(p)
         log(f"Downloading chapter {p['ch_from']}" + (f"–{p['ch_to']}" if p["ch_to"] != p["ch_from"] else "")
             + f" of '{book['title']}' from ncert.nic.in …")
         parts = ncert.load_selection(book["code"], p["ch_from"], p["ch_to"], p["p_from"], p["p_to"], log=log)
@@ -229,7 +288,7 @@ def _run_job(job_id: str, p: dict) -> None:
                 if piece.first_page != 1 or piece.last_page != piece.total_pages:
                     note = f", pages {piece.first_page}–{piece.last_page} of {piece.total_pages}"
                 needed = generator.claude_sections(p["sections"])
-                earlier = _saved_result(book["code"], piece, needed)
+                earlier = _saved_result(book["code"], piece, needed, model)
                 if earlier is not None:
                     log(f"Chapter {piece.number}{note}: using the result saved earlier.")
                     results.append(earlier)
@@ -240,8 +299,9 @@ def _run_job(job_id: str, p: dict) -> None:
                 data = generator.generate_chapter(piece.pdf, cls=p["cls"], subject=p["subject"],
                                                   book=book["title"], chapter=piece.number, page_note=note,
                                                   engine=p["engine"], api_key=p["api_key"],
-                                                  sections=needed, log=log)
-                _result_path(book["code"], piece, needed).write_text(json.dumps(data, ensure_ascii=False))
+                                                  sections=needed, gemini_model=p["gemini_model"],
+                                                  gemini_output_limit=p["gemini_output_limit"], log=log)
+                _result_path(book["code"], piece, needed, model).write_text(json.dumps(data, ensure_ascii=False))
                 results.append(data)
             data = generator.merge_parts(results) if len(results) > 1 else results[0]
             note = ""
@@ -259,6 +319,11 @@ def _run_job(job_id: str, p: dict) -> None:
                    chapters, out, p["sections"])
         job.update(status="done", file=str(out), filename=out.name)
         log(f"Done. Saved to {out}")
+    except gemini.UsageLimit as e:
+        job.update(status="error", error=f"The Gemini usage limit for your key was reached ({str(e)[:160]}). "
+                   "Free keys have per-minute and daily limits. Finished parts are saved: click Prepare again "
+                   "after a minute, or after the daily limit resets, and the app will continue where it "
+                   "stopped. Ticking fewer sections also helps.")
     except claude_cli.UsageLimit as e:
         job.update(status="error", error=f"Your Claude usage limit was reached ({str(e)[:160]}). "
                    "Finished parts are saved: click Prepare again after the limit resets and the app will continue "

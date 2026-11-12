@@ -2,7 +2,7 @@
 
 A desktop app for CBSE students and teachers (Ubuntu/Linux and Windows). Choose a **class,
 subject, book, chapters and (optionally) pages**. The app downloads the chapters from the
-official NCERT site (ncert.nic.in), has Claude write the exam preparation material, and saves a
+official NCERT site (ncert.nic.in), has Claude or Google Gemini write the exam preparation material, and saves a
 **printable A4 PDF**. Tick what you want in it, for each chapter:
 
 | Notes | Questions with answers |
@@ -14,8 +14,8 @@ official NCERT site (ncert.nic.in), has Claude write the exam preparation materi
 | **Differences tables**: "difference between X and Y" | **Practice test** at the end: questions picked from the ticked question sections, without answers, with the answer key on separate pages |
 
 The first five (summary, key points, 1-, 2/3- and 5-mark questions) are ticked at first; the app
-remembers your choice. Each extra section adds time and Claude usage per chapter. The practice
-test uses no extra Claude usage: the app builds it from the questions already written.
+remembers your choice. Each extra section adds time and AI usage per chapter. The practice
+test uses no extra AI usage: the app builds it from the questions already written.
 
 The diagrams are simple box-and-arrow diagrams. They are not pictures of apparatus, maps or
 anatomy; for those, use the figures in the NCERT book.
@@ -28,16 +28,24 @@ Settings panel (opened from the top-right corner):
 
 ![Settings](docs/settings.png)
 
-## Two ways to use Claude (pick in Settings, top-right corner)
+## Three ways to run the AI (pick in Settings, top-right corner)
 
-| | **Claude login** | **API key** |
-|---|---|---|
-| What you need | A Claude **Pro or Max** subscription (Free doesn't include Claude Code) | An API key from console.anthropic.com |
-| Cost | Included in your plan; uses your plan's usage limits | Pay per use, about $0.30–0.60 per chapter |
-| How it works | Through Claude Code, Anthropic's command-line tool, signed in to your account | Direct calls to the Claude API |
-| Setup | Click **Log in with Claude** in Settings | Paste the key in Settings |
+| | **Claude login** | **API key** (Claude) | **Google Gemini** |
+|---|---|---|---|
+| What you need | A Claude **Pro or Max** subscription (Free doesn't include Claude Code) | An API key from console.anthropic.com | A Gemini API key from [aistudio.google.com/apikey](https://aistudio.google.com/apikey); a **free** key works |
+| Cost | Included in your plan; uses your plan's usage limits | Pay per use, about $0.30–0.60 per chapter | Free within Google's free-tier limits (per minute and per day; Google changes them) |
+| How it works | Through Claude Code, Anthropic's command-line tool, signed in to your account | Direct calls to the Claude API | Direct calls to the Gemini API |
+| Setup | Click **Log in with Claude** in Settings | Paste the key in Settings | Paste the key in Settings; the app lists the models your key can use and picks a Flash model |
 
-Each person uses their own Claude account or key; nothing is shared.
+Each person uses their own account or key; nothing is shared.
+
+About Gemini:
+- The prompts were written and checked with Claude. Gemini's notes and answers may differ in
+  quality, so check a few PDFs before relying on them.
+- Free keys have daily limits. If one is reached, finished parts are kept; click **Prepare** again
+  later, or choose another model in Settings. Splitting chapters uses more requests per chapter.
+- Google says it may use free-tier requests to improve its products.
+- The key can also come from the `GEMINI_API_KEY` environment variable.
 
 ## Install on Ubuntu / Linux
 
@@ -102,6 +110,7 @@ few minutes. Click **Open PDF to print** when it's done. PDFs are also kept in:
 | `ncert.py` | Reads NCERT's catalogue into `catalog.json`; downloads chapter PDFs; cuts page ranges |
 | `generator.py` | The selectable sections (prompt and output schema for each), and the API-key engine |
 | `claude_cli.py` | The Claude-login engine (Claude Code: status, login, one request per chapter) |
+| `gemini.py` | The Google Gemini engine (lists the models a key can use, one request per chapter) |
 | `settings.py` | Settings in `~/.config/ncert-prep/settings.json` (Windows: `%APPDATA%\ncert-prep`), readable only by you |
 | `pdf_render.py`, `fonts/` | Printable PDF layout with the bundled DejaVu font (so H₂O, x², √, → print on any computer); draws the diagrams and tables and builds the practice test |
 | `certs/` | Public Let's Encrypt intermediate certificates. ncert.nic.in doesn't send its own, so this lets downloads verify properly |
@@ -119,9 +128,12 @@ Notes:
 
 ```bash
 .venv/bin/python tests/test_end_to_end.py
+.venv/bin/python tests/test_gemini.py
 ```
 
 This tests both engines without spending money. It uses real NCERT downloads, with Claude
 replaced by a mock API and a stand-in `claude` command. It also covers chapter splitting,
 resuming, and the selectable sections (all of them in one PDF, reuse of saved parts for a
-smaller selection, and refusing an empty selection).
+smaller selection, and refusing an empty selection). `test_gemini.py` runs offline: it replaces
+the Gemini API and the NCERT download with stand-ins and checks the Gemini engine (key check,
+model choice, request format, rate limits and resume, error messages).

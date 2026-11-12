@@ -95,7 +95,7 @@
     <button class="badge" id="badge" type="button" aria-haspopup="dialog"><span class="dot" id="bdot"></span><span id="btext">Checking AI…</span></button>
   </div>
   <p class="lede">Choose a class, subject, book and chapters. The book is downloaded from the official NCERT site
-    (ncert.nic.in) and Claude prepares a printable PDF with the notes, diagrams, tables and questions you tick below.</p>
+    (ncert.nic.in) and the AI you choose in Settings prepares a printable PDF with the notes, diagrams, tables and questions you tick below.</p>
 
   <form id="f" class="card">
     <div class="grid">
@@ -146,7 +146,7 @@
             <span class="hint">picked from the questions above, answer key on separate pages</span></label>
         </fieldset>
       </div>
-      <p class="hint" id="secmsg" style="margin:8px 0 0">Each extra section adds to the time and the Claude usage per chapter.</p>
+      <p class="hint" id="secmsg" style="margin:8px 0 0">Each extra section adds to the time and the AI usage per chapter.</p>
     </div>
 
     <button id="go" class="primary" type="submit">Prepare exam material</button>
@@ -163,7 +163,7 @@
   <div id="panel" role="dialog" aria-modal="true" aria-labelledby="sh">
     <div class="ph"><h2 id="sh">Settings</h2><button class="x" id="close" type="button" aria-label="Close settings">×</button></div>
 
-    <p class="hint" style="margin-top:0">Choose how the app talks to Claude.</p>
+    <p class="hint" style="margin-top:0">Choose which AI writes the material.</p>
 
     <div class="opt" id="opt-login">
       <label><input type="radio" name="engine" value="claude_login" id="eng-login">
@@ -180,6 +180,24 @@
         <div class="row"><input id="apikey" type="password" placeholder="sk-ant-…" autocomplete="off" style="flex:1;min-width:0">
           <button class="secondary" id="savekey" type="button">Save</button></div>
         <span class="hint">Stored only on this computer, in your user settings folder.</span>
+      </div>
+    </div>
+    <div class="opt" id="opt-gem">
+      <label><input type="radio" name="engine" value="gemini" id="eng-gem">
+        <span><strong>Google Gemini</strong><br><span class="hint">Use a free Gemini API key from Google AI Studio. Free keys have daily limits.</span></span></label>
+      <div class="body">
+        <div id="gem-state" class="hint"></div>
+        <label for="gemkey" style="margin:0">Gemini API key</label>
+        <div class="row"><input id="gemkey" type="password" placeholder="Paste your Gemini key" autocomplete="off" style="flex:1;min-width:0">
+          <button class="secondary" id="savegem" type="button">Save</button></div>
+        <span class="hint">Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>.
+          Stored only on this computer. Google says it may use free-tier requests to improve its products.</span>
+        <div id="gem-model-row" hidden>
+          <label for="gemmodel" style="margin:0 0 6px">Model</label>
+          <select id="gemmodel"></select>
+          <span class="hint">The models your key can use. Flash models have usually been on the free tier (Google AI Studio shows your limits); if one hits its limit, try another.</span>
+        </div>
+        <span class="hint">The material is written for Claude first; check Gemini's PDFs before relying on them.</span>
       </div>
     </div>
     <div class="msg" id="smsg" role="status"></div>
@@ -231,7 +249,11 @@ async function refresh() {
   ST = await fetch("/api/status").then(r => r.json());
   const s = ST.settings, c = ST.claude;
   $("eng-login").checked = s.engine === "claude_login"; $("eng-key").checked = s.engine === "api_key";
+  $("eng-gem").checked = s.engine === "gemini"; $("opt-gem").classList.toggle("sel", s.engine === "gemini");
   $("opt-login").classList.toggle("sel", s.engine === "claude_login"); $("opt-key").classList.toggle("sel", s.engine === "api_key");
+  $("gem-state").textContent = s.gemini_key_set ? `A key is saved (${s.gemini_key_hint}).` + (s.gemini_model ? ` Model: ${s.gemini_model}.` : "")
+    : (s.env_gemini_key ? "Using the GEMINI_API_KEY environment variable." : "No key saved yet.");
+  if ((s.gemini_key_set || s.env_gemini_key) && !gemModels) loadGemModels();
   $("split").value = String(s.split_pages); $("outdir").textContent = ST.output_dir;
   $("key-state").textContent = s.api_key_set ? `A key is saved (${s.api_key_hint}).` : (s.env_key ? "Using the ANTHROPIC_API_KEY environment variable." : "No key saved yet.");
 
@@ -261,10 +283,25 @@ async function refresh() {
     if (!c.installed) text = "Claude login: install needed";
     else if (c.logged_in) { dot = "ok"; text = "Claude login"; }
     else { dot = "warn"; text = "Log in to Claude"; }
+  } else if (s.engine === "gemini") {
+    if ((s.gemini_key_set || s.env_gemini_key) && s.gemini_model) { dot = "ok"; text = "Google Gemini"; }
+    else text = "Gemini: key not set";
   } else if (s.api_key_set || s.env_key) { dot = "ok"; text = "API key"; }
   else text = "API key: not set";
   $("bdot").className = "dot " + dot; $("btext").textContent = text;
   if (c.logged_in && loginPoll) { clearInterval(loginPoll); loginPoll = null; say("Logged in.", false); }
+}
+let gemModels = null;
+function showGemModels(models, current) {
+  gemModels = models;
+  opt($("gemmodel"), models.map(m => [m.id, m.name === m.id ? m.id : `${m.name} (${m.id})`]));
+  if (current) $("gemmodel").value = current;
+  $("gem-model-row").hidden = !models.length;
+}
+async function loadGemModels() {
+  gemModels = [];
+  try { const j = await post("/api/gemini/models"); showGemModels(j.models, j.current); }
+  catch (e) { gemModels = null; say(e.message, true); }
 }
 function startLoginPoll() { if (!loginPoll) loginPoll = setInterval(refresh, 2500); }
 function say(m, bad) { $("smsg").textContent = m; $("smsg").className = "msg " + (bad ? "bad" : "ok"); }
@@ -275,6 +312,15 @@ $("shade").onclick = e => { if (e.target === $("shade")) closePanel(); };
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("shade").hidden) closePanel(); });
 document.querySelectorAll('input[name=engine]').forEach(r => r.onchange = async () => { await post("/api/settings", { engine: r.value }); say("Saved."); refresh(); });
 $("savekey").onclick = async () => { try { await post("/api/settings", { api_key: $("apikey").value, engine: "api_key" }); $("apikey").value = ""; say("API key saved."); refresh(); } catch (e) { say(e.message, true); } };
+$("savegem").onclick = async () => {
+  $("savegem").disabled = true; say("Checking the key with Google…");
+  try { const j = await post("/api/settings", { gemini_api_key: $("gemkey").value, engine: "gemini" });
+        $("gemkey").value = ""; if (j.gemini_models) showGemModels(j.gemini_models, j.settings.gemini_model);
+        say(j.settings.gemini_model ? `Gemini key saved. Model: ${j.settings.gemini_model}.` : "Gemini key removed."); refresh(); }
+  catch (e) { say(e.message, true); }
+  $("savegem").disabled = false;
+};
+$("gemmodel").onchange = async () => { try { await post("/api/settings", { gemini_model: $("gemmodel").value }); say("Saved."); refresh(); } catch (e) { say(e.message, true); } };
 $("split").onchange = async () => { await post("/api/settings", { split_pages: $("split").value }); say("Saved."); };
 $("openfolder").onclick = () => post("/api/open-folder").catch(e => say(e.message, true));
 $("quit").onclick = async () => { await post("/api/quit").catch(() => {}); document.body.innerHTML = '<main><h1>NCERT Exam Prep has closed.</h1><p class="lede">You can close this window.</p></main>'; };
@@ -287,7 +333,7 @@ function checkSections() {
   test.disabled = !hasQ; if (!hasQ) test.checked = false;
   test.closest("label").classList.toggle("off", !hasQ);
   const any = chosen().some(v => v !== "practice_test");
-  $("secmsg").textContent = any ? "Each extra section adds to the time and the Claude usage per chapter."
+  $("secmsg").textContent = any ? "Each extra section adds to the time and the AI usage per chapter."
                                 : "Tick at least one section.";
   $("secmsg").className = "hint" + (any ? "" : " error");
   return any;
@@ -296,7 +342,8 @@ SEC().forEach(b => b.onchange = () => { if (checkSections()) post("/api/settings
 
 refresh().then(() => { const c = ST.claude, s = ST.settings;
   SEC().forEach(b => b.checked = s.sections.includes(b.value)); checkSections();
-  if ((s.engine === "claude_login" && !(c.installed && c.logged_in)) || (s.engine === "api_key" && !(s.api_key_set || s.env_key))) openPanel(); });
+  if ((s.engine === "claude_login" && !(c.installed && c.logged_in)) || (s.engine === "api_key" && !(s.api_key_set || s.env_key))
+      || (s.engine === "gemini" && !((s.gemini_key_set || s.env_gemini_key) && s.gemini_model))) openPanel(); });
 
 // ---------------- jobs
 $("f").onsubmit = async e => {

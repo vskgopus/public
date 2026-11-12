@@ -276,11 +276,13 @@ def _via_api(pdf_bytes: bytes, prompt: str, title: str, api_key: str, schema: di
 
 def generate_chapter(pdf_bytes: bytes, *, cls: str, subject: str, book: str, chapter: int,
                      page_note: str = "", engine: str = "api_key", api_key: str = "",
-                     sections=None, log=print) -> dict:
+                     sections=None, gemini_model: str = "", gemini_output_limit: int = 0,
+                     log=print) -> dict:
     """Return the study material (dict matching build_schema(sections)) for one chapter PDF.
 
     engine="claude_login": the signed-in Claude Pro/Max account via Claude Code.
     engine="api_key":      the Anthropic API with the given key (or ANTHROPIC_API_KEY).
+    engine="gemini":       the Google Gemini API with the given key and model.
     sections: keys of SECTIONS to write (default DEFAULT_SECTIONS).
     """
     sections = claude_sections(DEFAULT_SECTIONS if sections is None else sections)
@@ -292,6 +294,10 @@ def generate_chapter(pdf_bytes: bytes, *, cls: str, subject: str, book: str, cha
     if engine == "claude_login":
         import claude_cli
         data, usage = claude_cli.run_structured(pdf_bytes, prompt, SYSTEM, schema), "Claude login"
+    elif engine == "gemini":
+        import gemini
+        data, usage = gemini.generate(pdf_bytes, prompt, SYSTEM, schema, api_key=api_key,
+                                      model=gemini_model, output_limit=gemini_output_limit)
     else:
         data, usage = _via_api(pdf_bytes, prompt, f"{book} - Chapter {chapter}", api_key, schema)
     for key in sections:
