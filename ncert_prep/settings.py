@@ -14,6 +14,8 @@ DEFAULTS = {
     "engine": "claude_login",   # "claude_login" (Claude Pro/Max via Claude Code) or "api_key"
     "api_key": "",
     "split_pages": 0,           # 0 = send whole chapters; N = split chapters into parts of N pages
+    # Sections ticked on the main page (keys of generator.ALL_OPTIONS); remembered between runs.
+    "sections": ["summary", "key_points", "one_mark", "short_answer", "long_answer"],
 }
 
 
@@ -64,5 +66,5 @@ def save(changes: dict) -> dict:
 def public(data: dict) -> dict:
     """Settings safe to send to the page (API key masked)."""
     key = data.get("api_key") or ""
-    return {"engine": data["engine"], "split_pages": data["split_pages"],
+    return {"engine": data["engine"], "split_pages": data["split_pages"], "sections": data["sections"],
             "api_key_set": bool(key), "api_key_hint": f"…{key[-4:]}" if len(key) > 8 else ""}

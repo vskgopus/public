@@ -3,13 +3,22 @@
 A desktop app for CBSE students and teachers (Ubuntu/Linux and Windows). Choose a **class,
 subject, book, chapters and (optionally) pages**. The app downloads the chapters from the
 official NCERT site (ncert.nic.in), has Claude write the exam preparation material, and saves a
-**printable A4 PDF** with, for each chapter:
+**printable A4 PDF**. Tick what you want in it, for each chapter:
 
-1. **Summary notes**: every topic explained as short points
-2. **Key points** to remember: definitions, formulae, equations, laws
-3. **One-mark questions with answers**: MCQ, fill in the blanks, true/false, very short answer, assertion-reason
-4. **2-mark and 3-mark questions with answers**, including the NCERT exercise questions
-5. **5-mark questions with answers**
+| Notes | Questions with answers |
+|---|---|
+| **Summary notes**: every topic explained as short points | **One-mark questions**: MCQ, fill in the blanks, true/false, very short answer, assertion-reason |
+| **Explanation diagrams**: flowcharts of processes, cycles and concept maps, drawn by the app from Claude's outline | **2-mark and 3-mark questions**, including the NCERT exercise questions |
+| **Key points** to remember: definitions, formulae, equations, laws | **5-mark questions** |
+| **Quick revision table**: one row per topic (topic, in short, remember) | **Case-based questions**: a passage with sub-questions |
+| **Differences tables**: "difference between X and Y" | **Practice test** at the end: questions picked from the ticked question sections, without answers, with the answer key on separate pages |
+
+The first five (summary, key points, 1-, 2/3- and 5-mark questions) are ticked at first; the app
+remembers your choice. Each extra section adds time and Claude usage per chapter. The practice
+test uses no extra Claude usage: the app builds it from the questions already written.
+
+The diagrams are simple box-and-arrow diagrams. They are not pictures of apparatus, maps or
+anatomy; for those, use the figures in the NCERT book.
 
 Sample output: [`samples/Class10_Science_Ch1_Chemical_Reactions_and_Equations.pdf`](samples/Class10_Science_Ch1_Chemical_Reactions_and_Equations.pdf)
 
@@ -80,6 +89,9 @@ few minutes. Click **Open PDF to print** when it's done. PDFs are also kept in:
 - **Settings → Split long chapters** sends a chapter in parts of 8, 12 or 16 pages.
 - Every finished part is saved. If you hit your plan's usage limit, click **Prepare** again
   after it resets; the app reuses the saved parts and continues from where it stopped.
+- Saved parts are also reused when you later ask for fewer sections. Asking for a section the
+  saved parts don't have sends those chapters to Claude again.
+- Leaving out sections you don't need also saves usage.
 
 ## Files
 
@@ -88,10 +100,10 @@ few minutes. Click **Open PDF to print** when it's done. PDFs are also kept in:
 | `launcher.py` | Starts the app on this computer only (127.0.0.1) and opens it in an app window |
 | `app.py`, `templates/index.html` | The page, settings, background jobs |
 | `ncert.py` | Reads NCERT's catalogue into `catalog.json`; downloads chapter PDFs; cuts page ranges |
-| `generator.py` | Prompt, output schema, and the API-key engine |
+| `generator.py` | The selectable sections (prompt and output schema for each), and the API-key engine |
 | `claude_cli.py` | The Claude-login engine (Claude Code: status, login, one request per chapter) |
 | `settings.py` | Settings in `~/.config/ncert-prep/settings.json` (Windows: `%APPDATA%\ncert-prep`), readable only by you |
-| `pdf_render.py`, `fonts/` | Printable PDF layout with the bundled DejaVu font (so H₂O, x², √, → print on any computer) |
+| `pdf_render.py`, `fonts/` | Printable PDF layout with the bundled DejaVu font (so H₂O, x², √, → print on any computer); draws the diagrams and tables and builds the practice test |
 | `certs/` | Public Let's Encrypt intermediate certificates. ncert.nic.in doesn't send its own, so this lets downloads verify properly |
 | `install.sh`, `ncert-prep.sh` | Linux installer and launcher |
 | `install.bat`, `install.ps1`, `start.bat` | Windows installer and launcher |
@@ -110,5 +122,6 @@ Notes:
 ```
 
 This tests both engines without spending money. It uses real NCERT downloads, with Claude
-replaced by a mock API and a stand-in `claude` command. It also covers chapter splitting and
-resuming.
+replaced by a mock API and a stand-in `claude` command. It also covers chapter splitting,
+resuming, and the selectable sections (all of them in one PDF, reuse of saved parts for a
+smaller selection, and refusing an empty selection).

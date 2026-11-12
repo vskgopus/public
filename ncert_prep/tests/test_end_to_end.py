@@ -4,6 +4,9 @@
    samples/class10_science_ch1.json; the request shape is checked.
 2. Claude login engine: a stand-in `claude` command (tests/fake_claude.py) answers
    `auth status` and `-p`; chapter splitting, merging and resume are checked.
+3. Selectable sections: every optional section (diagrams, revision table, differences,
+   case-based, practice test) in one PDF; saved results reused for a smaller selection;
+   invalid selections refused.
 
 Run:  python tests/test_end_to_end.py      (needs network access to ncert.nic.in)
 """
@@ -37,7 +40,8 @@ import httpx2 as httpx  # noqa: E402
 import app as webapp  # noqa: E402
 import generator  # noqa: E402
 
-SAMPLE = (ROOT / "samples" / "class10_science_ch1.json").read_text()
+FULL = json.loads((ROOT / "samples" / "class10_science_ch1.json").read_text())
+FULL.update(json.loads((ROOT / "tests" / "sample_extras.json").read_text()))
 captured = {}
 
 
@@ -48,6 +52,8 @@ def sse(events):
 def handler(request):
     body = json.loads(request.content)
     captured.update(body=body, headers=dict(request.headers))
+    required = body["output_config"]["format"]["schema"]["required"]
+    SAMPLE = json.dumps({k: v for k, v in FULL.items() if k in required}, ensure_ascii=False)
     events = [
         {"type": "message_start", "message": {"id": "msg_test", "type": "message", "role": "assistant",
          "model": body["model"], "content": [], "stop_reason": None, "stop_sequence": None,
@@ -97,6 +103,8 @@ assert st["status"] == "done", st
 assert client.get(st["download"], base_url=BASE).data.startswith(b"%PDF")
 b = captured["body"]
 assert b["model"] == generator.MODEL and b["output_config"]["format"]["type"] == "json_schema"
+assert b["output_config"]["format"]["schema"]["required"] == ["chapter_title"] + generator.DEFAULT_SECTIONS, \
+    "default selection should ask for the original five sections"
 assert b["thinking"] == {"type": "adaptive"} and b["fallbacks"] == "default"
 hdr = captured["headers"]
 assert "sk-ant-test-1234567890" in (hdr.get("x-api-key", "") + hdr.get("authorization", "")), "saved key not sent"
@@ -126,3 +134,56 @@ calls2 = [l for l in Path(os.environ["FAKE_CLAUDE_LOG"]).read_text().splitlines(
 assert len(calls2) == 2, "resume should not call Claude again"
 out = Path(webapp.JOBS[list(webapp.JOBS)[-1]]["file"])
 print(f"OK - Claude login engine, split + resume; PDF {out.name} ({out.stat().st_size // 1024} KB)")
+
+
+# --- 3. Selectable sections (Claude login engine, still 8-page parts)
+import pdf_render  # noqa: E402
+from pypdf import PdfReader  # noqa: E402
+
+
+def calls_so_far():
+    return [json.loads(l) for l in Path(os.environ["FAKE_CLAUDE_LOG"]).read_text().splitlines() if '"-p"' in l]
+
+
+for bad, why in (([], "nothing ticked"), (["practice_test"], "practice test without questions"),
+                 (["summary", "pictures"], "unknown section")):
+    r = client.post("/api/jobs", json={"cls": "10", "subject": "Science", "book": "jesc1", "chapter_from": "1",
+                                       "sections": bad}, headers=H, base_url=BASE)
+    assert r.status_code == 400, (why, r.get_json())
+
+everything = generator.ALL_OPTIONS
+before = len(calls_so_far())
+st = run_job(sections=everything)
+print("\n".join(st["log"]))
+assert st["status"] == "done", st
+new = calls_so_far()[before:]
+assert len(new) == 2, "the saved 5-section parts lack the extras, so both parts must be asked again"
+argv = new[0]["argv"]
+schema = json.loads(argv[argv.index("--json-schema") + 1])
+assert schema["required"] == ["chapter_title"] + list(generator.SECTIONS), schema["required"]
+prompt = argv[argv.index("-p") + 1]
+for word in ("diagrams -", "revision_table -", "differences -", "case_based -"):
+    assert word in prompt, word
+saved = client.get("/api/status", base_url=BASE).get_json()["settings"]["sections"]
+assert saved == everything, "the ticked sections should be remembered"
+
+pdf = Path(webapp.JOBS[list(webapp.JOBS)[-1]]["file"])
+text = "\n".join(p.extract_text() for p in PdfReader(pdf).pages)
+for heading in ("Diagrams to Understand the Chapter", "Quick Revision Table", "Differences",
+                "Case-Based Questions", "Practice Test", "Answer Key", "Types of chemical reactions",
+                "Difference between Exothermic reaction and Endothermic reaction"):
+    assert heading in text, heading
+
+# A smaller selection reuses the saved parts (they hold every section) and leaves the rest out.
+st = run_job(sections=["diagrams", "revision_table"])
+assert st["status"] == "done" and sum("saved earlier" in l for l in st["log"]) == 2, st["log"]
+assert len(calls_so_far()) == before + 2, "a subset of saved sections must not call Claude again"
+pdf = Path(webapp.JOBS[list(webapp.JOBS)[-1]]["file"])
+text = "\n".join(p.extract_text() for p in PdfReader(pdf).pages)
+assert "Quick Revision Table" in text and "One Mark Questions" not in text and "Practice Test" not in text
+
+# Practice test picks questions spread across the sections that are ticked.
+paper = pdf_render.practice_paper([FULL], ["one_mark", "long_answer"])
+assert [h for h, _m, _q in paper] == ["Section A: 1 mark each", "Section B: 5 marks each"], paper
+assert len(paper[0][2]) == 10 and len(paper[1][2]) == 3
+print(f"OK - selectable sections; PDF {pdf.name}")

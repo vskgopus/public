@@ -43,7 +43,13 @@
   button:disabled { opacity: .55; cursor: progress; }
   #go { margin-top: 20px; width: 100%; }
   .includes { margin: 20px 0 0; padding: 14px 16px; background: var(--soft); border-radius: 10px; font-size: .9rem; }
-  .includes ol { margin: 6px 0 0; padding-left: 20px; }
+  .checks { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+  .checks fieldset { background: var(--card); }
+  label.chk { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; font-weight: 400; margin: 6px 0 0; cursor: pointer; }
+  label.chk input { margin: 0; transform: translateY(1px); }
+  label.chk .hint { flex-basis: 100%; padding-left: 22px; }
+  label.chk.off { opacity: .55; cursor: not-allowed; }
+  @media (max-width: 560px) { .checks { grid-template-columns: 1fr; } }
   #status { margin-top: 20px; }
   #log { margin: 0; padding-left: 20px; font-size: .9rem; color: var(--muted); }
   #log li:last-child { color: var(--ink); }
@@ -89,7 +95,7 @@
     <button class="badge" id="badge" type="button" aria-haspopup="dialog"><span class="dot" id="bdot"></span><span id="btext">Checking AI…</span></button>
   </div>
   <p class="lede">Choose a class, subject, book and chapters. The book is downloaded from the official NCERT site
-    (ncert.nic.in) and Claude prepares a printable PDF of notes and questions with answers.</p>
+    (ncert.nic.in) and Claude prepares a printable PDF with the notes, diagrams, tables and questions you tick below.</p>
 
   <form id="f" class="card">
     <div class="grid">
@@ -114,15 +120,33 @@
         through the later chapters. Leave blank to use whole chapters.</p>
     </div>
 
-    <div class="includes">
-      <strong>The PDF contains, for each chapter:</strong>
-      <ol>
-        <li>Summary notes, topic by topic</li>
-        <li>Key points to remember</li>
-        <li>One-mark questions with answers (MCQ, fill in the blanks, true/false, assertion-reason, very short)</li>
-        <li>2- and 3-mark questions with answers</li>
-        <li>5-mark questions with answers</li>
-      </ol>
+    <div class="includes" id="includes">
+      <strong>Include in the PDF, for each chapter:</strong>
+      <div class="checks">
+        <fieldset>
+          <legend>Notes</legend>
+          <label class="chk"><input type="checkbox" name="sec" value="summary"> Summary notes, topic by topic</label>
+          <label class="chk"><input type="checkbox" name="sec" value="diagrams"> Explanation diagrams
+            <span class="hint">flowcharts, cycles and concept maps</span></label>
+          <label class="chk"><input type="checkbox" name="sec" value="key_points"> Key points to remember</label>
+          <label class="chk"><input type="checkbox" name="sec" value="revision_table"> Quick revision table
+            <span class="hint">one row per topic</span></label>
+          <label class="chk"><input type="checkbox" name="sec" value="differences"> Differences tables
+            <span class="hint">"difference between X and Y"</span></label>
+        </fieldset>
+        <fieldset>
+          <legend>Questions with answers</legend>
+          <label class="chk"><input type="checkbox" name="sec" value="one_mark"> One-mark questions
+            <span class="hint">MCQ, fill in the blanks, true/false, assertion-reason, very short</span></label>
+          <label class="chk"><input type="checkbox" name="sec" value="short_answer"> 2- and 3-mark questions</label>
+          <label class="chk"><input type="checkbox" name="sec" value="long_answer"> 5-mark questions</label>
+          <label class="chk"><input type="checkbox" name="sec" value="case_based"> Case-based questions
+            <span class="hint">a passage with sub-questions</span></label>
+          <label class="chk"><input type="checkbox" name="sec" value="practice_test" id="sec-test"> Practice test at the end
+            <span class="hint">picked from the questions above, answer key on separate pages</span></label>
+        </fieldset>
+      </div>
+      <p class="hint" id="secmsg" style="margin:8px 0 0">Each extra section adds to the time and the Claude usage per chapter.</p>
     </div>
 
     <button id="go" class="primary" type="submit">Prepare exam material</button>
@@ -254,17 +278,36 @@ $("savekey").onclick = async () => { try { await post("/api/settings", { api_key
 $("split").onchange = async () => { await post("/api/settings", { split_pages: $("split").value }); say("Saved."); };
 $("openfolder").onclick = () => post("/api/open-folder").catch(e => say(e.message, true));
 $("quit").onclick = async () => { await post("/api/quit").catch(() => {}); document.body.innerHTML = '<main><h1>NCERT Exam Prep has closed.</h1><p class="lede">You can close this window.</p></main>'; };
+// ---------------- sections to include
+const SEC = () => [...document.querySelectorAll("input[name=sec]")];
+const QUESTIONS = ["one_mark", "short_answer", "long_answer", "case_based"];
+function chosen() { return SEC().filter(b => b.checked).map(b => b.value); }
+function checkSections() {
+  const c = chosen(), hasQ = c.some(v => QUESTIONS.includes(v)), test = $("sec-test");
+  test.disabled = !hasQ; if (!hasQ) test.checked = false;
+  test.closest("label").classList.toggle("off", !hasQ);
+  const any = chosen().some(v => v !== "practice_test");
+  $("secmsg").textContent = any ? "Each extra section adds to the time and the Claude usage per chapter."
+                                : "Tick at least one section.";
+  $("secmsg").className = "hint" + (any ? "" : " error");
+  return any;
+}
+SEC().forEach(b => b.onchange = () => { if (checkSections()) post("/api/settings", { sections: chosen() }).catch(() => {}); });
+
 refresh().then(() => { const c = ST.claude, s = ST.settings;
+  SEC().forEach(b => b.checked = s.sections.includes(b.value)); checkSections();
   if ((s.engine === "claude_login" && !(c.installed && c.logged_in)) || (s.engine === "api_key" && !(s.api_key_set || s.env_key))) openPanel(); });
 
 // ---------------- jobs
 $("f").onsubmit = async e => {
   e.preventDefault();
+  if (!checkSections()) { $("secmsg").scrollIntoView({ block: "center" }); return; }
   $("go").disabled = true; $("status").hidden = false; $("actions").innerHTML = ""; $("log").innerHTML = "";
   $("state").innerHTML = '<span class="spinner"></span>Starting…';
   try {
     const j = await post("/api/jobs", { cls: $("cls").value, subject: $("subject").value, book: $("book").value,
-      chapter_from: $("chf").value, chapter_to: $("cht").value, page_from: $("pf").value, page_to: $("pt").value });
+      chapter_from: $("chf").value, chapter_to: $("cht").value, page_from: $("pf").value, page_to: $("pt").value,
+      sections: chosen() });
     poll(j.id);
   } catch (err) { fail(err.message); }
 };

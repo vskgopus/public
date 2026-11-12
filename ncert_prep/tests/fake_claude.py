@@ -14,7 +14,11 @@ elif argv[:2] == ["auth", "status"]:
     print(json.dumps({"loggedIn": True, "authMethod": "claude.ai"}))
 elif "-p" in argv:
     assert Path("chapter.pdf").read_bytes().startswith(b"%PDF"), "PDF missing in working folder"
-    sample = json.loads((Path(__file__).parent.parent / "samples" / "class10_science_ch1.json").read_text())
+    here = Path(__file__).parent
+    sample = json.loads((here.parent / "samples" / "class10_science_ch1.json").read_text())
+    sample.update(json.loads((here / "sample_extras.json").read_text()))
+    schema = json.loads(argv[argv.index("--json-schema") + 1])
+    sample = {k: v for k, v in sample.items() if k in schema["required"]}   # only what was asked for
     print(json.dumps({"type": "result", "subtype": "success", "is_error": False,
                       "result": json.dumps(sample), "structured_output": sample}))
 else:

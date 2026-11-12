@@ -86,6 +86,11 @@ def api_settings():
         if key and not key.startswith("sk-ant-"):
             return jsonify(error="That doesn't look like an Anthropic API key (it should start with sk-ant-)."), 400
         changes["api_key"] = key
+    if "sections" in f:
+        try:
+            changes["sections"] = _sections(f["sections"])
+        except ValueError as e:
+            return jsonify(error=str(e)), 400
     if "split_pages" in f:
         try:
             changes["split_pages"] = max(0, min(50, int(f["split_pages"] or 0)))
@@ -126,6 +131,21 @@ def _int(v):
     return int(v) if str(v or "").strip() else None
 
 
+def _sections(value) -> list[str]:
+    """Validate the ticked sections; keep the standard order."""
+    if not isinstance(value, list):
+        raise ValueError("Sections must be a list.")
+    unknown = [v for v in value if v not in generator.ALL_OPTIONS]
+    if unknown:
+        raise ValueError(f"Unknown section: {unknown[0]}")
+    chosen = [k for k in generator.ALL_OPTIONS if k in value]
+    if not generator.claude_sections(chosen):
+        raise ValueError("Tick at least one section to include in the PDF.")
+    if generator.PRACTICE_TEST in chosen and not any(k in chosen for k in generator.QUESTION_SECTIONS):
+        raise ValueError("The practice test is made from the questions, so tick at least one question section too.")
+    return chosen
+
+
 @app.post("/api/jobs")
 def create_job():
     f = request.get_json(force=True)
@@ -135,6 +155,7 @@ def create_job():
         ch_from = _int(f.get("chapter_from")) or book["first_chapter"]
         ch_to = _int(f.get("chapter_to")) or ch_from
         p_from, p_to = _int(f.get("page_from")), _int(f.get("page_to"))
+        sections = _sections(f.get("sections", settings.load()["sections"]))
     except (KeyError, ValueError) as e:
         return jsonify(error=f"Invalid request: {e}"), 400
     if not (book["first_chapter"] <= ch_from <= ch_to <= book["last_chapter"]):
@@ -144,7 +165,7 @@ def create_job():
     if p_from and p_to and p_from > p_to:
         return jsonify(error="'Pages from' must not be greater than 'Pages to'."), 400
 
-    s = settings.load()
+    s = settings.save({"sections": sections})   # remembered for next time
     if s["engine"] == "claude_login":
         st = claude_cli.status()
         if not st["installed"]:
@@ -157,14 +178,36 @@ def create_job():
     job_id = uuid.uuid4().hex[:12]
     JOBS[job_id] = {"status": "queued", "log": [], "file": None, "error": None, "started": time.time()}
     params = dict(cls=cls, subject=subject, book=book, ch_from=ch_from, ch_to=ch_to, p_from=p_from,
-                  p_to=p_to, engine=s["engine"], api_key=s["api_key"], split=s["split_pages"])
+                  p_to=p_to, engine=s["engine"], api_key=s["api_key"], split=s["split_pages"],
+                  sections=sections)
     threading.Thread(target=_run_job, args=(job_id, params), daemon=True).start()
     return jsonify(id=job_id)
 
 
-def _result_path(code: str, part: ncert.ChapterPart) -> "os.PathLike":
+def _result_stem(code: str, part: ncert.ChapterPart) -> str:
     key = f"{code}-{part.number}-{part.first_page}-{part.last_page}-{generator.MODEL}"
-    return RESULTS / f"{code}{part.number:02d}_p{part.first_page}-{part.last_page}_{hashlib.sha1(key.encode()).hexdigest()[:8]}.json"
+    return f"{code}{part.number:02d}_p{part.first_page}-{part.last_page}_{hashlib.sha1(key.encode()).hexdigest()[:8]}"
+
+
+def _result_path(code: str, part: ncert.ChapterPart, needed: list[str]) -> "os.PathLike":
+    """Where to save Claude's result for this part and set of sections."""
+    tag = hashlib.sha1(",".join(needed).encode()).hexdigest()[:6]
+    return RESULTS / f"{_result_stem(code, part)}_{tag}.json"
+
+
+def _saved_result(code: str, part: ncert.ChapterPart, needed: list[str]) -> dict | None:
+    """A result saved earlier for this part that already has every needed section.
+
+    Results made before sections were selectable have no tag in the name and hold the
+    original five sections; they are reused whenever those are enough."""
+    for path in sorted(RESULTS.glob(_result_stem(code, part) + "*.json")):
+        try:
+            data = json.loads(path.read_text())
+        except (OSError, ValueError):
+            continue
+        if all(k in data for k in needed):
+            return data
+    return None
 
 
 def _run_job(job_id: str, p: dict) -> None:
@@ -185,18 +228,20 @@ def _run_job(job_id: str, p: dict) -> None:
                 note = ""
                 if piece.first_page != 1 or piece.last_page != piece.total_pages:
                     note = f", pages {piece.first_page}–{piece.last_page} of {piece.total_pages}"
-                saved = _result_path(book["code"], piece)
-                if saved.exists():
+                needed = generator.claude_sections(p["sections"])
+                earlier = _saved_result(book["code"], piece, needed)
+                if earlier is not None:
                     log(f"Chapter {piece.number}{note}: using the result saved earlier.")
-                    results.append(json.loads(saved.read_text()))
+                    results.append(earlier)
                     continue
                 label = f" (part {i} of {len(pieces)})" if len(pieces) > 1 else ""
                 log(f"Writing notes and questions for chapter {piece.number}{label}{note} with {engine_name}. "
                     "This takes a few minutes …")
                 data = generator.generate_chapter(piece.pdf, cls=p["cls"], subject=p["subject"],
                                                   book=book["title"], chapter=piece.number, page_note=note,
-                                                  engine=p["engine"], api_key=p["api_key"], log=log)
-                saved.write_text(json.dumps(data, ensure_ascii=False))
+                                                  engine=p["engine"], api_key=p["api_key"],
+                                                  sections=needed, log=log)
+                _result_path(book["code"], piece, needed).write_text(json.dumps(data, ensure_ascii=False))
                 results.append(data)
             data = generator.merge_parts(results) if len(results) > 1 else results[0]
             note = ""
@@ -211,7 +256,7 @@ def _run_job(job_id: str, p: dict) -> None:
         stamp = time.strftime("%Y%m%d-%H%M%S")
         out = OUT_DIR / (re.sub(r"[^A-Za-z0-9]+", "_", f"Class{p['cls']}_{name}_{chs}") + f"_{stamp}.pdf")
         render_pdf({"cls": p["cls"], "subject": p["subject"], "book": book["title"], "code": book["code"]},
-                   chapters, out)
+                   chapters, out, p["sections"])
         job.update(status="done", file=str(out), filename=out.name)
         log(f"Done. Saved to {out}")
     except claude_cli.UsageLimit as e:

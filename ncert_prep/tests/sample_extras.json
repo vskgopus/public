@@ -1,0 +1,55 @@
+{
+ "diagrams": [
+  {"title": "Types of chemical reactions", "kind": "concept_map",
+   "caption": "The main types of chemical reactions in this chapter, with an example of each.",
+   "nodes": [
+    {"label": "Combination", "details": ["Two or more reactants form one product", "CaO + H₂O → Ca(OH)₂"]},
+    {"label": "Decomposition", "details": ["One reactant breaks into simpler products", "2FeSO₄ → Fe₂O₃ + SO₂ + SO₃"]},
+    {"label": "Displacement", "details": ["A more reactive element displaces a less reactive one", "Fe + CuSO₄ → FeSO₄ + Cu"]},
+    {"label": "Double displacement", "details": ["Exchange of ions between reactants", "Na₂SO₄ + BaCl₂ → BaSO₄ + 2NaCl"]},
+    {"label": "Redox", "details": ["Oxidation and reduction together", "CuO + H₂ → Cu + H₂O"]}
+   ]},
+  {"title": "Writing a balanced chemical equation", "kind": "flow",
+   "caption": "The steps for balancing a skeletal chemical equation.",
+   "nodes": [
+    {"label": "Write the word-equation", "details": ["Reactants on the left, products on the right"]},
+    {"label": "Write the skeletal equation", "details": ["Use formulae: Fe + H₂O → Fe₃O₄ + H₂"]},
+    {"label": "Count atoms of each element", "details": ["Make a table for both sides"]},
+    {"label": "Balance one element at a time", "details": ["Start with the compound having most atoms", "Change coefficients, never formulae"]},
+    {"label": "Check and add state symbols", "details": ["(s), (l), (g), (aq); conditions over the arrow"]}
+   ]},
+  {"title": "Respiration and photosynthesis", "kind": "cycle",
+   "caption": "Respiration releases energy and carbon dioxide; photosynthesis uses them to make glucose again.",
+   "nodes": [
+    {"label": "Glucose in cells", "details": ["Food is broken down into glucose"]},
+    {"label": "Respiration (exothermic)", "details": ["C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + energy"]},
+    {"label": "CO₂ and water released", "details": []},
+    {"label": "Photosynthesis in plants", "details": ["Sunlight and chlorophyll make glucose from CO₂ and water"]}
+   ]}
+ ],
+ "revision_table": [
+  {"topic": "Chemical change", "in_short": "The identity of the substance changes and a new substance forms.", "remember": "Signs: change of state, colour, gas given off, temperature change"},
+  {"topic": "Balanced equation", "in_short": "The number of atoms of each element is the same on both sides.", "remember": "Law of conservation of mass"},
+  {"topic": "Combination reaction", "in_short": "Two or more substances combine to form a single product.", "remember": "CaO + H₂O → Ca(OH)₂ + heat"},
+  {"topic": "Decomposition reaction", "in_short": "A single reactant breaks down into simpler products by heat, light or electricity.", "remember": "2AgCl → 2Ag + Cl₂ (sunlight)"},
+  {"topic": "Oxidation and reduction", "in_short": "Gain of oxygen (or loss of hydrogen) is oxidation; loss of oxygen (or gain of hydrogen) is reduction.", "remember": "CuO + H₂ → Cu + H₂O"}
+ ],
+ "differences": [
+  {"a": "Exothermic reaction", "b": "Endothermic reaction", "rows": [
+   {"basis": "Heat", "a": "Heat is given out", "b": "Heat is absorbed"},
+   {"basis": "Example", "a": "Burning of natural gas; respiration", "b": "Decomposition of calcium carbonate"}
+  ]},
+  {"a": "Displacement reaction", "b": "Double displacement reaction", "rows": [
+   {"basis": "What is exchanged", "a": "A more reactive element replaces a less reactive one", "b": "Ions are exchanged between two compounds"},
+   {"basis": "Example", "a": "Zn + CuSO₄ → ZnSO₄ + Cu", "b": "Na₂SO₄ + BaCl₂ → BaSO₄ + 2NaCl"}
+  ]}
+ ],
+ "case_based": [
+  {"passage": "A student heated ferrous sulphate crystals in a dry boiling tube. The green crystals turned colourless, then a brown solid was left behind and a gas with the smell of burning sulphur was given off.",
+   "questions": [
+    {"marks": 1, "question": "Name the type of reaction.", "options": [], "answer": "Thermal decomposition reaction."},
+    {"marks": 1, "question": "Why did the green colour disappear first?", "options": [], "answer": "The crystals lost their water of crystallisation."},
+    {"marks": 2, "question": "Write the balanced chemical equation and name the brown solid.", "options": [], "answer": "- 2FeSO₄(s) → Fe₂O₃(s) + SO₂(g) + SO₃(g)\n- The brown solid is ferric oxide, Fe₂O₃."}
+   ]}
+ ]
+}
