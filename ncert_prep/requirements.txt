@@ -4,3 +4,5 @@ requests>=2.31
 certifi
 pypdf>=5.0
 reportlab>=4.0
+pypdfium2>=5.0
+pillow>=10.0

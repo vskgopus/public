@@ -28,6 +28,10 @@ class UsageLimit(RuntimeError):
     """The Gemini key's rate or daily limit was reached."""
 
 
+class ModelUnavailable(RuntimeError):
+    """This model is overloaded right now, or no longer offered to this key."""
+
+
 def _error(r: requests.Response) -> tuple[str, str]:
     try:
         err = r.json().get("error", {})
@@ -46,7 +50,7 @@ def _check(r: requests.Response) -> None:
         raise RuntimeError("The Gemini API key was rejected. Check it in Settings "
                            f"(Google said: {msg or status or r.status_code}).")
     if r.status_code == 404:
-        raise RuntimeError(f"Gemini model not found. Choose another model in Settings ({msg}).")
+        raise ModelUnavailable(f"not available to this key ({msg})")
     raise RuntimeError(f"Gemini API error {r.status_code} {status}: {msg}")
 
 
@@ -89,6 +93,11 @@ def _rank(m: dict) -> tuple:
 
 def default_model(models: list[dict]) -> dict | None:
     return models[0] if models else None
+
+
+def fallbacks(models: list[dict], current: str, n: int = 2) -> list[dict]:
+    """Other Flash models to try, in preference order, when `current` is busy or unavailable."""
+    return [m for m in models if m["id"] != current and "flash" in m["id"]][:n]
 
 
 def _simplify(schema):
@@ -212,7 +221,11 @@ def generate(pdf_bytes: bytes, prompt: str, system: str, schema: dict, *, api_ke
             log(f"Could not reach Google ({type(e).__name__}). Trying again in {wait} s …")
             _sleep(wait)
             continue
-        if r.status_code in (500, 502, 503, 504) and attempt < attempts:   # overloaded: wait and retry
+        high_demand = r.status_code == 503 and re.search(r"high demand|overloaded", _error(r)[1], re.I)
+        if r.status_code in (500, 502, 503, 504) and (attempt == attempts or (high_demand and attempt >= 2)):
+            # Google says this model is overloaded: another model is usually quicker than waiting.
+            raise ModelUnavailable(f"busy after {attempt} tries (HTTP {r.status_code}: {_error(r)[1][:160]})")
+        if r.status_code in (500, 502, 503, 504):   # overloaded: wait and retry
             wait = 10 * attempt
             log(f"Google is busy (HTTP {r.status_code}: {_error(r)[1][:120] or 'no details'}). "
                 f"Trying again in {wait} s …")
@@ -281,6 +294,7 @@ def _read_stream(r, *, progress, log, cancel, idle_timeout: int, started: float 
     threading.Thread(target=ticker, daemon=True).start()
     buffer: list[str] = []
     try:
+        r.encoding = "utf-8"   # Google sends no charset; requests would otherwise decode as Latin-1 (H₂O -> HÃ¢Â‚Â‚O)
         for line in r.iter_lines(decode_unicode=True):
             if cancel is not None and cancel.is_set():
                 raise Cancelled("Stopped.")

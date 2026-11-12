@@ -9,6 +9,7 @@ official NCERT site (ncert.nic.in), has Claude or Google Gemini write the exam p
 |---|---|
 | **Summary notes**: every topic explained as short points | **One-mark questions**: MCQ, fill in the blanks, true/false, very short answer, assertion-reason |
 | **Explanation diagrams**: flowcharts of processes, cycles and concept maps, drawn by the app from Claude's outline | **2-mark and 3-mark questions**, including the NCERT exercise questions |
+| **Figures from the book**: the chapter's numbered figures, cut from the NCERT pages by the app (no AI), each with its caption and short notes from the AI | |
 | **Key points** to remember: definitions, formulae, equations, laws | **5-mark questions** |
 | **Quick revision table**: one row per topic (topic, in short, remember) | **Case-based questions**: a passage with sub-questions |
 | **Differences tables**: "difference between X and Y" | **Practice test** at the end: questions picked from the ticked question sections, without answers, with the answer key on separate pages |
@@ -17,8 +18,12 @@ The first five (summary, key points, 1-, 2/3- and 5-mark questions) are ticked a
 remembers your choice. Each extra section adds time and AI usage per chapter. The practice
 test uses no extra AI usage: the app builds it from the questions already written.
 
-The diagrams are simple box-and-arrow diagrams. They are not pictures of apparatus, maps or
-anatomy; for those, use the figures in the NCERT book.
+The diagrams are simple box-and-arrow diagrams. For apparatus, anatomy and other pictures, tick
+**Figures from the book**: the app finds each "Fig. X.Y" caption in the chapter pages, cuts out the
+figure above it at print quality and places it with its caption, a © NCERT credit and the AI's
+notes. NCERT's "not to be republished" watermark stays on the figures; the PDF is for your own
+study. A figure the app cannot cut out cleanly (for example one squeezed beside text) is left
+out and listed with its notes ("see it in the book"). Chapters without numbered figures get none.
 
 Sample output: [`samples/Class10_Science_Ch1_Chemical_Reactions_and_Equations.pdf`](samples/Class10_Science_Ch1_Chemical_Reactions_and_Equations.pdf)
 
@@ -42,10 +47,17 @@ Each person uses their own account or key; nothing is shared.
 About Gemini:
 - The prompts were written and checked with Claude. Gemini's notes and answers may differ in
   quality, so check a few PDFs before relying on them.
-- Free keys have daily limits. If one is reached, finished parts are kept; click **Prepare** again
-  later, or choose another model in Settings. Splitting chapters uses more requests per chapter.
+- Free keys have limits per model (Google reported 20 requests for one Flash model in November
+  2026). Each chapter, each part of a split chapter and each retry is a request. If a model is
+  overloaded ("high demand"), withdrawn, or out of quota, the app tries up to two other Flash
+  models and says so in the console. If all are out of quota, finished parts are kept; click
+  **Prepare** again later.
 - Google says it may use free-tier requests to improve its products.
 - The key can also come from the `GEMINI_API_KEY` environment variable.
+- If Gemini seems slow or silent, run the checker from the app folder. It uses the saved key and
+  model, times each step (a one-line answer, a one-page PDF, and with `--chapter` a real chapter)
+  and says where it gets stuck: `.venv/bin/python gemini_check.py --chapter`
+  (add `--model gemini-2.5-flash-lite` to compare another model).
 
 ## Install on Ubuntu / Linux
 
@@ -116,6 +128,8 @@ finished are kept. If the app was started from a terminal, the same lines are pr
 | `generator.py` | The selectable sections (prompt and output schema for each), and the API-key engine |
 | `claude_cli.py` | The Claude-login engine (Claude Code: status, login, one request per chapter) |
 | `gemini.py` | The Google Gemini engine (lists the models a key can use, one request per chapter) |
+| `gemini_check.py` | Step-by-step Gemini check with timings, for when Gemini seems slow or silent |
+| `figures.py` | Finds the numbered figures in a chapter PDF and cuts them out (pdfium) |
 | `settings.py` | Settings in `~/.config/ncert-prep/settings.json` (Windows: `%APPDATA%\ncert-prep`), readable only by you |
 | `pdf_render.py`, `fonts/` | Printable PDF layout with the bundled DejaVu font (so H₂O, x², √, → print on any computer); draws the diagrams and tables and builds the practice test |
 | `certs/` | Public Let's Encrypt intermediate certificates. ncert.nic.in doesn't send its own, so this lets downloads verify properly |
@@ -135,6 +149,7 @@ Notes:
 .venv/bin/python tests/test_end_to_end.py
 .venv/bin/python tests/test_gemini.py
 .venv/bin/python tests/test_launcher.py
+.venv/bin/python tests/test_figures.py
 ```
 
 This tests both engines without spending money. It uses real NCERT downloads, with Claude

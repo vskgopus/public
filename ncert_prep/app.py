@@ -20,6 +20,7 @@ import uuid
 from flask import Flask, abort, jsonify, render_template, request, send_file
 
 import claude_cli
+import figures
 import gemini
 import generator
 import ncert
@@ -329,6 +330,8 @@ def _run_job(job_id: str, p: dict) -> None:
             if part.first_page != 1 or part.last_page != part.total_pages:
                 note = f"Pages {part.first_page}–{part.last_page} of the chapter PDF"
             data.update(number=part.number, url=part.url, page_note=note)
+            if "figures" in p["sections"]:
+                data["book_figures"] = _book_figures(part, log)
             chapters.append(data)
 
         check_stop()
@@ -362,6 +365,17 @@ def _run_job(job_id: str, p: dict) -> None:
         job["progress"] = ""
         if job["status"] == "error" and not job["log"][-1].split("  ", 1)[-1].startswith("Error"):
             log(f"Error: {job['error']}")
+
+
+def _book_figures(part, log) -> list[dict]:
+    """The chapter's numbered figures, cut from the NCERT pages (no AI involved)."""
+    try:
+        found = figures.find_figures(part.pdf)
+    except Exception as e:  # a figure problem must not cost the whole PDF
+        log(f"Chapter {part.number}: could not take the figures from the book pages ({type(e).__name__}: {e}).")
+        return []
+    log(f"Chapter {part.number}: took {len(found)} numbered figure{'s' if len(found) != 1 else ''} from the book pages.")
+    return found
 
 
 @app.get("/api/jobs/<job_id>")

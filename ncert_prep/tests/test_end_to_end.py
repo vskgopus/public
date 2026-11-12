@@ -211,3 +211,17 @@ for _ in range(50):
 os.environ.pop("FAKE_CLAUDE_SLEEP")
 assert st["status"] == "stopped" and time.time() - t0 < 10, st
 print("OK - Stop ends a running Claude Code request")
+
+# --- Figures from the book: cut from the real NCERT pages, with the notes Claude wrote
+st = run_job(sections=["figures", "key_points"])
+print("\n".join(st["log"]))
+assert st["status"] == "done", st
+assert any("numbered figure" in l and "from the book pages" in l for l in st["log"]), st["log"]
+pdf = Path(webapp.JOBS[list(webapp.JOBS)[-1]]["file"])
+reader = PdfReader(pdf)
+text = "\n".join(p.extract_text() for p in reader.pages)
+for words in ("Figures from the NCERT Book", "From the NCERT textbook", "Fig. 1.1", "dazzling white flame"):
+    assert words in text, words
+images = sum(len(p.images) for p in reader.pages)
+assert images >= 5, f"expected the book's figures as images in the PDF, found {images}"
+print(f"OK - figures from the book: {images} figure images in {pdf.name}")

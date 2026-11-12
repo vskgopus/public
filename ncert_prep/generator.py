@@ -57,6 +57,21 @@ SECTIONS = {
                   "one sentence saying what the diagram shows. Only make diagrams the pages support; do not "
                   "attempt pictures such as apparatus, maps or anatomy.",
     },
+    "figures": {
+        "label": "Figures from the book",
+        "schema": {
+            "type": "array",
+            "description": "Short notes on the numbered figures in the pages",
+            "items": {"type": "object", "additionalProperties": False, "required": ["figure", "points"],
+                      "properties": {"figure": {"type": "string", "description": "The figure number exactly as printed, e.g. 1.1 or 6.1(a)"},
+                                     "points": _STRS}},
+        },
+        "prompt": "figures - for each numbered figure in the pages (labelled in the book as Fig. 1.1, Figure 1.1 "
+                  "and so on), the figure number exactly as printed (only the number, e.g. 1.1 or 6.1(a)) and "
+                  "1-3 short points: what the figure shows and what a student should remember or be able to "
+                  "draw or label from it for the exam. Only figures printed in these pages; skip unnumbered "
+                  "pictures. The app places the book's own figure next to these notes.",
+    },
     "key_points": {
         "label": "Key points to remember",
         "schema": {"type": "array", "items": _STR,
@@ -172,7 +187,7 @@ SECTIONS = {
     },
 }
 
-COUNT_WORDS = {"summary": "topics", "diagrams": "diagrams", "key_points": "key points",
+COUNT_WORDS = {"summary": "topics", "diagrams": "diagrams", "figures": "figure notes", "key_points": "key points",
                "revision_table": "revision-table rows", "differences": "difference tables",
                "one_mark": "one-mark", "short_answer": "2/3-mark", "long_answer": "five-mark questions",
                "case_based": "case-based sets"}
@@ -298,6 +313,53 @@ def _via_api(pdf_bytes: bytes, prompt: str, title: str, api_key: str, schema: di
     return json.loads(text), usage
 
 
+_GEMINI_STANDIN: dict = {}   # chosen model -> (model that answered instead, when); reused for 30 minutes
+
+
+def _via_gemini(pdf_bytes, prompt, schema, api_key, model, output_limit, *, log, progress, cancel):
+    """Gemini with the chosen model; if it is overloaded or withdrawn, try up to two other Flash models.
+    A stand-in that answered in the last 30 minutes is tried first, so later parts don't wait again."""
+    import gemini
+    queue = [{"id": model, "output_limit": output_limit}]
+    standin = _GEMINI_STANDIN.get(model)
+    if standin and time.time() - standin[1] < 1800:
+        log(f"{model} was busy a few minutes ago; using {standin[0]['id']}, which answered then.")
+        queue.insert(0, standin[0])
+    tried, looked_up, limits = [], False, 0
+    while queue:
+        m = queue.pop(0)
+        try:
+            data, usage = gemini.generate(pdf_bytes, prompt, SYSTEM, schema, api_key=api_key, model=m["id"],
+                                          output_limit=m["output_limit"], log=log, progress=progress, cancel=cancel)
+        except (gemini.ModelUnavailable, gemini.UsageLimit) as e:
+            # Free-tier quotas are counted per model, so another model may still have requests left.
+            limited = isinstance(e, gemini.UsageLimit)
+            tried.append(f"{m['id']}: {'usage limit reached' if limited else e}")
+            limits += limited
+            if standin and m["id"] == standin[0]["id"]:
+                _GEMINI_STANDIN.pop(model, None)          # the stand-in is busy now too
+            if not looked_up:                              # find other Flash models to try, once
+                looked_up = True
+                skip = {m["id"]} | {q["id"] for q in queue}
+                try:
+                    extra = [c for c in gemini.fallbacks(gemini.list_models(api_key), model, n=4) if c["id"] not in skip]
+                except Exception:
+                    extra = []
+                queue += extra[:2]
+            if queue:
+                why = "has reached your key's usage limit" if limited else f"is not answering ({e})"
+                log(f"Gemini {m['id']} {why}. Trying {queue[0]['id']} instead …")
+            continue
+        if m["id"] != model:
+            _GEMINI_STANDIN[model] = (m, time.time())
+            log(f"Tip: {m['id']} answered while {model} did not. You can choose {m['id']} in Settings → Model.")
+        return data, usage
+    if limits == len(tried):
+        raise gemini.UsageLimit("every model tried has reached its limit: " + "; ".join(t.split(":")[0] for t in tried))
+    raise RuntimeError("No Gemini model answered. " + " | ".join(tried)
+                       + " Google says demand spikes are usually temporary: try again later, or choose another model in Settings.")
+
+
 def generate_chapter(pdf_bytes: bytes, *, cls: str, subject: str, book: str, chapter: int,
                      page_note: str = "", engine: str = "api_key", api_key: str = "",
                      sections=None, gemini_model: str = "", gemini_output_limit: int = 0,
@@ -322,10 +384,8 @@ def generate_chapter(pdf_bytes: bytes, *, cls: str, subject: str, book: str, cha
         data, usage = claude_cli.run_structured(pdf_bytes, prompt, SYSTEM, schema,
                                                 progress=progress, cancel=cancel), "Claude login"
     elif engine == "gemini":
-        import gemini
-        data, usage = gemini.generate(pdf_bytes, prompt, SYSTEM, schema, api_key=api_key,
-                                      model=gemini_model, output_limit=gemini_output_limit,
-                                      log=log, progress=progress, cancel=cancel)
+        data, usage = _via_gemini(pdf_bytes, prompt, schema, api_key, gemini_model, gemini_output_limit,
+                                  log=log, progress=progress, cancel=cancel)
     else:
         log(f"Sending the chapter PDF ({len(pdf_bytes) / 1e6:.1f} MB) to the Claude API ({MODEL}) …")
         data, usage = _via_api(pdf_bytes, prompt, f"{book} - Chapter {chapter}", api_key, schema,

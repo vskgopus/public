@@ -61,6 +61,7 @@ class Resp:
     """A response. For streamed answers, `events` are sent as server-sent events."""
     def __init__(self, status, body, events=None):
         self.status_code, self._body, self.events = status, body, events
+        self.encoding = None      # like requests for text/event-stream without a charset
         self.ok = status < 400
         self.text = json.dumps(body)
 
@@ -68,8 +69,10 @@ class Resp:
         return self._body
 
     def iter_lines(self, decode_unicode=False):
+        # Decode the way requests does: with r.encoding, which defaults to ISO-8859-1 here.
         for ev in self.events if self.events is not None else [self._body]:
-            yield "data: " + json.dumps(ev, ensure_ascii=False)
+            raw = ("data: " + json.dumps(ev, ensure_ascii=False)).encode("utf-8")
+            yield raw.decode(self.encoding or "ISO-8859-1") if decode_unicode else raw
             yield ""
 
     def close(self):
@@ -226,7 +229,7 @@ calls = {"n": 0}
 
 def post_second_limited(url, json=None, data=None, headers=None, timeout=None, stream=False):
     calls["n"] += 1
-    if calls["n"] == 2:
+    if calls["n"] >= 2:            # every model is limited from the second part on
         stub.posts.append({"url": url, "body": None, "headers": headers})
         return err(429, "RESOURCE_EXHAUSTED", "Quota exceeded for requests per day")
     return orig_post(url, json=json, data=data, headers=headers, timeout=timeout, stream=stream)
@@ -239,7 +242,7 @@ stub.post = orig_post
 st, _ = run_job(sections=["summary", "one_mark"])
 assert st["status"] == "done", st
 assert sum("saved earlier" in l for l in st["log"]) == 1, st["log"]
-assert len(stub.posts) == n + 3, "first part + limited part, then only the missing part again"
+assert len(stub.posts) == n + 5, "first part + limited part (3 models), then only the missing part again"
 print("OK - rate limit keeps finished parts and resumes")
 
 # --- MAX_TOKENS and safety stops give clear messages
@@ -260,7 +263,9 @@ assert st["status"] == "done", st
 assert any("Google is busy (HTTP 503" in l for l in st["log"]), st["log"]
 
 # --- a stream error object (quota) during the answer is a usage limit
-stub.script = [Resp(200, None, [{"error": {"code": 429, "status": "RESOURCE_EXHAUSTED", "message": "Quota exceeded"}}])]
+generator._GEMINI_STANDIN.clear()
+stub.script = [Resp(200, None, [{"error": {"code": 429, "status": "RESOURCE_EXHAUSTED", "message": "Quota exceeded"}}])
+               for _ in range(3)]   # the chosen model and both fallbacks
 st, _ = run_job(sections=["key_points"], chapter_from="4", chapter_to="4")
 assert st["status"] == "error" and "Gemini usage limit" in st["error"], st
 
@@ -315,3 +320,49 @@ for _ in range(40):
 assert st["status"] == "stopped", st
 gemini.SESSION = stub
 print("OK - waiting for Google's reply is counted, and Stop works before the reply")
+
+# --- Unicode survives the stream (H₂O, →), as with the real API
+stub.script = [answer('{"chapter_title": "Ch", "key_points": ["2H₂ + O₂ → 2H₂O", "CO₂ ⇌ H₂CO₃", "x² ≤ √2"]}')]
+data, _ = gemini.generate(b"%PDF-1.4", "p", "s", {"type": "object"}, api_key=KEY, model="gemini-2.5-flash")
+assert data["key_points"] == ["2H₂ + O₂ → 2H₂O", "CO₂ ⇌ H₂CO₃", "x² ≤ √2"], data
+print("OK - Unicode text from the stream is decoded as UTF-8")
+
+# --- an overloaded model: after its retries the app tries the next Flash model and says so
+busy = [err(503, "UNAVAILABLE", "This model is currently experiencing high demand.")] * 2   # gives up after 2
+stub.script = list(busy)
+st, _ = run_job(sections=["key_points"], chapter_from="7", chapter_to="7")
+assert st["status"] == "done", st
+assert any("is not answering" in l and "Trying" in l for l in st["log"]), st["log"]
+assert any("Tip:" in l for l in st["log"]), st["log"]
+tried = [p["url"].split("/models/")[1].split(":")[0] for p in stub.posts[-3:]]
+assert tried[:2] == ["gemini-2.5-flash"] * 2 and tried[2] != "gemini-2.5-flash", tried
+standin = tried[2]
+
+# --- the next chapter starts with the stand-in that answered, without waiting on the busy model again
+n = len(stub.posts)
+st, _ = run_job(sections=["key_points"], chapter_from="10", chapter_to="10")
+assert st["status"] == "done" and any("was busy a few minutes ago" in l for l in st["log"]), st["log"]
+assert [p["url"].split("/models/")[1].split(":")[0] for p in stub.posts[n:]] == [standin], stub.posts[n:]
+generator._GEMINI_STANDIN.clear()
+
+# --- a withdrawn model (404) falls back at once; if nothing answers, the message says so
+stub.script = [err(404, "NOT_FOUND", "This model models/gemini-2.5-flash is no longer available to new users.")]
+st, _ = run_job(sections=["key_points"], chapter_from="8", chapter_to="8")
+assert st["status"] == "done" and any("not available to this key" in l for l in st["log"]), st["log"]
+generator._GEMINI_STANDIN.clear()
+stub.script = [err(404, "NOT_FOUND", "gone")] + busy * 2
+st, _ = run_job(sections=["key_points"], chapter_from="9", chapter_to="9")
+assert st["status"] == "error" and "No Gemini model answered" in st["error"], st
+print("OK - busy or withdrawn models fall back to other Flash models")
+
+# --- one model's quota is used up: another Flash model is tried; if all are, it is a usage limit
+generator._GEMINI_STANDIN.clear()
+quota = err(429, "RESOURCE_EXHAUSTED", "Quota exceeded for metric: generate_content_free_tier_requests, limit: 20")
+stub.script = [quota]
+st, _ = run_job(sections=["key_points"], chapter_from="11", chapter_to="11")
+assert st["status"] == "done" and any("reached your key's usage limit" in l for l in st["log"]), st["log"]
+generator._GEMINI_STANDIN.clear()
+stub.script = [quota] * 3
+st, _ = run_job(sections=["key_points"], chapter_from="12", chapter_to="12")
+assert st["status"] == "error" and "Gemini usage limit" in st["error"] and "Finished parts are saved" in st["error"], st
+print("OK - a model's used-up quota falls back; all used up is reported as a usage limit")

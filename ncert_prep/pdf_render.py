@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import io
 import math
 import re
 from pathlib import Path
@@ -16,7 +17,7 @@ from reportlab.lib.units import mm
 from reportlab.lib.utils import simpleSplit
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import (CondPageBreak, KeepTogether, PageBreak, Paragraph,
+from reportlab.platypus import (CondPageBreak, Image, KeepTogether, PageBreak, Paragraph,
                                 SimpleDocTemplate, Spacer, Table, TableStyle)
 
 import generator
@@ -270,6 +271,50 @@ def _diagram(dg: dict) -> list:
     return [KeepTogether(head + body + [Spacer(1, 3)] + caption), Spacer(1, 6)]
 
 
+# ------------------------------------------------------------------ figures from the book
+
+def _fig_id(number: str) -> str:
+    return re.sub(r"[^0-9a-z.()]", "", str(number).lower()).strip(".")
+
+
+def _book_figures_flow(book: list[dict], notes: list[dict]) -> list:
+    """The book's own figures (cut from the NCERT pages) with the AI's notes on each."""
+    import figures as figmod
+    by_id = {}
+    for n in notes or []:
+        by_id.setdefault(_fig_id(n.get("figure", "")), n)
+    out, shown = [], set()
+    credit = ParagraphStyle("credit", parent=S["caption"], fontSize=7.5, leading=9.5, spaceAfter=2)
+    for fig in sorted(book, key=lambda f: figmod.figure_key(f["number"])):
+        fid = _fig_id(fig["number"])
+        if fid in shown:
+            continue
+        shown.add(fid)
+        w, h = float(fig["width"]), float(fig["height"])
+        scale = min(1.0, WIDTH / w, (105 * mm) / h)
+        if w * scale < 70 * mm:                      # small drawings: enlarge a little for print
+            scale = min(70 * mm / w, (105 * mm) / h, WIDTH / w)
+        img = Image(io.BytesIO(fig["png"]), width=w * scale, height=h * scale)
+        img.hAlign = "CENTER"
+        cap = f"Fig. {fig['number']}" + (f"  {fig['caption']}" if fig.get("caption") else "")
+        parts = [img, Spacer(1, 2), Paragraph(_t(cap), ParagraphStyle("figcap", parent=S["caption"], fontName=BOLD,
+                                                                     textColor=INK, fontSize=9, leading=11)),
+                 Paragraph(_t("From the NCERT textbook (© NCERT), for study. Page "
+                              f"{fig['page']} of the chapter pages used."), credit)]
+        note = by_id.get(fid)
+        parts += [Paragraph(_t(x), S["bullet"], bulletText="•") for x in (note or {}).get("points", [])]
+        out += [KeepTogether(parts), Spacer(1, 8)]
+    missing = [n for n in notes or [] if _fig_id(n.get("figure", "")) not in shown]
+    if missing:
+        out.append(Paragraph(_t("Other figures in the chapter (see them in the book):"), S["topic"]))
+        for n in missing:
+            out.append(Paragraph(_t(f"Fig. {n.get('figure', '')}"), S["q"]))
+            out += [Paragraph(_t(x), S["bullet"], bulletText="•") for x in n.get("points", [])]
+    if not out:
+        out.append(Paragraph(_t("No numbered figures were found in these pages."), S["body"]))
+    return out
+
+
 # ------------------------------------------------------------------ tables
 
 def _grid(header: list[str], rows: list[list[str]], widths: list[float], bold_first=True) -> Table:
@@ -330,6 +375,9 @@ def _chapter_flow(ch: dict, meta: dict, sections: list[str]) -> list:
                 parts += [Paragraph(_t(p), S["bullet"], bulletText="•") for p in block["points"]]
                 flow.append(KeepTogether(parts[:3]))
                 flow += parts[3:]
+        elif key == "figures":
+            flow += bar("Figures from the NCERT Book")
+            flow += _book_figures_flow(ch.get("book_figures") or [], items)
         elif key == "diagrams":
             flow += bar("Diagrams to Understand the Chapter")
             for dg in items:
