@@ -118,8 +118,15 @@ class Stub:
             return err(400, "INVALID_ARGUMENT", "API key not valid. Please pass a valid API key.")
         return Resp(200, MODELS_PAGE2 if (params or {}).get("pageToken") == "p2" else MODELS_PAGE1)
 
-    def post(self, url, json=None, headers=None, timeout=None, stream=False):
+    def post(self, url, json=None, data=None, headers=None, timeout=None, stream=False):
         assert stream, "answers must be streamed"
+        if data is not None:                       # the app uploads a file-like body (for upload progress)
+            assert headers.get("Content-Type") == "application/json"
+            size, raw = len(data), b""
+            while chunk := data.read(65536):
+                raw += chunk
+            assert len(raw) == size
+            json = __import__("json").loads(raw)
         self.posts.append({"url": url, "body": __import__("copy").deepcopy(json), "headers": headers})
         if self.script:
             return self.script.pop(0)
@@ -217,12 +224,12 @@ orig_post = stub.post
 calls = {"n": 0}
 
 
-def post_second_limited(url, json=None, headers=None, timeout=None, stream=False):
+def post_second_limited(url, json=None, data=None, headers=None, timeout=None, stream=False):
     calls["n"] += 1
     if calls["n"] == 2:
-        stub.posts.append({"url": url, "body": json, "headers": headers})
+        stub.posts.append({"url": url, "body": None, "headers": headers})
         return err(429, "RESOURCE_EXHAUSTED", "Quota exceeded for requests per day")
-    return orig_post(url, json=json, headers=headers, timeout=timeout, stream=stream)
+    return orig_post(url, json=json, data=data, headers=headers, timeout=timeout, stream=stream)
 
 
 stub.post = post_second_limited
@@ -278,3 +285,33 @@ for _ in range(100):
 assert st["status"] == "stopped" and slow.closed, st
 assert any("Stopped" in l for l in st["log"])
 print("OK - console lines, busy retry, stream errors, Stop")
+
+# --- Google slow to reply: the live line counts the wait, and Stop works before any reply
+class SlowPost(Stub):
+    def post(self, url, json=None, data=None, headers=None, timeout=None, stream=False):
+        while data.read(65536):
+            pass
+        for _ in range(300):
+            time.sleep(0.05)
+        return answer("{}")
+
+
+gemini.SESSION = SlowPost()
+r = client.post("/api/jobs", json={"cls": "10", "subject": "Science", "book": "jesc1", "chapter_from": "6",
+                                   "chapter_to": "6", "sections": ["key_points"]}, headers=H, base_url=BASE)
+job = r.get_json()["id"]
+for _ in range(60):
+    st = client.get(f"/api/jobs/{job}", base_url=BASE).get_json()
+    if "Waiting for Google's reply" in st["progress"] and "so far" in st["progress"]:
+        break
+    time.sleep(0.1)
+assert "Waiting for Google's reply" in st["progress"], st
+client.post(f"/api/jobs/{job}/stop", headers=H, base_url=BASE)
+for _ in range(40):
+    st = client.get(f"/api/jobs/{job}", base_url=BASE).get_json()
+    if st["status"] != "running":
+        break
+    time.sleep(0.1)
+assert st["status"] == "stopped", st
+gemini.SESSION = stub
+print("OK - waiting for Google's reply is counted, and Stop works before the reply")

@@ -114,6 +114,58 @@ class Cancelled(RuntimeError):
     """The person pressed Stop."""
 
 
+class _Upload:
+    """The request body as a file-like object, so the upload can be shown as it goes."""
+    def __init__(self, data: bytes, state: dict):
+        self.data, self.state, self.pos = data, state, 0
+
+    def __len__(self):
+        return len(self.data) - self.pos
+
+    def read(self, n: int = -1) -> bytes:
+        n = len(self.data) - self.pos if n is None or n < 0 else min(n, 256 * 1024)
+        chunk = self.data[self.pos:self.pos + n]
+        self.pos += len(chunk)
+        self.state["sent"] = self.pos
+        return chunk
+
+
+def _post(url: str, payload: bytes, api_key: str, idle_timeout: int, *, progress, cancel):
+    """POST in a helper thread so the console keeps counting (upload, then waiting) and Stop works."""
+    import threading
+    state = {"sent": 0, "abandoned": False}
+    result: dict = {}
+
+    def worker():
+        try:
+            r = SESSION.post(url, data=_Upload(payload, state), stream=True, timeout=(20, idle_timeout),
+                             headers={"x-goog-api-key": api_key, "Content-Type": "application/json"})
+            if state["abandoned"]:
+                r.close()
+            result["r"] = r
+        except Exception as e:  # handed to the caller
+            result["e"] = e
+
+    t0 = time.time()
+    t = threading.Thread(target=worker, daemon=True)
+    t.start()
+    total = len(payload)
+    while t.is_alive():
+        t.join(1)
+        if cancel is not None and cancel.is_set():
+            state["abandoned"] = True
+            raise Cancelled("Stopped.")
+        el = _mins(time.time() - t0)
+        if state["sent"] < total:
+            progress(f"Uploading the chapter to Google: {state['sent'] / 1e6:.1f} of {total / 1e6:.1f} MB, {el} so far")
+        else:
+            progress(f"Uploaded. Waiting for Google's reply … {el} so far (Gemini reads and thinks "
+                     "before it answers; on long chapters this can take several minutes)")
+    if "e" in result:
+        raise result["e"]
+    return result["r"], t0
+
+
 def _mins(seconds: float) -> str:
     s = int(seconds)
     return f"{s // 60} min {s % 60:02d} s" if s >= 60 else f"{s} s"
@@ -151,10 +203,8 @@ def generate(pdf_bytes: bytes, prompt: str, system: str, schema: dict, *, api_ke
             raise Cancelled("Stopped.")
         try_note = f" (attempt {attempt} of {attempts})" if attempt > 1 else ""
         log(f"Sending the chapter PDF ({len(pdf_bytes) / 1e6:.1f} MB) to Google Gemini ({model}){try_note} …")
-        progress("Waiting for Google to accept the request …")
         try:
-            r = SESSION.post(url, json=body, headers={"x-goog-api-key": api_key}, stream=True,
-                             timeout=(20, idle_timeout))
+            r, sent_at = _post(url, json.dumps(body).encode(), api_key, idle_timeout, progress=progress, cancel=cancel)
         except requests.RequestException as e:
             if attempt == attempts:
                 raise RuntimeError(f"Could not reach the Gemini API. Check your internet connection ({e}).")
@@ -181,9 +231,10 @@ def generate(pdf_bytes: bytes, prompt: str, system: str, schema: dict, *, api_ke
     else:
         _check(r)
 
-    log("Google accepted the request. Gemini is reading the chapter and thinking; "
-        "the answer starts to arrive after that.")
-    data, text, usage = _read_stream(r, progress=progress, log=log, cancel=cancel, idle_timeout=idle_timeout)
+    log(f"Google accepted the request after {_mins(time.time() - sent_at)}. Gemini is reading the chapter "
+        "and thinking; the answer starts to arrive after that.")
+    data, text, usage = _read_stream(r, progress=progress, log=log, cancel=cancel, idle_timeout=idle_timeout,
+                                     started=sent_at)
     finish = data.get("finishReason", "")
     if data.get("blockReason"):
         raise RuntimeError(f"Gemini declined this request ({data['blockReason']}).")
@@ -202,11 +253,12 @@ def generate(pdf_bytes: bytes, prompt: str, system: str, schema: dict, *, api_ke
     return result, f"Gemini {model}: {usage.get('promptTokenCount', '?')} in / {usage.get('candidatesTokenCount', '?')} out tokens"
 
 
-def _read_stream(r, *, progress, log, cancel, idle_timeout: int) -> tuple[dict, str, dict]:
-    """Read the server-sent events; report progress; return (finish info, answer text, usage)."""
+def _read_stream(r, *, progress, log, cancel, idle_timeout: int, started: float | None = None) -> tuple[dict, str, dict]:
+    """Read the server-sent events; report progress; return (finish info, answer text, usage).
+    `started`: when the request was sent, so times count from there."""
     import threading
 
-    started = time.time()
+    started = started or time.time()
     state = {"chars": 0, "first": None, "done": False, "last": time.time()}
     info, usage, pieces = {}, {}, []
 
@@ -219,11 +271,11 @@ def _read_stream(r, *, progress, log, cancel, idle_timeout: int) -> tuple[dict, 
                     return
             now = time.time()
             if state["first"] is None:
-                progress(f"Gemini is reading the chapter and thinking … {_mins(now - started)} so far "
+                progress(f"Gemini is reading the chapter and thinking … {_mins(now - started)} since sending "
                          f"(nothing is sent back until it starts writing)")
             else:
                 progress(f"Receiving the answer from Gemini: {state['chars']:,} characters, "
-                         f"{_mins(now - started)} so far")
+                         f"{_mins(now - started)} since sending")
             time.sleep(1)
 
     threading.Thread(target=ticker, daemon=True).start()
@@ -272,7 +324,7 @@ def _read_stream(r, *, progress, log, cancel, idle_timeout: int) -> tuple[dict, 
     if cancel is not None and cancel.is_set():
         raise Cancelled("Stopped.")
     text = "".join(pieces)
-    log(f"Gemini finished writing: {len(text):,} characters in {_mins(time.time() - started)}.")
+    log(f"Gemini finished writing: {len(text):,} characters, {_mins(time.time() - started)} after sending.")
     return info, text, usage
 
 
@@ -300,7 +352,7 @@ def _take(chunk: str, info: dict, usage: dict, pieces: list, state: dict, log, s
             if p.get("text") and not p.get("thought"):
                 if state["first"] is None:
                     state["first"] = time.time()
-                    log(f"Gemini started writing the answer after {_mins(state['first'] - started)}.")
+                    log(f"Gemini started writing the answer, {_mins(state['first'] - started)} after sending.")
                 pieces.append(p["text"])
                 state["chars"] += len(p["text"])
         if cand.get("finishReason"):
