@@ -1,0 +1,7 @@
+Virtual ARM Lab
+Copyright (C) 2026 Gopu Sugumar
+Licensed under the GNU General Public License, version 3 or (at your option) any later
+version (GPL-3.0-or-later). See LICENSE.
+
+The VxWorks part is an independent teaching implementation of part of the public
+VxWorks API. It is not Wind River code and is not affiliated with Wind River.
