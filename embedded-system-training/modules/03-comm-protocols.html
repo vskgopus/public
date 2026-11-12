@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 3 — Communication Protocols</title>
+<link rel="stylesheet" href="../site.css">
+</head>
+<body>
+<header class="site-header"><a href="../index.html">Embedded System Training</a></header>
+<main class="content">
+<h1>Module 3 — Communication Protocols</h1>
+<p><a href="02-mcu-peripherals.html">← Module 2</a> · <a href="../index.html">Course home</a> · <a href="04-rtos.html">Next: RTOS →</a> · <a href="../quiz/index.html?module=comm">Take the quiz</a></p>
+<p><strong>Learning goals</strong></p>
+<ul>
+<li>Describe the framing, wiring and timing of UART, SPI, I2C and CAN.</li>
+<li>Choose a suitable protocol for a given application.</li>
+<li>Diagnose common wiring and configuration mistakes.</li>
+</ul>
+<hr>
+<h2>Quick comparison</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>UART</th>
+<th>SPI</th>
+<th>I2C</th>
+<th>CAN</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Clock</td>
+<td>None (asynchronous)</td>
+<td>Shared clock from controller</td>
+<td>Shared clock (SCL)</td>
+<td>None (bit timing per node)</td>
+</tr>
+<tr>
+<td>Wires (signal)</td>
+<td>TX, RX</td>
+<td>SCLK, MOSI, MISO, CS per device</td>
+<td>SDA, SCL</td>
+<td>CAN_H, CAN_L (differential)</td>
+</tr>
+<tr>
+<td>Duplex</td>
+<td>Full</td>
+<td>Full</td>
+<td>Half</td>
+<td>Half</td>
+</tr>
+<tr>
+<td>Device selection</td>
+<td>Point to point</td>
+<td>Chip-select line</td>
+<td>7-bit (or 10-bit) address</td>
+<td>Message identifier</td>
+</tr>
+<tr>
+<td>Typical speed</td>
+<td>9600 – 921 600 baud</td>
+<td>Several MHz to tens of MHz</td>
+<td>100 k / 400 k / 1 MHz</td>
+<td>Up to 1 Mbit/s (Classic CAN)</td>
+</tr>
+<tr>
+<td>Typical use</td>
+<td>Debug console, GPS, modems</td>
+<td>Flash, displays, fast ADCs</td>
+<td>Sensors, EEPROM, RTC</td>
+<td>Automotive and industrial networks</td>
+</tr>
+</tbody></table>
+<p>All of them need a <strong>common ground</strong> between devices, except where an isolated or
+differential physical layer is designed in.</p>
+<hr>
+<h2>1. Beginner — UART</h2>
+<ul>
+<li>Asynchronous: both sides must be set to the <strong>same baud rate</strong> and frame format.</li>
+<li>Frame: <strong>start bit (0)</strong>, 5–9 data bits sent <strong>LSB first</strong>, optional parity, then 1 or 2 <strong>stop bits (1)</strong>.
+The idle line is high.</li>
+<li><strong>8N1</strong> = 8 data bits, no parity, 1 stop bit = <strong>10 bits per byte</strong>.
+At 115 200 baud that is about 11 520 bytes/s.</li>
+<li>Wiring: <strong>TX → RX and RX → TX</strong>, plus GND.</li>
+<li>Voltage levels: MCU &quot;TTL/CMOS&quot; UART uses 0 V / 3.3 V (or 5 V). <strong>RS-232</strong> uses
+roughly ±3 to ±15 V with inverted logic. Never connect RS-232 directly to an MCU pin; use a transceiver.</li>
+<li>Optional hardware flow control: RTS/CTS.</li>
+</ul>
+<p><strong>Common faults:</strong> baud mismatch (garbage characters), TX/RX not crossed,
+missing ground, 5 V device on a 3.3 V-only pin.</p>
+<hr>
+<h2>2. Intermediate — SPI</h2>
+<ul>
+<li>The controller (master) drives <strong>SCLK</strong> and selects one peripheral by pulling its <strong>CS</strong> (chip select) low.</li>
+<li>Data moves both ways on each clock: MOSI (controller → peripheral) and MISO (peripheral → controller).
+Newer names are <strong>COPI/CIPO</strong> or <strong>SDO/SDI</strong>.</li>
+<li><strong>Four modes</strong> set by <strong>CPOL</strong> (idle clock level) and <strong>CPHA</strong> (which edge samples data):</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>CPOL</th>
+<th>CPHA</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p>  The controller and peripheral must use the same mode. The device datasheet tells you which.</p>
+<ul>
+<li>No acknowledge and no standard error check. If you need integrity, add a CRC at protocol level.</li>
+<li>To read, the controller must still clock out bytes (often dummy <code>0xFF</code> or <code>0x00</code>).</li>
+</ul>
+<h2>3. Intermediate — I2C</h2>
+<ul>
+<li>Two <strong>open-drain</strong> lines, <strong>SDA</strong> and <strong>SCL</strong>, each with a <strong>pull-up resistor</strong>.</li>
+<li>Speeds: Standard-mode 100 kbit/s, Fast-mode 400 kbit/s, Fast-mode Plus 1 Mbit/s.</li>
+<li><strong>START</strong>: SDA goes low while SCL is high. <strong>STOP</strong>: SDA goes high while SCL is high.</li>
+<li>First byte = <strong>7-bit address + R/W bit</strong> (0 = write, 1 = read).</li>
+<li>After every byte the receiver sends <strong>ACK</strong> (SDA low) or <strong>NACK</strong> (SDA high).</li>
+<li>A peripheral can hold SCL low to make the controller wait. This is called <strong>clock stretching</strong>.</li>
+<li>A <strong>repeated START</strong> lets you write a register address and then read it without releasing the bus.</li>
+</ul>
+<p>Typical register read: <code>START, addr+W, reg, REPEATED START, addr+R, data…, NACK, STOP</code>.</p>
+<p><strong>Common faults:</strong> missing or too-weak pull-ups (slow rising edges), address shifted by one bit
+(7-bit vs 8-bit notation in datasheets), two devices with the same address, and a bus held low
+after a reset in the middle of a transfer. To recover, toggle SCL about 9 times.</p>
+<hr>
+<h2>4. Advanced — CAN</h2>
+<ul>
+<li>Differential pair <strong>CAN_H / CAN_L</strong> that tolerates noise. A <strong>120 Ω termination</strong> is needed at
+<strong>each end</strong> of the bus (≈ 60 Ω measured between H and L with power off).</li>
+<li>Multi-master and message-based: frames carry an <strong>identifier</strong>, not a destination address.<ul>
+<li>Standard frame: 11-bit ID. Extended frame: 29-bit ID.</li>
+</ul>
+</li>
+<li><strong>Arbitration</strong>: a dominant bit (0) overwrites a recessive bit (1). The frame with the
+<strong>lowest ID wins</strong> without being corrupted, so lower IDs mean higher priority.</li>
+<li>Classic CAN: up to <strong>8 data bytes</strong>, up to 1 Mbit/s. <strong>CAN FD</strong>: up to <strong>64 data bytes</strong>,
+with a faster data phase.</li>
+<li>Built-in error handling: CRC, ACK slot, bit stuffing (after 5 equal bits, insert one opposite bit),
+and error counters that can drive a node to <strong>error-passive</strong> or <strong>bus-off</strong>.</li>
+<li>A node needs a <strong>CAN controller</strong> (often inside the MCU) <strong>and</strong> a <strong>CAN transceiver</strong> chip.</li>
+</ul>
+<h2>5. Choosing a protocol</h2>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Good choice</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Human-readable debug log to a PC</td>
+<td>UART (via USB-UART adapter)</td>
+</tr>
+<tr>
+<td>High-speed display or external Flash on the same PCB</td>
+<td>SPI</td>
+</tr>
+<tr>
+<td>Many slow sensors on two wires</td>
+<td>I2C</td>
+</tr>
+<tr>
+<td>Robust multi-node network over metres of cable</td>
+<td>CAN</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Key takeaways</h2>
+<ul>
+<li>UART: agree on the baud rate, cross TX/RX, 8N1 = 10 bits per byte.</li>
+<li>SPI: fast and simple. Match CPOL/CPHA. One CS per device.</li>
+<li>I2C: open-drain plus pull-ups, addresses, ACK/NACK.</li>
+<li>CAN: differential, terminated at both ends, lowest ID wins arbitration.</li>
+</ul>
+<h2>Self-check</h2>
+<ol>
+<li>How long does it take to send 100 bytes at 9600 baud, 8N1?</li>
+<li>A sensor&#39;s datasheet says its address is <code>0x90</code>/<code>0x91</code>. What is the 7-bit address?</li>
+<li>Two CAN nodes start sending IDs <code>0x100</code> and <code>0x0FF</code> at the same time. Which one wins?</li>
+</ol>
+<p><a href="../quiz/index.html?module=comm">Take the Module 3 quiz →</a></p>
+
+</main>
+<footer class="site-footer">Embedded System Training</footer>
+</body>
+</html>

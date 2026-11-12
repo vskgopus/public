@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Embedded Systems Quiz</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="home-link" href="../index.html">← Embedded System Training</a>
+  </header>
+
+  <main id="app">
+    <!-- Setup screen -->
+    <section id="screen-setup" class="card">
+      <h1>Embedded Systems MCQ Quiz</h1>
+      <p class="muted">Choose a module and level. Questions and options are shuffled on every attempt.
+        Pass mark: <strong><span id="pass-mark"></span>%</strong>.</p>
+      <form id="setup-form" novalidate>
+        <label for="learner-name">Your name <span class="req">*</span></label>
+        <input id="learner-name" type="text" autocomplete="name" maxlength="80" required>
+        <p id="name-error" class="error" hidden>Please enter your name. It appears on your result report.</p>
+
+        <label for="module-select">Module</label>
+        <select id="module-select"></select>
+
+        <label for="level-select">Level</label>
+        <select id="level-select">
+          <option value="all">All levels</option>
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
+
+        <label for="count-select">Number of questions</label>
+        <select id="count-select">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="20">20</option>
+          <option value="0">All available</option>
+        </select>
+        <p id="pool-info" class="muted small"></p>
+
+        <button type="submit" class="btn primary">Start quiz</button>
+      </form>
+    </section>
+
+    <!-- Question screen -->
+    <section id="screen-quiz" class="card" hidden>
+      <div class="quiz-top">
+        <span id="progress-text"></span>
+        <span id="q-tags"></span>
+      </div>
+      <div class="progress"><div id="progress-bar"></div></div>
+      <h2 id="q-text"></h2>
+      <pre id="q-code" hidden><code></code></pre>
+      <fieldset id="q-options" class="options"><legend class="sr-only">Answer options</legend></fieldset>
+      <div class="nav-row">
+        <button id="btn-prev" type="button" class="btn">← Previous</button>
+        <button id="btn-next" type="button" class="btn primary">Next →</button>
+        <button id="btn-submit" type="button" class="btn primary" hidden>Submit quiz</button>
+      </div>
+      <p id="unanswered-warning" class="error" hidden></p>
+    </section>
+
+    <!-- Results screen -->
+    <section id="screen-results" class="card" hidden>
+      <h1>Quiz Result Report</h1>
+      <table class="meta">
+        <tbody id="result-meta"></tbody>
+      </table>
+      <div id="score-box" class="score-box"></div>
+      <h2>Score by module</h2>
+      <table class="breakdown">
+        <thead><tr><th>Module</th><th>Correct</th><th>Score</th></tr></thead>
+        <tbody id="module-breakdown"></tbody>
+      </table>
+      <div class="nav-row no-print">
+        <button id="btn-csv" type="button" class="btn primary">Download CSV</button>
+        <button id="btn-print" type="button" class="btn">Print / Save as PDF</button>
+        <button id="btn-retake" type="button" class="btn">Take another quiz</button>
+      </div>
+      <h2>Answer review</h2>
+      <ol id="review-list" class="review"></ol>
+      <p class="muted small">This report was generated in the learner's browser and is not stored on a server.
+        It is a self-assessment record, not a verified certificate.</p>
+    </section>
+
+    <noscript><p class="card">This quiz needs JavaScript enabled.</p></noscript>
+  </main>
+
+  <script src="questions.js"></script>
+  <script src="quiz.js"></script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 2 — MCU &amp; Peripherals</title>
+<link rel="stylesheet" href="../site.css">
+</head>
+<body>
+<header class="site-header"><a href="../index.html">Embedded System Training</a></header>
+<main class="content">
+<h1>Module 2 — MCU &amp; Peripherals</h1>
+<p><a href="01-embedded-c.html">← Module 1</a> · <a href="../index.html">Course home</a> · <a href="03-comm-protocols.html">Next: Communication Protocols →</a> · <a href="../quiz/index.html?module=mcu">Take the quiz</a></p>
+<p><strong>Learning goals</strong></p>
+<ul>
+<li>Configure GPIO pins correctly (input/output, pull-up/down, push-pull/open-drain).</li>
+<li>Explain how interrupts and the vector table work.</li>
+<li>Calculate timer periods, PWM duty cycle and ADC results.</li>
+<li>Choose between polling, interrupts and DMA.</li>
+</ul>
+<blockquote>
+<p>Register names and formulas differ between MCU families. The examples use
+STM32-style timers and an ARM Cortex-M core. Always check the reference manual
+and datasheet for your part.</p>
+</blockquote>
+<hr>
+<h2>1. Beginner</h2>
+<h3>1.1 Memory-mapped I/O</h3>
+<p>Peripherals are controlled through registers that sit at fixed addresses in the
+memory map. Writing to an address configures hardware:</p>
+<pre><code class="language-c">#define GPIOA_ODR (*(volatile uint32_t *)0x4001080CU)   /* example address only */
+GPIOA_ODR |= (1U &lt;&lt; 5);
+</code></pre>
+<p>In real projects, use the vendor&#39;s device header (CMSIS) rather than raw addresses.</p>
+<h3>1.2 GPIO</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Input / Output</td>
+<td>Direction of the pin</td>
+</tr>
+<tr>
+<td>Push-pull output</td>
+<td>Actively drives both high and low</td>
+</tr>
+<tr>
+<td>Open-drain output</td>
+<td>Can only pull low. Needs a pull-up resistor to go high. Lets several devices share a line (used by I2C).</td>
+</tr>
+<tr>
+<td>Pull-up / pull-down</td>
+<td>Weak resistor that gives a floating input a defined level</td>
+</tr>
+</tbody></table>
+<p>A push-button wired between the pin and GND needs a <strong>pull-up</strong>. The pin reads 1 when
+the button is released and 0 when it is pressed.</p>
+<p><strong>Never leave inputs floating.</strong> They pick up noise and can increase power consumption.</p>
+<h3>1.3 Button debouncing</h3>
+<p>Mechanical contacts bounce for a few milliseconds. To get one clean event, either sample
+the input periodically (for example every 5–10 ms) and accept a change only after several
+equal readings, or add an RC filter with a Schmitt-trigger input.</p>
+<h3>1.4 Clock</h3>
+<p>Every peripheral needs a clock. On most MCUs you must <strong>enable the peripheral clock</strong>
+(for example an <code>RCC</code> enable bit) before its registers respond. Forgetting this is one of the most
+common causes of &quot;my peripheral does nothing&quot;.</p>
+<hr>
+<h2>2. Intermediate</h2>
+<h3>2.1 Interrupts</h3>
+<p>When an interrupt fires, the CPU saves its context, looks up the handler address in the
+<strong>vector table</strong>, runs the ISR, then returns. On Cortex-M the <strong>NVIC</strong> controls
+enabling and priorities. A <strong>lower</strong> priority number means <strong>higher</strong> urgency.</p>
+<p>Rules for good ISRs:</p>
+<ul>
+<li>Keep them short. Set a flag, copy data, or give a semaphore, and do the processing elsewhere.</li>
+<li>Do not block or busy-wait, and avoid <code>printf</code> and <code>malloc</code>.</li>
+<li>Clear the peripheral&#39;s interrupt flag, otherwise the ISR re-enters straight away.</li>
+<li>Variables shared with main code must be <code>volatile</code> and accessed atomically.</li>
+</ul>
+<h3>2.2 Polling vs interrupt vs DMA</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>CPU load</th>
+<th>Best for</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Polling</td>
+<td>High (CPU waits)</td>
+<td>Very simple or very fast one-off operations</td>
+</tr>
+<tr>
+<td>Interrupt</td>
+<td>Low to medium</td>
+<td>Events arriving at unpredictable times</td>
+</tr>
+<tr>
+<td>DMA</td>
+<td>Very low</td>
+<td>Moving blocks of data (ADC samples, UART/SPI buffers) without CPU involvement</td>
+</tr>
+</tbody></table>
+<h3>2.3 Timers</h3>
+<p>For an STM32-style timer:</p>
+<pre><code>f_update = f_timer_clock / ((PSC + 1) × (ARR + 1))
+</code></pre>
+<p>Example: 72 MHz clock, <code>PSC = 7199</code>, <code>ARR = 9999</code> → 72 000 000 / 7200 = 10 kHz tick, then
+10 000 / 10 000 = <strong>1 Hz</strong> update event.</p>
+<h3>2.4 PWM</h3>
+<pre><code>duty cycle = CCR / (ARR + 1)
+</code></pre>
+<p>With <code>ARR = 999</code> and <code>CCR = 250</code> the duty cycle is 25 %. PWM is used for motor speed, LED dimming and
+servo control.</p>
+<h3>2.5 ADC</h3>
+<p>An <em>N</em>-bit ADC has 2ᴺ codes. For a 12-bit ADC with V_REF = 3.3 V:</p>
+<pre><code>1 LSB = 3.3 V / 4096 ≈ 0.806 mV
+V_in  = code × V_REF / 4096          (code 2048 ≈ 1.65 V)
+</code></pre>
+<p>(Some texts divide by 2ᴺ − 1 instead. The difference is below one LSB.)</p>
+<p><strong>Nyquist:</strong> sample at more than twice the highest frequency in the signal, and use an
+anti-aliasing filter in front of the ADC.</p>
+<hr>
+<h2>3. Advanced</h2>
+<h3>3.1 Watchdog timer</h3>
+<p>A watchdog resets the MCU if the software does not refresh (&quot;kick&quot;) it in time.
+Kick it from one place that only runs when the system is healthy, for example after all tasks
+have reported in. Never kick it from a timer ISR that keeps running while the main loop is stuck.</p>
+<h3>3.2 Brown-out and reset sources</h3>
+<p>A brown-out detector (BOD/BOR) holds the MCU in reset while the supply voltage is too low
+for reliable operation. After a reset, read the reset-cause register (power-on, watchdog, brown-out,
+software, pin) and log it. It is very useful when debugging field failures.</p>
+<h3>3.3 Critical sections and atomicity</h3>
+<pre><code class="language-c">uint32_t primask = __get_PRIMASK();   /* CMSIS intrinsics on Cortex-M */
+__disable_irq();
+shared_counter++;
+__set_PRIMASK(primask);               /* restore previous state */
+</code></pre>
+<p>Keep critical sections short, because they add to interrupt latency.</p>
+<h3>3.4 Low-power modes</h3>
+<p>MCUs offer sleep or stop modes that turn off clocks to save energy. They wake on interrupts.
+Typical pattern: do the work, then <code>__WFI()</code> (wait for interrupt) in the idle loop.
+Disable unused peripherals and configure unused pins so they don&#39;t float.</p>
+<h3>3.5 Cortex-M interrupt features</h3>
+<ul>
+<li><strong>Tail-chaining</strong>: when one ISR ends and another is pending, the core skips the full
+context restore and save between them.</li>
+<li><strong>Nesting</strong>: a higher-priority interrupt can pre-empt a running lower-priority ISR.</li>
+<li><strong>HardFault</strong>: usually caused by invalid memory access, an unaligned access where it is not allowed,
+or a stack overflow. Inspect the stacked PC and the fault status registers.</li>
+</ul>
+<hr>
+<h2>Key takeaways</h2>
+<ul>
+<li>Enable the clock, configure the pin, then use the peripheral.</li>
+<li>Keep ISRs short, clear their flags, and protect shared data.</li>
+<li>Know the timer, PWM and ADC formulas for your MCU, and check them against the reference manual.</li>
+<li>Use DMA for bulk data and the watchdog for recovery.</li>
+</ul>
+<h2>Self-check</h2>
+<ol>
+<li>A 16 MHz timer clock with PSC = 15. What ARR value gives a 1 kHz update rate?</li>
+<li>Why does an I2C line need open-drain outputs?</li>
+<li>A 10-bit ADC with a 5 V reference reads 512. What is the approximate input voltage?</li>
+</ol>
+<p><a href="../quiz/index.html?module=mcu">Take the Module 2 quiz →</a></p>
+
+</main>
+<footer class="site-footer">Embedded System Training</footer>
+</body>
+</html>

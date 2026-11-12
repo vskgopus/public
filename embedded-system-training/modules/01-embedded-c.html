@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 1 — Embedded C Basics</title>
+<link rel="stylesheet" href="../site.css">
+</head>
+<body>
+<header class="site-header"><a href="../index.html">Embedded System Training</a></header>
+<main class="content">
+<h1>Module 1 — Embedded C Basics</h1>
+<p><a href="../index.html">← Course home</a> · <a href="02-mcu-peripherals.html">Next: MCU &amp; Peripherals →</a> · <a href="../quiz/index.html">Take the quiz</a></p>
+<p><strong>Learning goals</strong></p>
+<ul>
+<li>Choose correct fixed-width data types and understand integer promotion.</li>
+<li>Set, clear, toggle and test bits in registers safely.</li>
+<li>Explain what <code>volatile</code>, <code>const</code> and <code>static</code> do on an embedded target.</li>
+<li>Describe how a C program is laid out in Flash and RAM.</li>
+</ul>
+<hr>
+<h2>1. Beginner</h2>
+<h3>1.1 Use fixed-width types</h3>
+<p>The C standard only gives minimum sizes for <code>char</code>, <code>short</code>, <code>int</code> and <code>long</code>.
+<code>int</code> is 16 bits on some 8/16-bit MCUs and 32 bits on ARM Cortex-M.
+When the size matters (registers, protocols, file formats), include <code>&lt;stdint.h&gt;</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Width</th>
+<th>Range</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>uint8_t</code> / <code>int8_t</code></td>
+<td>8 bits</td>
+<td>0…255 / −128…127</td>
+</tr>
+<tr>
+<td><code>uint16_t</code> / <code>int16_t</code></td>
+<td>16 bits</td>
+<td>0…65 535 / −32 768…32 767</td>
+</tr>
+<tr>
+<td><code>uint32_t</code> / <code>int32_t</code></td>
+<td>32 bits</td>
+<td>0…4 294 967 295 / −2 147 483 648…2 147 483 647</td>
+</tr>
+</tbody></table>
+<p><code>&lt;stdbool.h&gt;</code> gives you <code>bool</code>, <code>true</code> and <code>false</code>.</p>
+<h3>1.2 Bit manipulation</h3>
+<p>Peripheral registers are controlled bit by bit. Learn these four forms by heart:</p>
+<pre><code class="language-c">#define LED_PIN 5U
+
+reg |=  (1U &lt;&lt; LED_PIN);   /* set bit 5    */
+reg &amp;= ~(1U &lt;&lt; LED_PIN);   /* clear bit 5  */
+reg ^=  (1U &lt;&lt; LED_PIN);   /* toggle bit 5 */
+if (reg &amp; (1U &lt;&lt; LED_PIN)) { /* bit 5 is 1 */ }
+</code></pre>
+<p>Use the <code>U</code> suffix. In <code>1 &lt;&lt; 31</code> the <code>1</code> is a signed <code>int</code>, and on a 32-bit <code>int</code>
+shifting a 1 into the sign bit is undefined behaviour. <code>1U &lt;&lt; 31</code> is well defined.</p>
+<p>To write a multi-bit field (for example bits 4–6), clear the field first, then OR in the new value:</p>
+<pre><code class="language-c">#define MODE_POS   4U
+#define MODE_MASK  (0x7U &lt;&lt; MODE_POS)
+
+reg = (reg &amp; ~MODE_MASK) | ((mode &lt;&lt; MODE_POS) &amp; MODE_MASK);
+</code></pre>
+<h3>1.3 Hexadecimal and binary</h3>
+<p>Registers are written in hex because each hex digit maps to exactly 4 bits:
+<code>0xA5</code> = <code>1010 0101</code>. Practise converting both ways until it is automatic.</p>
+<hr>
+<h2>2. Intermediate</h2>
+<h3>2.1 <code>volatile</code></h3>
+<p><code>volatile</code> tells the compiler that a variable can change outside the normal flow of
+the program, so every read and write in the source must really happen.
+Without it, the optimiser may keep the value in a CPU register or delete a loop that seems to do nothing.</p>
+<p>Use <code>volatile</code> for:</p>
+<ol>
+<li>Memory-mapped hardware registers.</li>
+<li>Variables shared between an interrupt service routine (ISR) and main code.</li>
+<li>Variables shared between RTOS tasks (together with proper locking).</li>
+</ol>
+<pre><code class="language-c">volatile bool data_ready = false;
+
+void UART_IRQHandler(void) { data_ready = true; }
+
+int main(void) {
+    while (!data_ready) { }   /* without volatile this could become an infinite loop */
+}
+</code></pre>
+<blockquote>
+<p><strong><code>volatile</code> does not make an operation atomic.</strong> <code>counter++</code> on a <code>volatile</code>
+variable is still read, modify and write. An interrupt can arrive between those steps.
+Protect shared data with a critical section or atomic instructions.</p>
+</blockquote>
+<h3>2.2 <code>const</code></h3>
+<ul>
+<li><code>const uint8_t table[] = {...};</code> usually ends up in Flash (<code>.rodata</code>), which saves RAM.</li>
+<li>A read-only hardware register: <code>volatile const uint32_t *status_reg;</code>
+The program must not write to it, but its value can still change.</li>
+</ul>
+<h3>2.3 <code>static</code></h3>
+<table>
+<thead>
+<tr>
+<th>Where</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Local variable</td>
+<td>Keeps its value between calls. Stored in <code>.data</code>/<code>.bss</code>, not on the stack.</td>
+</tr>
+<tr>
+<td>Global variable or function</td>
+<td>Visible only inside that <code>.c</code> file (internal linkage).</td>
+</tr>
+</tbody></table>
+<h3>2.4 Integer promotion</h3>
+<p>Before arithmetic, types smaller than <code>int</code> are promoted to <code>int</code>:</p>
+<pre><code class="language-c">uint8_t a = 200, b = 100;
+uint8_t sum = a + b;    /* a + b is computed as int 300, then truncated to 44 */
+</code></pre>
+<p>Comparisons that mix signed and unsigned values are a common source of bugs.
+<code>-1 &lt; 0U</code> is <strong>false</strong>, because <code>-1</code> is converted to a large unsigned value.</p>
+<hr>
+<h2>3. Advanced</h2>
+<h3>3.1 Memory layout</h3>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Contents</th>
+<th>Located in</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>.text</code></td>
+<td>Code</td>
+<td>Flash</td>
+</tr>
+<tr>
+<td><code>.rodata</code></td>
+<td><code>const</code> data, string literals</td>
+<td>Flash</td>
+</tr>
+<tr>
+<td><code>.data</code></td>
+<td>Initialised globals and statics</td>
+<td>RAM (initial values copied from Flash at startup)</td>
+</tr>
+<tr>
+<td><code>.bss</code></td>
+<td>Uninitialised or zero-initialised globals and statics</td>
+<td>RAM (zeroed at startup)</td>
+</tr>
+<tr>
+<td>Stack</td>
+<td>Local variables, return addresses</td>
+<td>RAM (grows down on Cortex-M)</td>
+</tr>
+<tr>
+<td>Heap</td>
+<td><code>malloc</code></td>
+<td>RAM</td>
+</tr>
+</tbody></table>
+<p>The startup code copies <code>.data</code>, zeroes <code>.bss</code> and then calls <code>main()</code>.
+Read your toolchain&#39;s linker script and <code>.map</code> file to see where everything ends up.</p>
+<h3>3.2 Avoid dynamic allocation in real-time code</h3>
+<p><code>malloc</code>/<code>free</code> can fragment the heap, and their run time is not easy to bound.
+Many safety-related coding standards (for example MISRA C) restrict or forbid
+dynamic allocation after initialisation. Prefer static buffers or fixed-size memory pools.</p>
+<h3>3.3 Implementation-defined and undefined behaviour</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Right shift of a negative signed integer</td>
+<td>Implementation-defined</td>
+</tr>
+<tr>
+<td>Layout and order of bit-fields</td>
+<td>Implementation-defined. Don&#39;t rely on it for register maps.</td>
+</tr>
+<tr>
+<td>Signed integer overflow</td>
+<td>Undefined</td>
+</tr>
+<tr>
+<td>Shift by ≥ width of the type</td>
+<td>Undefined</td>
+</tr>
+</tbody></table>
+<h3>3.4 Endianness</h3>
+<p>In <strong>little-endian</strong> order the least-significant byte is stored at the lowest address.
+Most ARM Cortex-M devices are configured little-endian. Network protocols are often big-endian,
+so convert explicitly with shifts instead of casting pointers:</p>
+<pre><code class="language-c">uint32_t be32_read(const uint8_t *p) {
+    return ((uint32_t)p[0] &lt;&lt; 24) | ((uint32_t)p[1] &lt;&lt; 16) |
+           ((uint32_t)p[2] &lt;&lt; 8)  |  (uint32_t)p[3];
+}
+</code></pre>
+<h3>3.5 Function pointers and state machines</h3>
+<pre><code class="language-c">typedef void (*state_fn)(void);
+static void idle(void);
+static void run(void);
+static state_fn state = idle;
+
+void tick(void) { state(); }   /* each state assigns the next state */
+</code></pre>
+<hr>
+<h2>Key takeaways</h2>
+<ul>
+<li>Use <code>&lt;stdint.h&gt;</code> types and <code>U</code> suffixes for masks.</li>
+<li><code>volatile</code> means &quot;always really access this&quot;. It does <strong>not</strong> mean atomic.</li>
+<li>Know which sections live in Flash and which in RAM.</li>
+<li>Avoid undefined behaviour and heap use in time-critical code.</li>
+</ul>
+<h2>Self-check</h2>
+<ol>
+<li>Write one expression that clears bits 8–11 of <code>reg</code> and sets them to <code>0x5</code>.</li>
+<li>Why might <code>while (!flag);</code> hang forever with optimisation on?</li>
+<li>Where does <code>static int count = 3;</code> inside a function live?</li>
+</ol>
+<p><a href="../quiz/index.html?module=c">Take the Module 1 quiz →</a></p>
+
+</main>
+<footer class="site-footer">Embedded System Training</footer>
+</body>
+</html>

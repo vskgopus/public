@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 4 — RTOS Fundamentals</title>
+<link rel="stylesheet" href="../site.css">
+</head>
+<body>
+<header class="site-header"><a href="../index.html">Embedded System Training</a></header>
+<main class="content">
+<h1>Module 4 — RTOS Fundamentals</h1>
+<p><a href="03-comm-protocols.html">← Module 3</a> · <a href="../index.html">Course home</a> · <a href="../quiz/index.html?module=rtos">Take the quiz</a></p>
+<p><strong>Learning goals</strong></p>
+<ul>
+<li>Explain tasks, task states and pre-emptive priority scheduling.</li>
+<li>Choose between a queue, a semaphore and a mutex.</li>
+<li>Recognise and prevent priority inversion, deadlock and stack overflow.</li>
+</ul>
+<blockquote>
+<p>The examples use <strong>FreeRTOS</strong> API names. Other RTOSes (Zephyr, ThreadX, RTX, embOS…)
+have the same concepts with different names. Check your RTOS documentation for exact
+signatures, because APIs change between versions.</p>
+</blockquote>
+<hr>
+<h2>1. Beginner</h2>
+<h3>1.1 Why an RTOS?</h3>
+<p>A &quot;super-loop&quot; (<code>while(1) { a(); b(); c(); }</code>) is fine for simple systems. As timing requirements
+grow, an RTOS lets you split the work into <strong>tasks</strong> with priorities, so urgent work is not held up by slow work.</p>
+<p><strong>Real-time</strong> means <em>predictable</em>, not <em>fast</em>:</p>
+<ul>
+<li><strong>Hard real-time</strong>: missing a deadline is a system failure (airbag, motor control).</li>
+<li><strong>Soft real-time</strong>: an occasional miss lowers quality (audio glitch, UI lag).</li>
+</ul>
+<h3>1.2 Tasks and states</h3>
+<p>Each task has its own <strong>stack</strong> and a <strong>priority</strong>. In FreeRTOS a task is in one of these states:</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Running</td>
+<td>Currently executing on the CPU</td>
+</tr>
+<tr>
+<td>Ready</td>
+<td>Able to run, waiting for the CPU</td>
+</tr>
+<tr>
+<td>Blocked</td>
+<td>Waiting for time or an event (delay, queue, semaphore)</td>
+</tr>
+<tr>
+<td>Suspended</td>
+<td>Removed from scheduling until explicitly resumed</td>
+</tr>
+</tbody></table>
+<pre><code class="language-c">void led_task(void *arg) {
+    for (;;) {
+        toggle_led();
+        vTaskDelay(pdMS_TO_TICKS(500));   /* blocks; other tasks run */
+    }
+}
+
+xTaskCreate(led_task, &quot;LED&quot;, 128, NULL, 1, NULL);
+vTaskStartScheduler();
+</code></pre>
+<h3>1.3 The tick</h3>
+<p>A periodic timer interrupt (the <strong>tick</strong>, e.g. <code>configTICK_RATE_HZ = 1000</code> → 1 ms) drives
+time-outs and delays. When no task is ready, the <strong>idle task</strong> runs.</p>
+<hr>
+<h2>2. Intermediate</h2>
+<h3>2.1 Pre-emptive priority scheduling</h3>
+<p>The scheduler always runs the <strong>highest-priority Ready task</strong>. If a higher-priority task becomes
+ready (for example an ISR gives it a semaphore), it <strong>pre-empts</strong> the running task immediately.
+Tasks of equal priority can share the CPU by <strong>time slicing</strong>.</p>
+<p>During a <strong>context switch</strong> the RTOS saves the CPU registers of the old task on its stack and restores
+those of the new task.</p>
+<h3>2.2 Inter-task communication</h3>
+<table>
+<thead>
+<tr>
+<th>Object</th>
+<th>Use it for</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Queue</strong></td>
+<td>Passing data between tasks, or from an ISR to a task</td>
+<td>FreeRTOS copies the data into the queue</td>
+</tr>
+<tr>
+<td><strong>Binary semaphore</strong></td>
+<td>Signalling an event (&quot;data is ready&quot;)</td>
+<td>Often given from an ISR, taken by a task</td>
+</tr>
+<tr>
+<td><strong>Counting semaphore</strong></td>
+<td>Counting events or a pool of N resources</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Mutex</strong></td>
+<td>Mutual exclusion around a shared resource</td>
+<td>Has an owner. FreeRTOS mutexes use priority inheritance.</td>
+</tr>
+<tr>
+<td><strong>Event group</strong></td>
+<td>Waiting on combinations of flags</td>
+<td></td>
+</tr>
+</tbody></table>
+<h3>2.3 Calling RTOS functions from ISRs</h3>
+<p>In an ISR use only the <strong>interrupt-safe</strong> variants, e.g. <code>xQueueSendFromISR()</code>,
+<code>xSemaphoreGiveFromISR()</code>. Request a context switch at the end of the ISR if a higher-priority
+task was woken (<code>portYIELD_FROM_ISR()</code>). Never call blocking functions from an ISR.</p>
+<h3>2.4 Periodic tasks</h3>
+<p><code>vTaskDelay(n)</code> delays <em>relative to now</em>, so the period drifts by however long the work took.
+For a fixed period use <code>vTaskDelayUntil()</code> (newer FreeRTOS versions also provide
+<code>xTaskDelayUntil()</code>), which wakes at absolute multiples of the period.</p>
+<hr>
+<h2>3. Advanced</h2>
+<h3>3.1 Priority inversion</h3>
+<p>A <strong>high</strong>-priority task waits for a mutex held by a <strong>low</strong>-priority task, while a
+<strong>medium</strong>-priority task pre-empts the low one. The high task is now effectively blocked
+by the medium task.</p>
+<p><strong>Fix:</strong> <strong>priority inheritance</strong>. The mutex holder temporarily gets the priority of the
+highest task waiting on it. A widely cited real case is the 1997 Mars Pathfinder lander,
+which suffered repeated resets until priority inheritance was enabled on a mutex.</p>
+<h3>3.2 Deadlock</h3>
+<p>Task A holds lock 1 and waits for lock 2, while task B holds lock 2 and waits for lock 1.
+Prevention:</p>
+<ul>
+<li>Always take locks in the <strong>same global order</strong>.</li>
+<li>Hold locks for as short a time as possible. Don&#39;t block while holding one.</li>
+<li>Use time-outs on <code>take</code> calls and handle failure.</li>
+</ul>
+<h3>3.3 Stack sizing</h3>
+<p>Each task has its own stack. Overflow corrupts other memory silently.</p>
+<ul>
+<li>Enable <code>configCHECK_FOR_STACK_OVERFLOW</code> and implement the hook during development.</li>
+<li>Measure the remaining stack with <code>uxTaskGetStackHighWaterMark()</code> and keep a margin.</li>
+<li>Large local arrays and deep call chains or <code>printf</code> use a lot of stack.</li>
+</ul>
+<h3>3.4 Reentrancy and shared code</h3>
+<p>A function is <strong>reentrant</strong> if it can be safely interrupted and called again before the first
+call finishes. That means it uses no unprotected static or global state. <code>strtok()</code> is a classic
+non-reentrant function.</p>
+<h3>3.5 Schedulability: rate-monotonic scheduling</h3>
+<p>With fixed priorities and periodic independent tasks, giving <strong>shorter-period tasks higher
+priority</strong> (rate-monotonic) is optimal among fixed-priority schemes. A sufficient (not necessary)
+test is:</p>
+<pre><code>U = Σ (Cᵢ / Tᵢ) ≤ n(2^(1/n) − 1)      → about 0.693 for large n
+</code></pre>
+<p>where Cᵢ is the worst-case execution time and Tᵢ is the period.</p>
+<hr>
+<h2>Key takeaways</h2>
+<ul>
+<li>The highest-priority Ready task runs. Blocked tasks consume no CPU.</li>
+<li>Use a queue for data, a semaphore for signals and a mutex for shared resources.</li>
+<li>Use only <code>...FromISR</code> APIs inside interrupts.</li>
+<li>Watch for priority inversion, deadlock and stack overflow.</li>
+</ul>
+<h2>Self-check</h2>
+<ol>
+<li>Why should a mutex not be given from an ISR?</li>
+<li>Task periods 10 ms and 50 ms with execution times 2 ms and 10 ms. Is U below the RM bound for n = 2 (≈ 0.828)?</li>
+<li>What is the difference between <code>vTaskDelay</code> and <code>vTaskDelayUntil</code>?</li>
+</ol>
+<p><a href="../quiz/index.html?module=rtos">Take the Module 4 quiz →</a></p>
+
+</main>
+<footer class="site-footer">Embedded System Training</footer>
+</body>
+</html>
