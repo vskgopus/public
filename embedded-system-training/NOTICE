@@ -1,0 +1,8 @@
+Embedded System Training
+Copyright (C) 2026 Gopu Sugumar
+Licensed under the GNU General Public License, version 3 or (at your option) any later
+version (GPL-3.0-or-later). See LICENSE.
+
+The training material describes general embedded systems concepts. Product and API names
+(for example ARM, Cortex-M, STM32, FreeRTOS, MISRA) are used only to identify the
+technologies being taught; this project is not affiliated with or endorsed by their owners.

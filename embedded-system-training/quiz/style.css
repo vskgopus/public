@@ -38,6 +38,8 @@ body {
 }
 .site-header { max-width: 760px; margin: 0 auto; padding: 16px; }
 .home-link { color: var(--accent); text-decoration: none; }
+.site-footer { max-width: 760px; margin: 0 auto; padding: 0 16px 32px; color: var(--muted); font-size: 0.875rem; }
+.site-footer a { color: var(--accent); }
 main { max-width: 760px; margin: 0 auto; padding: 0 16px 48px; }
 .card {
   background: var(--surface);
