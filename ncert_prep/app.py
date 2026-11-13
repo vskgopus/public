@@ -75,8 +75,9 @@ def index():
 def api_status():
     s = settings.load()
     has_env_key = bool(os.environ.get("ANTHROPIC_API_KEY"))
+    s_desc = describe_ai(s)
     busy = any(j["status"] in ("queued", "running") for j in JOBS.values())
-    return jsonify(version=VERSION, busy=busy,
+    return jsonify(version=VERSION, busy=busy, ai=s_desc[0], api_model=generator.MODEL,
                    settings=settings.public(s) | {"env_key": has_env_key, "env_gemini_key": bool(_env_gemini_key())},
                    claude=claude_cli.status(), output_dir=str(OUT_DIR))
 
@@ -131,6 +132,38 @@ def api_settings():
     if models is not None:
         out["gemini_models"] = models
     return jsonify(out)
+
+
+def describe_ai(s: dict | None = None, sections=None) -> list[str]:
+    """Plain lines saying which AI is used, which model, and what the AI writes versus what the app does."""
+    s = s or settings.load()
+    if s["engine"] == "claude_login":
+        st = claude_cli.status()
+        state = ("signed in" if st.get("logged_in") else "NOT signed in: open Settings and log in") \
+            if st.get("installed") else "Claude Code is NOT installed"
+        lines = [f"AI: Claude login, your Claude Pro/Max plan through Claude Code ({state}); "
+                 "the model is the one Claude Code uses by default."]
+    elif s["engine"] == "gemini":
+        key = "key saved" if (s["gemini_api_key"] or _env_gemini_key()) else "NO key saved"
+        lines = [f"AI: Google Gemini, model {s['gemini_model'] or '(none chosen)'} ({key}); if it is busy or out of "
+                 "quota the app tries up to two other Gemini Flash models."]
+    else:
+        key = "key saved" if (s["api_key"] or os.environ.get("ANTHROPIC_API_KEY")) else "NO key saved"
+        lines = [f"AI: Claude API (pay per use), model {generator.MODEL} ({key})."]
+    if sections is not None:
+        what = {"diagrams": "diagram outlines", "figures": "notes on the book's figures"}
+        ai = [what.get(k, generator.SECTIONS[k]["label"].lower()) for k in generator.claude_sections(sections)]
+        app_side = ["downloading the chapter from ncert.nic.in"]
+        if "diagrams" in sections:
+            app_side.append("drawing the diagrams from the AI's outline")
+        if "figures" in sections:
+            app_side.append("cutting the figures out of the book pages")
+        if generator.PRACTICE_TEST in sections:
+            app_side.append("building the practice test from the AI's questions")
+        app_side.append("laying out the PDF")
+        lines.append("The AI writes: " + ", ".join(ai) + ".")
+        lines.append("The app does without AI: " + ", ".join(app_side) + ".")
+    return lines
 
 
 def _env_gemini_key() -> str:
@@ -295,6 +328,8 @@ def _run_job(job_id: str, p: dict) -> None:
         book = p["book"]
         engine_name = {"claude_login": "your Claude login", "gemini": f"Google Gemini ({p['gemini_model']})"}.get(
             p["engine"], "the Claude API")
+        for line in describe_ai(settings.load(), p["sections"]):
+            log(line)
         model = _model_tag(p)
         log(f"Downloading chapter {p['ch_from']}" + (f"–{p['ch_to']}" if p["ch_to"] != p["ch_from"] else "")
             + f" of '{book['title']}' from ncert.nic.in …")

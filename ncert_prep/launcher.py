@@ -145,6 +145,9 @@ def main() -> None:
     if hasattr(signal, "SIGTERM"):   # ending this process (e.g. by a newer launcher) shuts down cleanly
         signal.signal(signal.SIGTERM, lambda *_: webapp.shutdown_event.set())
     print(f"NCERT Exam Prep is running at {url}  (close with the Quit button or Ctrl+C)")
+    for line in webapp.describe_ai():
+        print(line, flush=True)
+    print("Each job prints here what the AI writes and what the app does itself.", flush=True)
     if not os.environ.get("NCERT_NO_BROWSER"):
         open_window(url)
     try:

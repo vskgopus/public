@@ -29,11 +29,11 @@ Sample output: [`samples/Class10_Science_Ch1_Chemical_Reactions_and_Equations.pd
 
 ![Launch page](docs/launch-page.png)
 
-Settings panel (opened from the top-right corner):
+Settings (the **Settings** button at the top; **Quit** is next to it):
 
 ![Settings](docs/settings.png)
 
-## Three ways to run the AI (pick in Settings, top-right corner)
+## Three ways to run the AI (pick in Settings)
 
 | | **Claude login** | **API key** (Claude) | **Google Gemini** |
 |---|---|---|---|
@@ -96,10 +96,15 @@ it offers to run `sudo apt install python3-venv` for you.
 
 ## First start
 
-The Settings panel opens. Choose one:
-- **Claude login**: click **Log in with Claude**. A browser tab opens; sign in and approve.
-  The dot turns green.
-- **API key**: paste your `sk-ant-…` key and click **Save**.
+The card at the top of the page ("AI that writes your material") shows which AI is used, which
+model, and whether it is ready. If you are not logged in, click **Log in with Claude** right there:
+a browser tab opens; sign in and approve, and the dot turns green. To change the AI, or to enter
+an API key or a Gemini key, click **Settings** at the top. **Quit** (next to it) closes the app; it
+asks first while a PDF is being prepared.
+
+The terminal (if you started the app from one) and the console on the page say which AI is used,
+what the AI writes in this job, and what the app does itself without AI (downloading, cutting
+the book's figures, drawing diagrams, building the practice test, laying out the PDF).
 
 Then choose the book and chapters and click **Prepare exam material**. A chapter takes a
 few minutes. A console under the button shows each step with the time, and a live line shows

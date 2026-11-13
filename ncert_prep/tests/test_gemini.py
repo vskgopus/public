@@ -366,3 +366,19 @@ stub.script = [quota] * 3
 st, _ = run_job(sections=["key_points"], chapter_from="12", chapter_to="12")
 assert st["status"] == "error" and "Gemini usage limit" in st["error"] and "Finished parts are saved" in st["error"], st
 print("OK - a model's used-up quota falls back; all used up is reported as a usage limit")
+
+# --- the console says which AI is used and what it writes versus what the app does itself
+generator._GEMINI_STANDIN.clear()
+st, _ = run_job(sections=["figures", "key_points", "one_mark", "practice_test"], chapter_from="13", chapter_to="13")
+assert st["status"] == "done", st
+said = "\n".join(st["log"])
+assert "AI: Google Gemini, model gemini-2.5-flash" in said, said
+assert "The AI writes: notes on the book's figures, key points to remember, one-mark questions." in said, said
+assert "The app does without AI:" in said and "cutting the figures out of the book pages" in said \
+    and "building the practice test" in said, said
+page = client.get("/", base_url=BASE).data
+for element in (b'id="btnsettings"', b'id="btnquit"', b'id="ailogin"', b'id="aidetail"'):
+    assert element in page, element
+status = client.get("/api/status", base_url=BASE).get_json()
+assert status["ai"].startswith("AI: Google Gemini"), status["ai"]
+print("OK - console and page say which AI is used; Settings, Quit and login are on the front page")
