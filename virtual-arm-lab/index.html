@@ -256,7 +256,7 @@ table.t input{width:9em}
 .tbtn{padding:0 8px;gap:5px;font-size:12.5px}
 #tb select{max-width:140px}.spd input{width:56px}.spd{font-size:12px}
 .chk{white-space:nowrap}
-@media (max-width:1560px){.spd{font-size:0}.spd span{font-size:12px}.tbtn.stp span,#bRst span{display:none}.tbtn.stp,#bRst{padding:0 9px}}
+@media (max-width:1640px){.spd{font-size:0}.spd span{font-size:12px}.tbtn.stp span,#bRst span{display:none}.tbtn.stp,#bRst{padding:0 9px}}
 
 @media (prefers-color-scheme:light){:root[data-theme="auto"]{color-scheme:light;
 --bg:#e9edf2;--p1:#f7f9fb;--p2:#eef2f6;--p3:#e2e8ef;--ln:#cfd7e1;--tx:#18222f;--mu:#5b6a7c;--ac:#0b8a5e;--ac2:#1565c0;--wn:#b56a00;--er:#c62828;
@@ -354,6 +354,7 @@ table.t input{width:9em}
 }
 /* the Manual button shows only its icon where the one-row toolbar is tight */
 @media (min-width:1181px) and (max-width:1300px){#bDoc span{display:none}#bDoc{padding:0 9px}#tb #ex{max-width:120px}}
+@media (min-width:1181px) and (max-width:1240px){#tb #ex{max-width:88px}}
 /* scrollbars: grey in both themes, whatever the browser's default (some draw bright white ones) */
 *{scrollbar-color:var(--sbt) var(--sbk)}
 ::-webkit-scrollbar{width:12px;height:12px}
@@ -387,6 +388,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
 #board #ledWdt.run{fill:#3ddc97;filter:drop-shadow(0 0 4px #3ddc97)}
 #board #ledWdt.fault{fill:#ff5252;filter:drop-shadow(0 0 6px #ff5252)}
 .WDT{color:var(--er)}.ADC{color:var(--ac)}
+#bRun{min-width:7.6em;justify-content:center}   /* fixed width: the label changes (Run / Continue / Pause); the step buttons must not move under the mouse */
 </style></head><body><div id="app">
 <header id="tb">
  <button class="brand" id="bAbout" title="About Virtual ARM Lab (version 0.11.0)" aria-label="About Virtual ARM Lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ac)"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg><b>Virtual ARM Lab</b><span>Cortex-M3 debugger</span></button>
