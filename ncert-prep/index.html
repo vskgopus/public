@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Only this site's own files may run; the page may talk only to Anthropic and Google (for the AI). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src https://api.anthropic.com https://generativelanguage.googleapis.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>NCERT Exam Prep</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="shell noprint" id="app">
+  <header class="appbar">
+    <div class="logo" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M9 7h7M9 11h5"/></svg></div>
+    <div class="brand"><h1>NCERT Exam Prep</h1><p>Study PDFs from NCERT books, in your browser</p></div>
+    <button class="iconbtn" id="btnsettings" type="button" aria-haspopup="dialog" title="Settings: AI and keys">
+      <svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+      <span class="lbl">Settings</span></button>
+  </header>
+
+  <section class="ai" aria-live="polite">
+    <p class="kicker">AI that writes your material</p>
+    <p class="name"><span class="dot" id="aidot"></span><span id="ainame">Checking…</span></p>
+    <p class="detail" id="aidetail"></p>
+    <div class="acts"><button class="pill light" id="aisetup" type="button">Set up the AI</button></div>
+  </section>
+
+  <form id="f" novalidate>
+    <div class="card">
+      <div class="step"><b>1</b><h2>Choose the chapter</h2></div>
+      <div class="grid">
+        <div><label for="cls">Class</label><select id="cls"></select></div>
+        <div><label for="subject">Subject</label><select id="subject"></select></div>
+        <div class="full"><label for="book">Book</label><select id="book"></select></div>
+        <div class="full"><label for="chapter">Chapter</label><select id="chapter"></select></div>
+      </div>
+    </div>
+
+    <div class="card" id="getpdf">
+      <div class="step"><b>2</b><h2>Get the chapter PDF</h2></div>
+      <ol class="howto">
+        <li><a class="bigbtn" id="dl" href="#" target="_blank" rel="noopener noreferrer">Download chapter from NCERT</a>
+          <span class="hint">Opens the official PDF (<span id="dlname">file</span>). Save it: on a phone it goes to Downloads; on a PC use the viewer's download button.</span></li>
+        <li><button class="bigbtn alt" id="choose" type="button">Next: use the downloaded file</button>
+          <span class="hint" id="choosehint">Pick <b id="wantname">the file</b> from Downloads. You can also drop it here.</span>
+          <input type="file" id="file" accept="application/pdf,.pdf" hidden></li>
+      </ol>
+      <div class="filebox" id="filebox" hidden></div>
+      <fieldset class="range">
+        <legend>Pages (optional)</legend>
+        <div class="pair">
+          <div><label for="pf">From</label><input id="pf" type="number" min="1" placeholder="1" inputmode="numeric"></div>
+          <div><label for="pt">To</label><input id="pt" type="number" min="1" placeholder="end" inputmode="numeric"></div>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="card includes">
+      <div class="step"><b>3</b><h2>What to include</h2></div>
+      <fieldset class="chips">
+        <legend>Notes</legend>
+        <label class="chk"><input type="checkbox" name="sec" value="summary"> Summary notes<span class="hint">topic by topic</span></label>
+        <label class="chk"><input type="checkbox" name="sec" value="diagrams"> Explanation diagrams<span class="hint">flowcharts, cycles and concept maps</span></label>
+        <label class="chk"><input type="checkbox" name="sec" value="key_points"> Key points to remember<span class="hint">definitions, formulae, laws</span></label>
+        <label class="chk"><input type="checkbox" name="sec" value="revision_table"> Quick revision table<span class="hint">one row per topic</span></label>
+        <label class="chk"><input type="checkbox" name="sec" value="differences"> Differences tables<span class="hint">"difference between X and Y"</span></label>
+      </fieldset>
+      <fieldset class="chips">
+        <legend>Questions with answers</legend>
+        <label class="chk"><input type="checkbox" name="sec" value="one_mark"> One-mark questions<span class="hint">MCQ, fill in the blanks, true/false, assertion-reason</span></label>
+        <label class="chk"><input type="checkbox" name="sec" value="short_answer"> 2- and 3-mark questions<span class="hint">including NCERT exercises</span></label>
+        <label class="chk"><input type="checkbox" name="sec" value="long_answer"> 5-mark questions<span class="hint">full model answers</span></label>
+        <label class="chk"><input type="checkbox" name="sec" value="case_based"> Case-based questions<span class="hint">a passage with sub-questions</span></label>
+        <label class="chk"><input type="checkbox" name="sec" value="practice_test" id="sec-test"> Practice test at the end<span class="hint">from the questions above, answer key separate</span></label>
+      </fieldset>
+      <p class="hint" id="secmsg">Figures from the book are in the desktop app for now. Each extra section adds time and AI usage.</p>
+    </div>
+
+    <div class="card" id="status" hidden>
+      <div class="statebar"><p id="state"></p><button id="stop" type="button" hidden>Stop</button></div>
+      <div class="consolehead"><span>What the app is doing</span></div>
+      <div id="console" role="log" aria-label="What the app is doing"></div>
+      <div class="actions" id="actions"></div>
+    </div>
+
+    <div class="actionbar"><div class="inner"><button id="go" type="submit">Prepare exam material</button></div></div>
+  </form>
+  <p class="foot">Runs in your browser: your keys and files stay on this device, and the chapter goes only to the AI you choose.<br>
+    Chapters © NCERT, downloaded by you from ncert.nic.in. For personal study.</p>
+</div>
+
+<div id="shade" class="noprint" hidden>
+  <div id="panel" role="dialog" aria-modal="true" aria-labelledby="sh">
+    <div class="ph"><h2 id="sh">Settings</h2><button class="x" id="close" type="button" aria-label="Close settings">×</button></div>
+    <p class="hint">Choose which AI writes the material. A Claude Pro/Max login can't be used from a web page; use the desktop app for that.</p>
+
+    <div class="opt" id="opt-claude">
+      <label><input type="radio" name="engine" value="claude" id="eng-claude">
+        <span><strong>Claude API key</strong><br><span class="hint">Pay per use, from console.anthropic.com.</span></span></label>
+      <div class="body">
+        <div class="hint" id="claude-state"></div>
+        <label for="claudekey">Anthropic API key</label>
+        <div class="row"><input id="claudekey" type="password" placeholder="sk-ant-…" autocomplete="off"><button class="secondary" id="saveclaude" type="button">Save</button></div>
+        <label for="claudemodel">Model</label>
+        <select id="claudemodel"></select>
+        <span class="hint" id="claudeprice"></span>
+      </div>
+    </div>
+
+    <div class="opt" id="opt-gem">
+      <label><input type="radio" name="engine" value="gemini" id="eng-gem">
+        <span><strong>Google Gemini (free key)</strong><br><span class="hint">Free keys have per-model limits. Google says it may use free-tier requests to improve its products.</span></span></label>
+      <div class="body">
+        <div class="hint" id="gem-state"></div>
+        <label for="gemkey">Gemini API key</label>
+        <div class="row"><input id="gemkey" type="password" placeholder="Paste your Gemini key" autocomplete="off"><button class="secondary" id="savegem" type="button">Save</button></div>
+        <span class="hint">Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">aistudio.google.com/apikey</a>.</span>
+        <div id="gem-model-row" hidden><label for="gemmodel">Model</label><select id="gemmodel"></select></div>
+      </div>
+    </div>
+    <div class="msg" id="smsg" role="status"></div>
+
+    <div class="sect">
+      <label class="chk plain"><input type="checkbox" id="remember"> Remember my keys on this device<span class="hint">Off: keys are forgotten when you close the browser tab.</span></label>
+      <button class="secondary" id="forget" type="button">Forget saved keys</button>
+    </div>
+    <div class="sect">
+      <label for="split">Split long chapters</label>
+      <select id="split">
+        <option value="0">Off: send the chapter whole</option>
+        <option value="8">Parts of up to 8 pages</option>
+        <option value="12">Parts of up to 12 pages</option>
+        <option value="16">Parts of up to 16 pages</option>
+      </select>
+      <span class="hint">Helps when a chapter is too long for one answer. Each part is one more AI request.</span>
+    </div>
+  </div>
+</div>
+
+<main id="doc" class="doc" hidden></main>
+
+<script src="vendor/pdf-lib-1.17.1.min.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
