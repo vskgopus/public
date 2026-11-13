@@ -256,7 +256,7 @@ table.t input{width:9em}
 .tbtn{padding:0 8px;gap:5px;font-size:12.5px}
 #tb select{max-width:140px}.spd input{width:56px}.spd{font-size:12px}
 .chk{white-space:nowrap}
-@media (max-width:1640px){.spd{font-size:0}.spd span{font-size:12px}.tbtn.stp span,#bRst span{display:none}.tbtn.stp,#bRst{padding:0 9px}}
+@media (max-width:1720px){.spd{font-size:0}.spd span{font-size:12px}.tbtn.stp span,#bRst span{display:none}.tbtn.stp,#bRst{padding:0 9px}}
 
 @media (prefers-color-scheme:light){:root[data-theme="auto"]{color-scheme:light;
 --bg:#e9edf2;--p1:#f7f9fb;--p2:#eef2f6;--p3:#e2e8ef;--ln:#cfd7e1;--tx:#18222f;--mu:#5b6a7c;--ac:#0b8a5e;--ac2:#1565c0;--wn:#b56a00;--er:#c62828;
@@ -354,7 +354,8 @@ table.t input{width:9em}
 }
 /* the Manual button shows only its icon where the one-row toolbar is tight */
 @media (min-width:1181px) and (max-width:1300px){#bDoc span{display:none}#bDoc{padding:0 9px}#tb #ex{max-width:120px}}
-@media (min-width:1181px) and (max-width:1240px){#tb #ex{max-width:88px}}
+@media (min-width:1181px) and (max-width:1240px){#tb #ex{max-width:80px}}
+@media (min-width:1181px) and (max-width:1300px){.tbtn.stp,#bRst{padding:0 6px}}
 /* scrollbars: grey in both themes, whatever the browser's default (some draw bright white ones) */
 *{scrollbar-color:var(--sbt) var(--sbk)}
 ::-webkit-scrollbar{width:12px;height:12px}
@@ -363,7 +364,7 @@ table.t input{width:9em}
 ::-webkit-scrollbar-thumb:hover{background:var(--sbth)}
 #tb::-webkit-scrollbar{display:none}
 /* the Project panel header holds six buttons: keep them inside the default 208 px width */
-#side .ph{padding:0 4px 0 8px;letter-spacing:.06em}#side .ph .acts{gap:0}#side .ph .ib{width:22px}
+#side .ph{padding:0 3px 0 7px;letter-spacing:.05em}#side .ph .acts{gap:0}#side .ph .ib{width:20px}
 /* app name opens About */
 button.brand{background:none;border:0;padding:2px 6px 2px 2px;border-radius:5px;color:inherit;font:inherit;cursor:pointer}
 button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:underline;text-underline-offset:3px}
@@ -389,15 +390,35 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
 #board #ledWdt.fault{fill:#ff5252;filter:drop-shadow(0 0 6px #ff5252)}
 .WDT{color:var(--er)}.ADC{color:var(--ac)}
 #bRun{min-width:7.6em;justify-content:center}   /* fixed width: the label changes (Run / Continue / Pause); the step buttons must not move under the mouse */
+
+/* share dialog (same look as About) */
+#shareDlg{position:fixed;inset:0;z-index:61;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.55)}
+#shareDlg[hidden]{display:none}
+#shB textarea{width:100%;box-sizing:border-box;height:90px;font:12px var(--mono,monospace);background:var(--p2);color:var(--tx);border:1px solid var(--ln);border-radius:5px;padding:6px;resize:vertical;word-break:break-all}
+#shB .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}#shB .row button{padding:5px 12px}
+#shB li small{color:var(--mu)}#shB .rep{color:var(--wn)}
+/* memory map */
+#mapv{font-size:12.5px}#mapv h4{margin:8px 0 2px;font-size:12.5px}
+.mbar{position:relative;height:30px;background:var(--p3);border:1px solid var(--ln);border-radius:4px;overflow:hidden;margin:2px 0 1px}
+.mseg{position:absolute;top:0;bottom:0;min-width:2px;border-right:1px solid var(--p1);cursor:pointer;opacity:.85}.mseg:hover{opacity:1;outline:1px solid var(--tx)}
+.mhb{position:absolute;bottom:0;height:40%;background:var(--wn);opacity:.9;pointer-events:none}
+.mmk{position:absolute;top:0;bottom:0;width:2px;background:var(--tx);pointer-events:none}
+.mmk span{position:absolute;top:1px;left:4px;font-size:10px;color:var(--tx);white-space:nowrap;text-shadow:0 0 2px var(--p1)}
+.maxis{display:flex;justify-content:space-between;color:var(--mu);font-size:10.5px;margin-bottom:4px}
+.msw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+#mapv tr.mrow{cursor:pointer}#mapv tr.mrow:hover{background:var(--hiL)}
+.m-vec{background:var(--dr)}.m-code{background:var(--ac2)}.m-ro{background:var(--st)}.m-ld{background:var(--nm)}.m-data{background:var(--ac)}.m-bss{background:var(--ty)}
+.m-heap{background:var(--mn)}.m-dtb{background:var(--kw)}.m-stack{background:var(--er)}.m-res{background:repeating-linear-gradient(45deg,var(--p3),var(--p3) 4px,var(--ln) 4px,var(--ln) 8px)}.m-tstk{background:var(--wn)}
 </style></head><body><div id="app">
 <header id="tb">
- <button class="brand" id="bAbout" title="About Virtual ARM Lab (version 0.15.0)" aria-label="About Virtual ARM Lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ac)"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg><b>Virtual ARM Lab</b><span>Cortex-M3 debugger</span></button>
+ <button class="brand" id="bAbout" title="About Virtual ARM Lab (version 0.16.0)" aria-label="About Virtual ARM Lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ac)"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg><b>Virtual ARM Lab</b><span>Cortex-M3 debugger</span></button>
  <div class="grp"><button class="tbtn bld" id="bAsm" title="Build the active file (Ctrl+B)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg><span>Build</span></button></div>
  <div class="grp">
   <button class="tbtn pri" id="bRun" title="Run / Continue (F5 or F8)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg><span>Run</span></button>
   <button class="tbtn stp" id="bStep" title="Step Into (F11)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11M7 9l5 5 5-5"/><circle cx="12" cy="20" r="1.6" fill="currentColor"/></svg><span>Step Into</span></button>
   <button class="tbtn stp" id="bOver" title="Step Over (F10)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13a8 8 0 0 1 15-3.5M19 4v6h-6"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/></svg><span>Step Over</span></button>
   <button class="tbtn stp" id="bOut" title="Step Out (Shift+F11)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M7 9l5-5 5 5"/><circle cx="12" cy="20" r="1.6" fill="currentColor"/></svg><span>Step Out</span></button>
+  <button class="tbtn stp" id="bLoop" title="Step out of loop: run until the loop around this line ends (Ctrl+Shift+F10)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6H8a4 4 0 0 0 0 8h3"/><path d="M11 11l3 3-3 3"/><path d="M16 14h5M18 11l3 3-3 3"/></svg><span>Out of loop</span></button>
   <button class="tbtn stp" id="bCur" title="Run to the line where the editor cursor is (Ctrl+F10)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16"/><path d="M9 7l10 5-10 5z" fill="currentColor"/></svg><span>Run to Cursor</span></button>
   <button class="tbtn" id="bRst" title="Reset the CPU (Shift+F5)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg><span>Reset</span></button>
  </div>
@@ -417,6 +438,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
   <button class="ib" id="fOpen" title="Open files from your PC" aria-label="Open files"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></button>
   <button class="ib" id="fSave" title="Save current file to your PC (Ctrl+S)" aria-label="Save file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l4 4v14H5z"/><path d="M8 3v6h7V3M8 21v-7h8v7"/></svg></button>
   <button class="ib" id="fPrj" title="Save the whole project as project.json" aria-label="Save project"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg></button>
+  <button class="ib" id="fShare" title="Share the current program as a link" aria-label="Share the program as a link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></button>
   <button class="ib" id="fRst" title="Restore the original of this example file (press twice)" aria-label="Restore the original example file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg></button>
   <button class="ib" id="fDel" title="Delete the active file (press twice)" aria-label="Delete file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></button>
  </div></div>
@@ -446,6 +468,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
    <button class="pt" data-w="wt">Watch</button>
    <button class="pt" data-w="lc">Locals</button>
    <button class="pt" data-w="mm">Memory</button>
+  <button class="pt" data-w="map">Map</button>
    <button class="pt" data-w="ds2">Disassembly</button>
    <button class="pt" data-w="cs">Call stack</button>
    <button class="pt" data-w="tk">Tasks</button>
@@ -463,6 +486,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
    <div class="win" id="w-mm" hidden><div class="wr"><label>Address <input id="ma" class="m" value="0x20000000" size="11"></label><select id="mn" aria-label="Bytes"><option>64</option><option selected>128</option><option>256</option><option>512</option></select><button id="mu">Update</button><label class="chk"><input type="checkbox" id="ml" checked> Live</label><button data-go="0x20000000">RAM</button><button data-go="sp">SP</button><button data-go="0x40010000">GPIO</button><button data-go="0x40011000">UART</button></div>
     <pre id="mv" class="mono"></pre>
     <div class="wr" style="margin-top:8px"><label>Write <input id="mwa" class="m" value="0x20000000" size="11"></label><input id="mwv" class="m" value="0" size="9" aria-label="Value"><select id="mws" aria-label="Size"><option value="1">byte</option><option value="2">half-word</option><option value="4" selected>word</option></select><button id="mwb">Write</button></div></div>
+   <div class="win" id="w-map" hidden><div id="mapv"></div></div>
    <div class="win" id="w-ds2" hidden><div class="wr"><select id="dm" aria-label="Disassembly view"><option value="mix">Source + assembly</option><option value="asm">Assembly only</option></select><small>Click a row to toggle an instruction breakpoint.</small></div><div id="dv"></div></div>
    <div class="win" id="w-cs" hidden><div id="csv"></div></div>
    <div class="win" id="w-tk" hidden><div id="tkv"></div></div>
@@ -472,7 +496,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
 <p>The <b>User Manual</b> explains the IDE: projects and files, creating a program in C, assembly or with VxWorks, building, running, debugging and testing. The <b>Datasheet</b> describes the CPU, the memory map, every register, the exception and interrupt system, the instruction set and the C compiler. The <b>VxWorks API Reference</b> describes every kernel function, with error codes and the differences from a real VxWorks system.</p>
 <h3>Quick start</h3><p><b>1.</b> Pick a file in the Project panel, or choose one from <b>Open an example…</b> in the toolbar. <b>2.</b> Press <b>Build</b> (Ctrl+B). <b>3.</b> <b>Run</b> (F5) or step with <b>F10</b> (over), <b>F11</b> (into), <b>Shift+F11</b> (out). Click a line number or press <b>F9</b> to toggle a breakpoint. The board on the right shows the pins, LEDs, buzzer, and the UART, I&sup2;C and SPI devices live.</p>
 <p>Example folders: <b>samples</b> (bare-metal C, one program per interface, using the register names), <b>vxdemos</b> (VxWorks programs), <b>vxworks</b> (the kernel, its drivers and the device tree <code>board.dts</code> they read; VxWorks programs use the drivers, not registers). The <b>Tasks</b> window shows VxWorks tasks, semaphores, message queues and watchdogs.</p>
-<table><tr><th>Key</th><th>Action</th></tr><tr><td>F1</td><td>Open the manual</td></tr><tr><td>F5 / F8</td><td>Run / Continue / Pause</td></tr><tr><td>F10</td><td>Step over (runs a whole call, and stays in the current task)</td></tr><tr><td>F11</td><td>Step into</td></tr><tr><td>Shift+F11</td><td>Step out</td></tr><tr><td>Ctrl+F10</td><td>Run to cursor</td></tr><tr><td>Shift+F5</td><td>Reset</td></tr><tr><td>F9</td><td>Toggle breakpoint on the cursor line</td></tr><tr><td>Ctrl+B / Ctrl+S</td><td>Build / Save file</td></tr></table><p>Breakpoints can have conditions such as <code>n==3</code>. Watchpoints stop the CPU when a variable or address is read or written. The <b>Registers</b> tab shows the core registers and flags; double-click one to edit it.</p></div>
+<table><tr><th>Key</th><th>Action</th></tr><tr><td>F1</td><td>Open the manual</td></tr><tr><td>F5 / F8</td><td>Run / Continue / Pause</td></tr><tr><td>F10</td><td>Step over (runs a whole call, and stays in the current task)</td></tr><tr><td>F11</td><td>Step into</td></tr><tr><td>Shift+F11</td><td>Step out</td></tr><tr><td>Ctrl+F10</td><td>Run to cursor</td></tr><tr><td>Ctrl+Shift+F10</td><td>Out of loop: run until the loop around the current line ends</td></tr><tr><td>Shift+F5</td><td>Reset</td></tr><tr><td>F9</td><td>Toggle breakpoint on the cursor line</td></tr><tr><td>Ctrl+B / Ctrl+S</td><td>Build / Save file</td></tr></table><p>Breakpoints can have conditions such as <code>n==3</code>. Watchpoints stop the CPU when a variable or address is read or written. The <b>Registers</b> tab shows the core registers and flags; double-click one to edit it.</p></div>
 </div>
   </div>
  </section>
@@ -487,7 +511,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
 </div>
 <div id="about" hidden role="dialog" aria-modal="true" aria-labelledby="abT"><div class="abcard">
  <div class="abhd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg>
-  <div><h2 id="abT">Virtual ARM Lab</h2><div class="abv"><span>Version <b id="abVer">0.15.0</b></span> &middot; <span>released 2026-11-13</span></div></div>
+  <div><h2 id="abT">Virtual ARM Lab</h2><div class="abv"><span>Version <b id="abVer">0.16.0</b></span> &middot; <span>released 2026-11-13</span></div></div>
   <button class="tbtn" id="abX" title="Close (Esc)">Close</button></div>
  <div class="abbody">
   <p>A virtual ARM microcontroller board in the browser: a Cortex-M3 style CPU with an IDE, a debugger, a C compiler and a VxWorks 7 style real-time kernel, for learning embedded programming.</p>
@@ -505,6 +529,12 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
    <tr><td>Documents</td><td>User Manual, Datasheet and VxWorks API Reference (press <b>Manual</b> or F1)</td></tr>
   </table>
   <h3>What's new</h3>
+  <p><b>0.16.0</b> (2026-11-13):</p>
+  <ul>
+   <li>A Map tab: flash and RAM drawn as bars (vector table, code, data, heap, task stacks, device tree, stack) with live MSP and PSP markers</li>
+   <li>Out of loop (Ctrl+Shift+F10): runs until the loop around the current line ends, in C and in assembly</li>
+   <li>Share links: send a program as a link; whoever opens it is asked before its files are added</li>
+  </ul>
   <p><b>0.15.0</b> (2026-11-13):</p>
   <ul>
    <li>VxWorks events: <code>eventSend</code> (also from interrupts), <code>eventReceive</code> (any or all, with a timeout), <code>eventClear</code></li>
@@ -563,6 +593,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
  </div>
 </div>
 </div>
+<div id="shareDlg" hidden role="dialog" aria-modal="true" aria-labelledby="shT"><div class="abcard"><div class="abhd"><div><h2 id="shT">Share</h2></div><button class="ib" id="shX" title="Close (Esc)" aria-label="Close">&times;</button></div><div class="abbody" id="shB"></div></div></div>
 <div id="docs" hidden role="dialog" aria-modal="true" aria-label="Documentation">
  <header class="dhd"><b class="dttl">Documentation</b>
   <div class="dtabs" role="tablist" aria-label="Documents"><button role="tab" data-doc="manual">User Manual</button><button role="tab" data-doc="datasheet">Datasheet</button><button role="tab" data-doc="vxworks">VxWorks API</button></div>
@@ -605,6 +636,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
 <tr><td>Open files from your computer</td><td>Press the folder button and pick one or more <code>.c .h .s .asm .dts .txt</code> files. A <code>.txt</code> ending is removed, so <code>main.c.txt</code> becomes <code>main.c</code>. A file with the same name as a project file replaces that file's text.</td></tr>
 <tr><td>Save a file to your computer</td><td>Press the disk button or <kbd>Ctrl</kbd>+<kbd>S</kbd>. On the claude.ai page you are asked to confirm, and source files are saved with an extra <code>.txt</code> ending (only some file types are allowed there); rename the file afterwards.</td></tr>
 <tr><td>Save or load the whole project</td><td>Press the download-arrow button to save <code>project.json</code>. To load it again, open it with the folder button. <b>Loading a project.json replaces all files in the project.</b></td></tr>
+<tr><td>Share a program as a link</td><td>Press the link button. The link holds the program in the editor: its main file and the files it includes or links (<code>startup.s</code>, <code>app.ld</code> &hellip;). Example files you have not changed, such as the VxWorks kernel, are not copied into the link: the app supplies them. Copy the link and send it. Whoever opens it is asked first, sees the files, and can add them to their project; a file of theirs with the same name is replaced only then, and the dialog says so. The code travels in the part of the link after <code>#</code>, which browsers never send to a server; nothing is uploaded. Very long links can be cut by some chat and mail programs.</td></tr>
 <tr><td>Delete a file</td><td>Press the bin button twice within 2.5 seconds. The last file cannot be deleted.</td></tr>
 <tr><td>Close an editor tab</td><td>Click the &times; on the tab. The file stays in the project.</td></tr>
 </table>
@@ -889,6 +921,7 @@ void main(void)
 <tr><td>Step Into</td><td><kbd>F11</kbd></td><td>Runs to the next source line, going into called functions.</td></tr>
 <tr><td>Step Over</td><td><kbd>F10</kbd></td><td>Runs to the next line of the same function; a called function runs completely. In VxWorks programs it stays in the current task: other tasks and interrupts run, but the CPU stops only when the current task reaches its next line.</td></tr>
 <tr><td>Step Out</td><td><kbd>Shift</kbd>+<kbd>F11</kbd></td><td>Runs until the current function returns.</td></tr>
+<tr><td>Out of loop</td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd></td><td>Runs until the loop around the current line ends, and stops at the first line after it (in the same function; calls and interrupts inside the loop run normally). In nested loops it leaves the innermost one; press again for the next. It finds the loop by the jump back at its end, so it works in C and in assembly, for example through the 10,000 turns of <code>zero_bss</code> in the VxWorks <code>startup.s</code>. When you step the same lines again and again, the status bar suggests it.</td></tr>
 <tr><td>Run to Cursor</td><td><kbd>Ctrl</kbd>+<kbd>F10</kbd></td><td>Runs until the line where the editor cursor is (or the next line with code).</td></tr>
 <tr><td>Instruction step</td><td>(toolbar switch)</td><td>When ticked, the step commands execute one machine instruction instead of one source line. Watch it in the <b>Disassembly</b> window.</td></tr>
 </table>
@@ -915,6 +948,7 @@ void main(void)
 <tr><td>Breakpoints</td><td>See <a href="#m-bp">7.2</a>.</td></tr>
 <tr><td>Watch</td><td>Expressions you add. Each can be: a register (<code>r0</code> &hellip; <code>r12</code>, <code>sp</code>, <code>lr</code>, <code>pc</code>); a C variable (<code>count</code>, or <code>main.i</code> for the variable <code>i</code> of <code>main</code>); a peripheral register (<code>GPIO_OUT</code>); an array element (<code>buf[2]</code>); a struct field through any path (<code>pt.x</code>, <code>p-&gt;next-&gt;val</code>, <code>pts[1].y</code>); or memory (<code>*0x20000000</code>, with <code>:1</code>, <code>:2</code> or <code>:4</code> for the size in bytes). Type a new value and press <kbd>Enter</kbd> to change it.</td></tr>
 <tr><td>Locals</td><td>The parameters and local variables of the function selected in the Call stack (the current one at first), and all global variables. Values can be edited. C programs only.</td></tr>
+<tr><td>Map</td><td>The memory map, drawn as two bars: flash (vector table, code, constants, the start values of <code>.data</code>) and RAM (<code>.data</code>, <code>.bss</code> or the global variables, the VxWorks heap with its blocks in use and the task stacks, the device tree, the main stack), with markers at MSP and PSP that move as the program runs. The table under the bars gives each region's addresses and size; click a region to open it in the Memory window.</td></tr>
 <tr><td>Memory</td><td>A hex dump from an address (or <code>sp</code>), 64 to 512 bytes. Bytes that changed are highlighted. <b>Live</b> updates it while the program runs. The Write row stores a byte, half-word or word.</td></tr>
 <tr><td>Disassembly</td><td>The machine instructions with their addresses, mixed with the C source lines they came from (or assembly only).</td></tr>
 <tr><td>Call stack</td><td>The chain of function calls. A line marked <i>(interrupted)</i> is code that was interrupted by a handler. Click a line to show it and to choose the function whose locals are shown.</td></tr>
@@ -1004,6 +1038,7 @@ void main(void)
 <tr><td><kbd>F11</kbd></td><td>Step Into</td></tr>
 <tr><td><kbd>Shift</kbd>+<kbd>F11</kbd></td><td>Step Out</td></tr>
 <tr><td><kbd>Ctrl</kbd>+<kbd>F10</kbd></td><td>Run to Cursor</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd></td><td>Out of loop</td></tr>
 <tr><td><kbd>F9</kbd></td><td>Set or clear a breakpoint on the cursor line</td></tr>
 <tr><td><kbd>Ctrl</kbd>+<kbd>S</kbd></td><td>Save the file to your computer</td></tr>
 <tr><td><kbd>Tab</kbd> (in the editor)</td><td>Insert two spaces. <kbd>Enter</kbd> keeps the indentation and indents after <code>{</code> in C.</td></tr>
@@ -2780,7 +2815,8 @@ function cc(src){
   if(t==="for"){nx();need("(");if(isT(pk()))decl(Lc);else if(pk()!==";")simple();need(";");
    const a=nl(),b=nl(),c=nl();lb(a);if(pk()!==";"){E(0);em("CMP r4, #0");em(`BEQ ${b}`)}need(";");
    const s0=p;let k=0;while(!(k===0&&pk()===")")){const x=nx();if(x===undefined)err("bad for loop");if(x==="(")k++;if(x===")")k--}const s1=p;nx();
-   LP.push([b,c]);stmt();LP.pop();lb(c);if(s1>s0){const sp=p,sv=T[s1];p=s0;T[s1]=undefined;simple();T[s1]=sv;p=sp}em(`B ${a}`);lb(b);return}
+   LP.push([b,c]);stmt();LP.pop();lb(c);if(line>0)O.push("        .line "+line);   /* the step (i++) and the jump back belong to the for line */
+   if(s1>s0){const sp=p,sv=T[s1];p=s0;T[s1]=undefined;simple();T[s1]=sv;p=sp}em(`B ${a}`);lb(b);return}
   if(t==="switch"){nx();need("(");E(0);need(")");fpOff+=4;const slot=-fpOff;em(`STR r4, [r11, #${slot}]`);
    const tst=nl(),end=nl(),sw={cases:[],def:null};swStack.push(sw);em(`B ${tst}`);
    const cont=LP.length?LP[LP.length-1][1]:null;LP.push([end,cont]);stmt();LP.pop();swStack.pop();em(`B ${end}`);
@@ -3468,12 +3504,21 @@ function bpHit(i){const c=bpCond.get(i);if(c){let ok=true;noWp++;try{ok=!!evalCo
 /* ---------- run control ---------- */
 const lineKey=i=>{const l=locArr[i];return l?l.f*1e6+l.l:-1};
 let pendStop=0,fStart=new Set;
-function stopRun(why){running=0;stepMode=null;stopWhy=why;pendStop=1}
+/* the closing backward branch of the innermost loop around instruction i: {lo, hi} or null */
+function findLoop(i){for(let j=i;j<prog.length&&j<i+4000;j++){if(j>i&&fStart.has(j))break;const I=prog[j];let t=-1;
+  if(I.op==="B")t=I.tgt;else if((I.op==="CBZ"||I.op==="CBNZ")&&I.a[1])t=labels[I.a[1].v]??-1;
+  if(t>=0&&t<=i)return{lo:t,hi:j}}return null}
+let stepHist=[];
+function cmdLoop(){if(!ensureBuilt())return;if(hl||running)return;const L=findLoop(pc);
+ if(!L){setSt("Not inside a loop here: there is no jump back to this line before the function ends","wn");return}
+ prev.set(R);stopWhy="";stepMode={t:"loop",lo:L.lo,hi:L.hi,d:depth,k0:ctxKey()};go()}
+function stopRun(why){running=0;if(why==="step"&&stepMode&&stepMode.t==="loop")why="loop";stepMode=null;stopWhy=why;pendStop=1}
 /* identifies the running context: -1 in an interrupt handler, else the VxWorks task id (0 without a kernel).
    Before the kernel runs tasks (they use PSP) there is one context: start-up code may still be zeroing
    taskIdCurrent (RAM starts as 0xA5), which must not look like a task switch to the stepper. */
 function ctxKey(){if(inIsr)return -1;if(!spsel)return 0;const t=symTab.taskIdCurrent;return t&&t.a!==undefined?peek(t.a,4):0}
 function stepDone(){const m=stepMode;
+ if(m.t==="loop"){if(ctxKey()!==m.k0)return false;if(depth<m.d)return true;return depth===m.d&&(pc<m.lo||pc>m.hi)}
  if(m.t[0]==="c"){if(m.t==="cout"&&m.k0===-1)return!inIsr;if(ctxKey()!==m.k0)return false;
   if(m.t==="cover")return pc===m.ret&&R[13]===m.sp0;if(m.t==="cout")return R[13]>m.fp0;
   if(m.t==="clover"){if(m.wait){if(pc===m.wait.ret&&R[13]===m.wait.sp)m.wait=null;return false}
@@ -3499,7 +3544,7 @@ function cmdStep(k){if(!ensureBuilt())return;if(hl)return;if(running){return}pre
  if(k==="out"){if(depth>0){stepMode={t:"out",d:depth-1};go()}else one()}
  else if(byI){if(k==="over"&&I&&I.op==="BL"){stepMode={t:"iover",d:depth};go()}else one()}
  else{stepMode={t:k==="over"?"lover":"linto",k:lineKey(pc),d:depth};go()}}
-$("bStep").onclick=()=>cmdStep("into");$("bOver").onclick=()=>cmdStep("over");$("bOut").onclick=()=>cmdStep("out");
+$("bStep").onclick=()=>cmdStep("into");$("bLoop").onclick=cmdLoop;$("bOver").onclick=()=>cmdStep("over");$("bOut").onclick=()=>cmdStep("out");
 $("bRun").onclick=()=>{if(running){stopRun("pause");return}if(!ensureBuilt())return;if(hl)return;prev.set(R);stepMode=null;stopWhy="";go()};
 $("bAsm").onclick=()=>{running=0;build()};
 $("bRst").onclick=()=>{if(!asm){setSt("Nothing to reset — build first","wn");return}running=0;stepMode=null;rstCause=2;reset();onReset()};
@@ -3512,6 +3557,7 @@ function frame(t){const dt=Math.min(.05,(t-lt)/1000||.016);lt=t;if(running)run(s
 document.addEventListener("keydown",e=>{const k=e.key,c=e.ctrlKey||e.metaKey,tg=e.target&&e.target.tagName;
  if(k==="F5"&&e.shiftKey){e.preventDefault();$("bRst").click()}
  else if(k==="F5"||k==="F8"){e.preventDefault();$("bRun").click()}
+ else if(k==="F10"&&c&&e.shiftKey){e.preventDefault();$("bLoop").click()}
  else if(k==="F10"&&c){e.preventDefault();$("bCur").click()}
  else if(k==="F10"){e.preventDefault();$("bOver").click()}
  else if(k==="F11"){e.preventDefault();(e.shiftKey?$("bOut"):$("bStep")).click()}
@@ -3691,7 +3737,7 @@ $("tclr").onclick=()=>{tout="";td=1};$("lc").onclick=()=>{logs=[];ld=1};
 /* ---------- tabs and splitter ---------- */
 function setTab(t){curTab=t;document.querySelectorAll("#ptabs .pt").forEach(b=>{const on=b.dataset.w===t;b.classList.toggle("on",on);b.setAttribute("aria-selected",on)});
  document.querySelectorAll("#wins .win").forEach(w=>w.hidden=w.id!=="w-"+t);$("bottom").classList.remove("hid");
- if(t==="mm")updM();if(t==="wt")renderW();if(t==="bp")rBpWin();if(t==="ds2"){buildDis();paintDis(true)}if(t==="cs")rCs();if(t==="tk")rTasks();if(t==="lc")rLocals();if(t==="pr")rPr();if(t==="out")rOut();if(t==="term"){td=1}if(t==="lg")ld=1;persist()}
+ if(t==="mm")updM();if(t==="map")rMap(1);if(t==="wt")renderW();if(t==="bp")rBpWin();if(t==="ds2"){buildDis();paintDis(true)}if(t==="cs")rCs();if(t==="tk")rTasks();if(t==="lc")rLocals();if(t==="pr")rPr();if(t==="out")rOut();if(t==="term"){td=1}if(t==="lg")ld=1;persist()}
 $("ptabs").addEventListener("click",e=>{const b=e.target.closest(".pt");if(b)setTab(b.dataset.w)});
 const setBh=v=>{bh=Math.max(120,Math.min(v,innerHeight-220));$("bottom").style.setProperty("--bh",bh+"px")};
 $("spl").addEventListener("pointerdown",e=>{e.preventDefault();const y0=e.clientY,h0=bh;$("spl").classList.add("drag");$("spl").setPointerCapture(e.pointerId);
@@ -3751,12 +3797,13 @@ function render(dt){acc();const e=cyc-fs;if(e>0){for(let p=0;p<8;p++){bright[p]=
   else if(curTab==="cs"){const sg=cs.length+":"+pc+":"+selFrame;if(sg!==csSig&&!running){csSig=sg;rCs()}}
   else if(curTab==="lc"&&!$("lcv").contains(document.activeElement))rLocals();
   else if(curTab==="tk")rTasks();
+  else if(curTab==="map")rMap();
   else if(curTab==="bp"&&(running||stopWhy)&&!$("w-bp").contains(document.activeElement)){const sg=[...bpHits.values()].join()+wps.map(p=>p.hits).join();if(sg!==render.bs){render.bs=sg;rBpWin()}}}}
-function onStop(){let m="";const l=locArr[pc],at=l?files[l.f].n+":"+l.l:"0x"+h(0x08000000+4*pc,8);
+function onStop(){let m="";if(stopWhy!=="step")stepHist=[];const l=locArr[pc],at=l?files[l.f].n+":"+l.l:"0x"+h(0x08000000+4*pc,8);
  if(hl)m=hl==="Program ended"?"Program finished (ran past the last instruction).":hl;
  else if(stopWhy==="bp")m="Breakpoint hit at "+at;else if(stopWhy==="cursor")m="Stopped at cursor: "+at;
  else if(stopWhy==="wp")m="Watchpoint: "+(wpHit?wpHit.p.x+" "+(wpHit.t==="w"?"written":"read")+" at "+at:"");
- else if(stopWhy==="wdt")m="Watchdog reset during a step: stopped at "+at;else if(stopWhy==="step")m="Stopped at "+at;else if(stopWhy==="pause")m="Paused at "+at;else if(stopWhy==="halt")m="Stopped at "+at+" (BKPT)";
+ else if(stopWhy==="wdt")m="Watchdog reset during a step: stopped at "+at;else if(stopWhy==="loop")m="Out of the loop: stopped at "+at;else if(stopWhy==="step"){m="Stopped at "+at;const k=lineKey(pc);stepHist.push(k);if(stepHist.length>30)stepHist.shift();if(stepHist.filter(x=>x===k).length>=3&&findLoop(pc))m+=" · in a loop: Out of loop (Ctrl+Shift+F10) runs to its end"}else if(stopWhy==="pause")m="Paused at "+at;else if(stopWhy==="halt")m="Stopped at "+at+" (BKPT)";
  if(m)setSt(m,hl&&hl!=="Program ended"?"er":"wn");lastFollow=-9;followNow();dirty=1;if(curTab==="bp")rBpWin();if(curTab==="cs"){csSig="";rCs()}if(curTab==="lc")rLocals();if(curTab==="tk")rTasks()}
 
 /* ---------- documentation reader: User Manual, Datasheet, VxWorks API (src/manual.html) ---------- */
@@ -3860,8 +3907,85 @@ $("dm").value="mix";
  else{files=DEFAULTS();act=0;wl=["r0","GPIO_OUT"];fold=new Set(["vxworks"])}
  known=DEMO.map(f=>f.n);
  $("thm").value=document.documentElement.dataset.theme||"dark";document.documentElement.dataset.theme=$("thm").value;
- $("ed").value=files[act].t;setBh(bh);if(sw||rw)setCols(sw,rw);renderHL();rGut();rTree();rOut();buildDis();rBpWin();setTab(["term","lg","out","rg","bp","wt","lc","mm","ds2","cs","tk","pr","help"].includes(curTab)?curTab:"term");
+ $("ed").value=files[act].t;setBh(bh);if(sw||rw)setCols(sw,rw);renderHL();rGut();rTree();rOut();buildDis();rBpWin();setTab(["term","lg","out","rg","bp","wt","lc","mm","map","ds2","cs","tk","pr","help"].includes(curTab)?curTab:"term");
  setSt("Ready — press Build (Ctrl+B), then Run or step with F10 / F11");reset();if(spiText)setSpiIn(spiText,1)})();
 requestAnimationFrame(frame);
+
+/* ---------- memory map (Map tab): flash and RAM as bars, live ---------- */
+let mapHtml="";
+const tVar=v=>v.arr?Math.max(1,v.n)*(v.e||4):v.st?v.sz:(v.sz||4);
+function mapRegions(){const F=[],R=[],add=(L,name,a,n,cls,note)=>{if(n>0)L.push({name,a:a>>>0,n,cls,note:note||""})};
+ if(vtN)add(F,"vector table (.isr_vector)",0x08000000,4*vtN,"m-vec",vtN+" entries: SP, Reset_Handler, handlers");
+ add(F,"code (.text)",cA(vtN),4*(prog.length-vtN),"m-code",(prog.length-vtN)+" instructions");
+ if(ldInfo){const P=ldInfo.lay.place,S=ldInfo.sizes;
+  if(P.rodata&&S.rodata)add(F,"constants (.rodata)",P.rodata.lma,S.rodata,"m-ro","strings");
+  if(P.data&&S.data)add(F,"start values of .data",P.data.lma,S.data,"m-ld","copied to RAM by startup.s");
+  if(P.data&&S.data)add(R,".data",P.data.vma,S.data,"m-data","globals with a start value");
+  if(P.bss&&S.bss)add(R,".bss",P.bss.vma,S.bss,"m-bss","globals that start at 0 (zeroed by startup.s)");
+  }
+ else if(cBuild){let hi=0;for(const k in symTab){const v=symTab[k];if(v&&v.a!==undefined&&v.fp===undefined&&v.a>=K.RAM&&v.a<K.RAM_END)hi=Math.max(hi,v.a+tVar(v))}
+  if(hi)add(R,"global variables",K.RAM,hi-K.RAM,"m-data","the compiler places them from the bottom of RAM")}
+ const sv=n=>symTab[n]&&symTab[n].a!==undefined?peek(symTab[n].a,4):0,hp=sv("vxHeap"),hs=sv("vxHeapSize"),blk=[];
+ if(hp>=K.RAM&&hp<K.RAM_END&&hs>0&&hs<=RS&&hp+hs<=K.RAM_END){add(R,"heap (in .bss)",hp,hs,"m-heap",sv("vxMemUsed")+" bytes used in "+sv("vxMemBlocks")+" blocks: task stacks, message queues, malloc");
+  for(let o=0,k=0;o<hs&&k<400;k++){const w=peek(hp+o,4);if(!w||(w&~1)<8)break;if(w&1)blk.push([hp+o,w&~1]);o+=w&~1}
+  if(symTab.vxTaskUsed)for(let i=0;i<symTab.vxTaskUsed.n;i++)if(KA("vxTaskUsed",i)){const b=KA("vxTaskStackBase",i),z=KA("vxTaskStackSize",i);if(b&&z)add(R,"stack of "+taskName_(i),b,z,"m-tstk","in the heap")}}
+ if(dtb&&dtbAddr)add(R,"device tree blob",dtbAddr,dtb.length,"m-dtb","its address is in r2 at reset");
+ const ms=mrs("MSP")>>>0;const rsv=ldInfo?ldInfo.lay.secs.filter(s=>/stack|dtb/i.test(s.name)).reduce((a,s)=>a+s.size,0):0;
+ if(ms>=K.RAM&&ms<=K.RAM_END)add(R,"main stack in use",ms,K.RAM_END-ms,"m-stack","from MSP up to the top of RAM"+(rsv?"; the linker file keeps "+rsv+" bytes free at the top for the stack"+(dtb?" and the device tree":""):""));
+ return{F,R,blk,ms,ps:mrs("PSP")>>>0}}
+function mapBar(L,base,span,extra){const pc_=x=>(100*(x-base)/span).toFixed(3)+"%";
+ return`<div class="mbar">${L.filter(r=>!/^stack of /.test(r.name)).map(r=>`<div class="mseg ${r.cls}" data-a="${r.a}" title="${esc(r.name)}: 0x${h(r.a,8)} - 0x${h(r.a+r.n-1,8)}, ${r.n} bytes" style="left:${pc_(r.a)};width:${(100*r.n/span).toFixed(3)}%"></div>`).join("")}${extra||""}</div>
+ <div class="maxis"><span>0x${h(base,8)}</span><span>0x${h(base+span/2,8)}</span><span>0x${h(base+span,8)}</span></div>`}
+function rMap(force){const v=$("mapv");if(!asm){if(force||mapHtml){mapHtml="";v.innerHTML="<small>Build a program to see where its code, data and stacks are in flash and RAM.</small>"}return}
+ const M=mapRegions(),fEnd=Math.max(...M.F.map(r=>r.a+r.n)),fSpan=Math.max(1024,Math.ceil((fEnd-0x08000000)/1024)*1024),pc_=x=>(100*(x-K.RAM)/RS).toFixed(3)+"%";
+ let ex=M.blk.map(([a,n])=>`<div class="mhb" style="left:${pc_(a)};width:${(100*n/RS).toFixed(3)}%"></div>`).join("");
+ const mk=(x,t)=>x>=K.RAM&&x<=K.RAM_END?`<div class="mmk" style="left:${pc_(Math.min(x,K.RAM_END-1))}"><span style="${x>K.RAM+RS*0.85?"left:auto;right:4px":""}">${t}</span></div>`:"";
+ ex+=mk(M.ms,"MSP")+(M.ps&&M.ps!==M.ms?mk(M.ps,"PSP"):"");
+ const rows=[...M.F,...M.R].map(r=>`<tr class="mrow" data-a="${r.a}"><td><span class="msw ${r.cls}"></span>${esc(r.name)}</td><td class="mono">0x${h(r.a,8)}</td><td class="mono">0x${h(r.a+r.n-1,8)}</td><td class="mono">${r.n}</td><td><small>${esc(r.note)}</small></td></tr>`).join("");
+ const html=`<h4>Flash (0x08000000, ${fEnd-0x08000000} bytes used)</h4>${mapBar(M.F,0x08000000,fSpan)}<h4>RAM (64 KB)${M.blk.length?" · yellow: heap blocks in use":""}</h4>${mapBar(M.R,K.RAM,RS,ex)}
+ <table class="t"><tr><th>Region</th><th>Start</th><th>End</th><th>Bytes</th><th></th></tr>${rows}</table><small>Click a region to open it in the Memory window. MSP and PSP move as the program runs.</small>`;
+ if(html!==mapHtml||force){mapHtml=html;v.innerHTML=html}}
+$("mapv").addEventListener("click",e=>{const t=e.target.closest("[data-a]");if(!t)return;$("ma").value="0x"+h(+t.dataset.a,8);setTab("mm");updM()});
+
+/* ---------- share link: the current program, packed into the URL after # (never sent to a server) ---------- */
+async function packStr(str){const bytes=new TextEncoder().encode(str);let data=bytes,flag="u";
+ if(typeof CompressionStream!=="undefined"){const cs=new Blob([bytes]).stream().pipeThrough(new CompressionStream("deflate-raw"));data=new Uint8Array(await new Response(cs).arrayBuffer());flag="z"}
+ let s="";for(let i=0;i<data.length;i+=8192)s+=String.fromCharCode.apply(null,data.subarray(i,i+8192));
+ return flag+btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+async function unpackStr(t){const flag=t[0];let b=t.slice(1).replace(/-/g,"+").replace(/_/g,"/");while(b.length%4)b+="=";
+ const bin=atob(b),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);let out=u;
+ if(flag==="z"){const ds=new Blob([u]).stream().pipeThrough(new DecompressionStream("deflate-raw"));out=new Uint8Array(await new Response(ds).arrayBuffer())}else if(flag!=="u")throw Error("unknown link format");
+ return new TextDecoder().decode(out)}
+function shareDlg(title,html){$("shT").textContent=title;$("shB").innerHTML=html;$("shareDlg").hidden=false;$("shX").focus({preventScroll:true})}
+function closeShare(){$("shareDlg").hidden=true}
+$("shX").onclick=closeShare;$("shareDlg").addEventListener("click",e=>{if(e.target===$("shareDlg"))closeShare()});
+addEventListener("keydown",e=>{if(!$("shareDlg").hidden&&e.key==="Escape"){e.preventDefault();closeShare()}});
+/* the files of the program in the editor: its own files, and the example files it uses unchanged (by name) */
+function shareData(){syncEd();if(!(asm&&buildIdx===pickEntry()&&!stale)&&!build())return null;   /* an up-to-date build is kept (no reset) */const D=DEFAULTS(),own=[],def=[];
+ for(const i of[...bFiles].sort((a,b)=>a-b)){const f=files[i],d=D.find(x=>x.n===f.n);if(d&&d.t===f.t)def.push(f.n);else own.push([f.n,f.t])}
+ return{v:1,app:"virtual-arm-lab",e:files[buildIdx].n,f:own,d:def}}
+async function shareProgram(){const d=shareData();if(!d){setSt("The program has errors: fix them first, then share it","er");return null}
+ const link=location.href.split("#")[0]+"#share="+(await packStr(JSON.stringify(d)));
+ shareDlg("Share "+d.e,`<p>This link holds the program <b>${esc(d.e)}</b>: ${d.f.length?d.f.length+" file"+(d.f.length===1?"":"s")+" of yours ("+d.f.map(x=>esc(x[0])).join(", ")+")":"an unchanged example, no files of yours"}${d.d.length?", and "+d.d.length+" unchanged example file"+(d.d.length===1?"":"s")+" that the app supplies":""}. Anyone who opens it can add the program to their project; the code is in the part after <code>#</code>, which the browser does not send to any server.</p>
+  <textarea id="shL" readonly aria-label="Share link">${esc(link)}</textarea><p><small>${link.length} characters${link.length>8000?" · a long link: some chat and mail programs cut long links, so check that it arrives whole":""}</small></p>
+  <div class="row"><button id="shC">Copy link</button></div>`);
+ $("shC").onclick=async()=>{let okc=false;try{await navigator.clipboard.writeText(link);okc=true}catch(e){const t=$("shL");t.focus();t.select();try{okc=document.execCommand("copy")}catch(x){}}
+  setSt(okc?"Share link copied":"Select the link and copy it (Ctrl+C)",okc?"":"wn");if(okc)$("shC").textContent="Copied"};
+ $("shL").addEventListener("focus",e=>e.target.select());return link}
+$("fShare").onclick=()=>{shareProgram()};
+/* opening a share link: ask first, then add the files (replacing a file of the same name only with consent) */
+async function importShare(t){let d;
+ try{d=JSON.parse(await unpackStr(t));if(!d||d.app!=="virtual-arm-lab"||typeof d.e!=="string"||!Array.isArray(d.f)||!Array.isArray(d.d)||d.f.some(x=>!Array.isArray(x)||typeof x[0]!=="string"||typeof x[1]!=="string")||d.d.some(x=>typeof x!=="string"))throw Error("not a program link")}
+ catch(e){history.replaceState(null,"",location.href.split("#")[0]);setSt("This share link is damaged or incomplete ("+e.message+"): nothing was added","er");return}
+ const D=DEFAULTS(),list=[...d.f.map(([n,tx])=>({n,t:tx,app:0})),...d.d.map(n=>{const x=D.find(y=>y.n===n);return x?{n,t:x.t,app:1}:null}).filter(Boolean)];
+ const rows=list.map(x=>{const f=files.find(y=>y.n===x.n),st=!f?"new":f.t===x.t?"same as yours":"replaces your copy";return`<li><code>${esc(x.n)}</code> <small${st==="replaces your copy"?' class="rep"':""}>${st}${x.app?", from the app's examples":""}</small></li>`}).join("");
+ const nrep=list.filter(x=>{const f=files.find(y=>y.n===x.n);return f&&f.t!==x.t}).length;
+ shareDlg("Open a shared program",`<p>The link holds the program <b>${esc(d.e)}</b>. Add these files to your project?</p><ul>${rows}</ul>${nrep?`<p class="rep">${nrep} file${nrep===1?"":"s"} of yours will be replaced. Save your project first (the download button in the Project panel) if you want to keep ${nrep===1?"it":"them"}.</p>`:""}
+  <div class="row"><button id="shA">Add to project</button><button id="shN">Cancel</button></div>`);
+ const done=()=>{history.replaceState(null,"",location.href.split("#")[0]);closeShare()};
+ $("shN").onclick=()=>{done();setSt("Shared program not added")};
+ $("shA").onclick=()=>{syncEd();for(const x of list){const f=files.find(y=>y.n===x.n);if(f){if(f.t!==x.t){f.t=x.t;f.bp=[];f.off=[];f.cond={}}}else files.push({n:x.n,t:x.t,bp:[],off:[],cond:{}})}
+  const i=files.findIndex(y=>y.n===d.e);if(asm)invalidate();if(i>=0){act=-1;openF(i)}persist();rTree();done();setSt("Added the shared program "+d.e+": press Build, then Run")}}
+if(/^#share=/.test(location.hash))importShare(location.hash.slice(7));
 
 </script></body></html>
