@@ -2997,8 +2997,10 @@ function bpHit(i){const c=bpCond.get(i);if(c){let ok=true;noWp++;try{ok=!!evalCo
 const lineKey=i=>{const l=locArr[i];return l?l.f*1e6+l.l:-1};
 let pendStop=0,fStart=new Set;
 function stopRun(why){running=0;stepMode=null;stopWhy=why;pendStop=1}
-/* identifies the running context: -1 in an interrupt handler, else the VxWorks task id (0 without a kernel) */
-function ctxKey(){if(inIsr)return -1;const t=symTab.taskIdCurrent;return t&&t.a!==undefined?peek(t.a,4):0}
+/* identifies the running context: -1 in an interrupt handler, else the VxWorks task id (0 without a kernel).
+   Before the kernel runs tasks (they use PSP) there is one context: start-up code may still be zeroing
+   taskIdCurrent (RAM starts as 0xA5), which must not look like a task switch to the stepper. */
+function ctxKey(){if(inIsr)return -1;if(!spsel)return 0;const t=symTab.taskIdCurrent;return t&&t.a!==undefined?peek(t.a,4):0}
 function stepDone(){const m=stepMode;
  if(m.t[0]==="c"){if(m.t==="cout"&&m.k0===-1)return!inIsr;if(ctxKey()!==m.k0)return false;
   if(m.t==="cover")return pc===m.ret&&R[13]===m.sp0;if(m.t==="cout")return R[13]>m.fp0;
