@@ -101,6 +101,11 @@ function chapterHtml(ch, sections) {
       html += bar("Diagrams to Understand the Chapter") + items.map(diagram).join("");
     } else if (key === "key_points") {
       html += bar("Key Points to Remember") + (items.length ? `<ul class="keypoints">${items.map(k => `<li>${esc(strip(k))}</li>`).join("")}</ul>` : "");
+    } else if (key === "formulas") {
+      html += bar("Formula Summary");
+      const groups = items.filter(g => (g.formulas || []).length);
+      html += groups.map(g => `<div class="keep"><h4>${esc(g.topic)}</h4>${grid(["Name", "Formula", "Meaning and use"], g.formulas.map(f => [f.name, f.formula, f.use]))}</div>`).join("")
+        || `<p>This chapter has no formulas to summarise.</p>`;
     } else if (key === "revision_table") {
       html += bar("Quick Revision Table") + (items.length ? grid(["Topic", "In short", "Remember"], items.map(r => [r.topic, r.in_short, r.remember])) : "");
     } else if (key === "differences") {
@@ -122,22 +127,22 @@ function chapterHtml(ch, sections) {
 
 const spread = (items, k) => items.length <= k ? [...items] : Array.from({ length: k }, (_, i) => items[Math.floor(i * items.length / k)]);
 
-export function practicePaper(chapters, sections) {
+export function practicePaper(chapters, counts = DATA.practiceCounts) {
+  const c = { ...DATA.practiceCounts, ...counts };
   const pool = {};
-  for (const k of DATA.questionSections) if (sections.includes(k)) pool[k] = chapters.flatMap(c => c[k] || []);
+  for (const k of DATA.questionSections) pool[k] = chapters.flatMap(ch => ch[k] || []);
   const paper = [];
-  if (pool.one_mark?.length) paper.push(["1 mark each", 1, spread(pool.one_mark, 10).map(q => ["one", q])]);
-  const sa = pool.short_answer || [];
-  const two = spread(sa.filter(q => q.marks === 2), 4), three = spread(sa.filter(q => q.marks === 3), 4);
+  if (c.m1 && pool.one_mark.length) paper.push(["1 mark each", 1, spread(pool.one_mark, c.m1).map(q => ["one", q])]);
+  const two = spread(pool.short_answer.filter(q => q.marks === 2), c.m2), three = spread(pool.short_answer.filter(q => q.marks === 3), c.m3);
   if (two.length) paper.push(["2 marks each", 2, two.map(q => ["plain", q])]);
   if (three.length) paper.push(["3 marks each", 3, three.map(q => ["plain", q])]);
-  if (pool.long_answer?.length) paper.push(["5 marks each", 5, spread(pool.long_answer, 3).map(q => ["plain", q])]);
-  if (pool.case_based?.length) paper.push(["Case-based questions", 0, spread(pool.case_based, 2).map(c => ["case", c])]);
+  if (c.m5 && pool.long_answer.length) paper.push(["5 marks each", 5, spread(pool.long_answer, c.m5).map(q => ["plain", q])]);
+  if (c.case && pool.case_based.length) paper.push(["Case-based questions", 0, spread(pool.case_based, c.case).map(q => ["case", q])]);
   return paper.map(([h, m, qs], i) => [`Section ${"ABCDE"[i]}: ${h}`, m, qs]);
 }
 
-function practiceHtml(chapters, sections) {
-  const paper = practicePaper(chapters, sections);
+function practiceHtml(chapters, counts) {
+  const paper = practicePaper(chapters, counts);
   if (!paper.length) return "";
   const total = paper.reduce((s, [, m, qs]) => s + (m ? m * qs.length : qs.reduce((t, [, c]) => t + (c.questions || []).reduce((u, x) => u + (+x.marks || 0), 0), 0)), 0);
   let test = `<section class="chapter pagebreak"><h3 class="bar">Practice Test</h3><p>Chapter${chapters.length > 1 ? "s" : ""} ${esc(chapters.map(c => c.number).join(", "))} · Maximum marks: ${total} · Answer all questions. The answer key is on the pages after the test.</p>`;
@@ -156,7 +161,7 @@ function practiceHtml(chapters, sections) {
 
 // ------------------------------------------------------------------ document
 
-export function documentHtml(meta, chapters, options) {
+export function documentHtml(meta, chapters, options, testCounts) {
   const practice = options.includes(DATA.practiceTest);
   const sections = DATA.order.filter(k => options.includes(k));
   const contents = sections.map(k => DATA.sections[k].label).concat(practice ? ["Practice test with answer key"] : []);
@@ -170,7 +175,7 @@ export function documentHtml(meta, chapters, options) {
     <p class="muted">Contents: ${esc(contents.map((c, i) => `${i + 1}. ${c}`).join("  ·  "))}</p>
     ${qline ? `<p class="muted">${esc(qline)} questions with answers</p>` : ""}
     <p class="muted small">Based on the official NCERT textbook (ncert.nic.in). Prepared ${esc(today)} with ${esc(meta.ai)}.</p></div></section>`;
-  for (const ch of chapters) html += chapterHtml(ch, sections);
-  if (practice) html += practiceHtml(chapters, sections);
+  if (sections.length) for (const ch of chapters) html += chapterHtml(ch, sections);
+  if (practice) html += practiceHtml(chapters, testCounts);
   return html;
 }

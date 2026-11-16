@@ -16,7 +16,7 @@ const store = {
   drop(k, area = localStorage) { try { area.removeItem(k); } catch { /* ignore */ } },
 };
 let S = { engine: "claude", claudeModel: CLAUDE_MODELS[0].id, geminiModel: "", geminiOutputLimit: 0, split: 0,
-          sections: DATA.defaultSections, remember: false, ...store.get(SAVED) };
+          sections: DATA.defaultSections, practiceCounts: DATA.practiceCounts, remember: false, ...store.get(SAVED) };
 let K = { claude: "", gemini: "", ...store.get(KEYS, S.remember ? localStorage : sessionStorage) };
 const saveSettings = () => store.set(SAVED, S);
 function saveKeys() {
@@ -81,13 +81,21 @@ box.addEventListener("drop", e => { e.preventDefault(); box.classList.remove("dr
 // ------------------------------------------------------------------ sections
 const SEC = () => [...document.querySelectorAll("input[name=sec]")];
 const chosen = () => SEC().filter(b => b.checked).map(b => b.value);
+const TC = () => [...document.querySelectorAll("[data-tc]")];
+const counts = () => Object.fromEntries(TC().map(i => {
+  const n = Math.max(0, Math.min(DATA.practiceLimits[i.dataset.tc], Math.floor(+i.value || 0))); return [i.dataset.tc, n]; }));
+const testKinds = c => DATA.questionSections.filter(k => Object.entries(c).some(([x, n]) => n > 0 && DATA.countSection[x] === k));
 function checkSections() {
-  const c = chosen(), hasQ = c.some(v => DATA.questionSections.includes(v)), test = $("sec-test");
-  test.disabled = !hasQ; if (!hasQ) test.checked = false;
-  test.closest("label").classList.toggle("off", !hasQ);
-  return chosen().some(v => v !== DATA.practiceTest);
+  const test = $("sec-test").checked, any = chosen().length > 0, noq = test && !testKinds(counts()).length;
+  $("testbox").hidden = !test; $("testhint").hidden = !test;
+  $("secmsg").textContent = !any ? "Tick at least one section." : noq ? "The practice test needs at least one question: set a count above 0."
+    : "Figures from the book are in the desktop app for now. Each extra section adds time and AI usage.";
+  $("secmsg").className = "hint" + (any && !noq ? "" : " error");
+  return any && !noq;
 }
-SEC().forEach(b => { b.checked = S.sections.includes(b.value); b.onchange = () => { checkSections(); S.sections = chosen(); saveSettings(); }; });
+const sectionsChanged = () => { checkSections(); S.sections = chosen(); S.practiceCounts = counts(); saveSettings(); };
+SEC().forEach(b => { b.checked = S.sections.includes(b.value); b.onchange = sectionsChanged; });
+TC().forEach(i => { i.value = S.practiceCounts?.[i.dataset.tc] ?? DATA.practiceCounts[i.dataset.tc]; i.onchange = sectionsChanged; });
 checkSections();
 
 // ------------------------------------------------------------------ AI card + settings
@@ -190,11 +198,12 @@ $("f").onsubmit = async e => {
   if (S.engine === "claude" && !K.claude) return (openPanel(), say("Add your Anthropic API key first.", true));
   if (S.engine === "gemini" && !(K.gemini && S.geminiModel)) return (openPanel(), say("Add your Gemini key first.", true));
   if (!PDF) return fail("First download the chapter from NCERT, then press “Next: use the downloaded file” and choose it.");
-  if (!checkSections()) return fail("Tick at least one section.");
+  if (!checkSections()) return fail(chosen().length ? "The practice test needs at least one question: set a count above 0." : "Tick at least one section.");
   const total = PDF.pages, pf = +$("pf").value || 1, pt = +$("pt").value || total;
   if (pf < 1 || pt > total || pf > pt) return fail(`Pages must be between 1 and ${total}, and “From” not after “To”.`);
 
-  const options = chosen(), keys = DATA.order.filter(k => options.includes(k));
+  const options = chosen(), testCounts = counts();
+  const keys = DATA.order.filter(k => options.includes(k) || (options.includes(DATA.practiceTest) && testKinds(testCounts).includes(k)));
   const b = book(), number = +$("chapter").value, cls = $("cls").value, subject = $("subject").value;
   const schema = { type: "object", additionalProperties: false, required: ["chapter_title", ...keys],
                    properties: { chapter_title: { type: "string", description: "Official chapter title as printed in the book" },
@@ -211,7 +220,7 @@ $("f").onsubmit = async e => {
   const aiName = S.engine === "claude" ? `Claude API, model ${S.claudeModel}` : `Google Gemini, model ${S.geminiModel}`;
   log(`AI: ${aiName} (your own key, from this browser).`);
   log(`The AI writes: ${keys.map(k => k === "diagrams" ? "diagram outlines" : DATA.sections[k].label.toLowerCase()).join(", ")}.`);
-  log(`The page does without AI: cutting pages${S.split ? " and splitting the chapter" : ""}, drawing diagrams${options.includes(DATA.practiceTest) ? ", building the practice test" : ""}, laying out the document.`);
+  log(`The page does without AI: cutting pages${S.split ? " and splitting the chapter" : ""}, drawing diagrams${options.includes(DATA.practiceTest) ? ", building the practice paper and its answer key" : ""}, laying out the document.`);
   try {
     let bytes = PDF.bytes;
     if (pf !== 1 || pt !== total) { log(`Keeping pages ${pf}–${pt} of ${total}.`); bytes = await cut(PDF.bytes, pf, pt); }
@@ -238,7 +247,7 @@ $("f").onsubmit = async e => {
     data.chapter_title ||= `Chapter ${number}`;
     Object.assign(data, { number, url: chapterUrl(), page_note: pf !== 1 || pt !== total ? `Pages ${pf}–${pt} of the chapter PDF` : "" });
     log("Laying out the document …");
-    $("doc").innerHTML = documentHtml({ cls: clsLabel(cls).replace(/^Class /, ""), subject, book: b[1], ai: aiName }, [data], options);
+    $("doc").innerHTML = documentHtml({ cls: clsLabel(cls).replace(/^Class /, ""), subject, book: b[1], ai: aiName }, [data], options, testCounts);
     $("doc").hidden = false;
     log("Done. Press “Print / Save as PDF” (on a phone: Share → Print → Save as PDF).");
     clearInterval(ticker);

@@ -41,7 +41,7 @@
       <div class="step"><b>2</b><h2>Get the chapter PDF</h2></div>
       <ol class="howto">
         <li><a class="bigbtn" id="dl" href="#" target="_blank" rel="noopener noreferrer">Download chapter from NCERT</a>
-          <span class="hint">Opens the official PDF (<span id="dlname">file</span>). Save it: on a phone it goes to Downloads; on a PC use the viewer's download button.</span></li>
+          <span class="hint">Opens the official PDF (<span id="dlname">file</span>) in a new tab; a web page cannot make NCERT's file download by itself. To save it where you want: right-click the button and choose “Save link as…”, or use the download (↓) button in the PDF viewer. On a phone, press and hold the button and choose “Download link”.</span></li>
         <li><button class="bigbtn alt" id="choose" type="button">Next: use the downloaded file</button>
           <span class="hint" id="choosehint">Pick <b id="wantname">the file</b> from Downloads. You can also drop it here.</span>
           <input type="file" id="file" accept="application/pdf,.pdf" hidden></li>
@@ -63,6 +63,7 @@
         <label class="chk"><input type="checkbox" name="sec" value="summary"> Summary notes<span class="hint">topic by topic</span></label>
         <label class="chk"><input type="checkbox" name="sec" value="diagrams"> Explanation diagrams<span class="hint">flowcharts, cycles and concept maps</span></label>
         <label class="chk"><input type="checkbox" name="sec" value="key_points"> Key points to remember<span class="hint">definitions, formulae, laws</span></label>
+        <label class="chk"><input type="checkbox" name="sec" value="formulas"> Formula summary<span class="hint">every formula with meaning and use (maths, science)</span></label>
         <label class="chk"><input type="checkbox" name="sec" value="revision_table"> Quick revision table<span class="hint">one row per topic</span></label>
         <label class="chk"><input type="checkbox" name="sec" value="differences"> Differences tables<span class="hint">"difference between X and Y"</span></label>
       </fieldset>
@@ -72,7 +73,15 @@
         <label class="chk"><input type="checkbox" name="sec" value="short_answer"> 2- and 3-mark questions<span class="hint">including NCERT exercises</span></label>
         <label class="chk"><input type="checkbox" name="sec" value="long_answer"> 5-mark questions<span class="hint">full model answers</span></label>
         <label class="chk"><input type="checkbox" name="sec" value="case_based"> Case-based questions<span class="hint">a passage with sub-questions</span></label>
-        <label class="chk"><input type="checkbox" name="sec" value="practice_test" id="sec-test"> Practice test at the end<span class="hint">from the questions above, answer key separate</span></label>
+        <label class="chk"><input type="checkbox" name="sec" value="practice_test" id="sec-test"> Practice test paper with answer key<span class="hint">can be ticked on its own; the key is on separate pages at the end</span></label>
+        <div id="testbox" class="pair" hidden>
+          <div><label for="tc-m1">1-mark</label><input id="tc-m1" data-tc="m1" type="number" min="0" max="40" inputmode="numeric"></div>
+          <div><label for="tc-m2">2-mark</label><input id="tc-m2" data-tc="m2" type="number" min="0" max="20" inputmode="numeric"></div>
+          <div><label for="tc-m3">3-mark</label><input id="tc-m3" data-tc="m3" type="number" min="0" max="20" inputmode="numeric"></div>
+          <div><label for="tc-m5">5-mark</label><input id="tc-m5" data-tc="m5" type="number" min="0" max="15" inputmode="numeric"></div>
+          <div><label for="tc-case">Case-based</label><input id="tc-case" data-tc="case" type="number" min="0" max="6" inputmode="numeric"></div>
+        </div>
+        <p class="hint" id="testhint" hidden>Number of questions of each kind in the paper; 0 leaves that kind out. Kinds you have not ticked above are written by the AI for the paper only.</p>
       </fieldset>
       <p class="hint" id="secmsg">Figures from the book are in the desktop app for now. Each extra section adds time and AI usage.</p>
     </div>
