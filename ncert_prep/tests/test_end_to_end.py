@@ -104,7 +104,7 @@ assert client.get(st["download"], base_url=BASE).data.startswith(b"%PDF")
 b = captured["body"]
 assert b["model"] == generator.MODEL and b["output_config"]["format"]["type"] == "json_schema"
 assert b["output_config"]["format"]["schema"]["required"] == ["chapter_title"] + generator.DEFAULT_SECTIONS, \
-    "default selection should ask for the original five sections"
+    "default selection should ask for the default sections"
 assert b["thinking"] == {"type": "adaptive"} and b["fallbacks"] == "default"
 hdr = captured["headers"]
 assert "sk-ant-test-1234567890" in (hdr.get("x-api-key", "") + hdr.get("authorization", "")), "saved key not sent"
@@ -147,10 +147,13 @@ def calls_so_far():
     return [json.loads(l) for l in Path(os.environ["FAKE_CLAUDE_LOG"]).read_text().splitlines() if '"-p"' in l]
 
 
-for bad, why in (([], "nothing ticked"), (["practice_test"], "practice test without questions"),
-                 (["summary", "pictures"], "unknown section")):
+for bad, why, extra in (([], "nothing ticked", {}), (["summary", "pictures"], "unknown section", {}),
+                        (["practice_test"], "practice test with every count 0",
+                         {"practice_counts": {"m1": 0, "m2": 0, "m3": 0, "m5": 0, "case": 0}}),
+                        (["practice_test"], "a count out of range", {"practice_counts": {"m1": 99}}),
+                        (["practice_test"], "an unknown count", {"practice_counts": {"x": 1}})):
     r = client.post("/api/jobs", json={"cls": "10", "subject": "Science", "book": "jesc1", "chapter_from": "1",
-                                       "sections": bad}, headers=H, base_url=BASE)
+                                       "sections": bad} | extra, headers=H, base_url=BASE)
     assert r.status_code == 400, (why, r.get_json())
 
 everything = generator.ALL_OPTIONS
@@ -172,7 +175,7 @@ assert saved == everything, "the ticked sections should be remembered"
 pdf = Path(webapp.JOBS[list(webapp.JOBS)[-1]]["file"])
 text = "\n".join(p.extract_text() for p in PdfReader(pdf).pages)
 for heading in ("Diagrams to Understand the Chapter", "Quick Revision Table", "Differences",
-                "Case-Based Questions", "Practice Test", "Answer Key", "Types of chemical reactions",
+                "Case-Based Questions", "Practice Test", "Answer Key", "Formula Summary", "A = πr²", "Types of chemical reactions",
                 "Difference between Exothermic reaction and Endothermic reaction"):
     assert heading in text, heading
 
@@ -184,10 +187,30 @@ pdf = Path(webapp.JOBS[list(webapp.JOBS)[-1]]["file"])
 text = "\n".join(p.extract_text() for p in PdfReader(pdf).pages)
 assert "Quick Revision Table" in text and "One Mark Questions" not in text and "Practice Test" not in text
 
-# Practice test picks questions spread across the sections that are ticked.
-paper = pdf_render.practice_paper([FULL], ["one_mark", "long_answer"])
+# Practice test: sizes come from the counts; a count of 0 leaves a kind out.
+paper = pdf_render.practice_paper([FULL], {"m2": 0, "m3": 0, "case": 0})
 assert [h for h, _m, _q in paper] == ["Section A: 1 mark each", "Section B: 5 marks each"], paper
 assert len(paper[0][2]) == 10 and len(paper[1][2]) == 3
+paper = pdf_render.practice_paper([FULL], {"m1": 3})
+assert len(paper[0][2]) == 3, "the 1-mark count should be used"
+
+# The practice test on its own: the AI writes the questions, the PDF holds only the paper and its key.
+before = len(calls_so_far())
+st = run_job(sections=["practice_test"], chapter_from="3", chapter_to="3")   # chapter 3: nothing saved yet
+assert st["status"] == "done", st
+new = calls_so_far()[before:]
+assert new, "the questions for the paper were not saved, so the AI must be asked"
+argv = new[0]["argv"]
+schema = json.loads(argv[argv.index("--json-schema") + 1])
+assert schema["required"] == ["chapter_title", "one_mark", "short_answer", "long_answer", "case_based"], schema["required"]
+text = "\n".join(p.extract_text() for p in PdfReader(Path(webapp.JOBS[list(webapp.JOBS)[-1]]["file"])).pages)
+assert "Practice Test" in text and "Answer Key" in text and "Section A" in text, text[:300]
+assert "Summary Notes" not in text and "One Mark Questions (1 mark each)" not in text, "no question bank was asked for"
+n_calls = len(calls_so_far())
+st = run_job(sections=["practice_test"], chapter_from="3", chapter_to="3",
+             practice_counts={"m1": 5, "m2": 0, "m3": 0, "m5": 0, "case": 0})
+assert st["status"] == "done" and len(calls_so_far()) == n_calls, "a smaller paper is covered by the saved questions"
+assert client.get("/api/status", base_url=BASE).get_json()["settings"]["practice_counts"]["m1"] == 5
 print(f"OK - selectable sections; PDF {pdf.name}")
 
 # --- Stop while Claude Code is working: the process is ended and the job says so

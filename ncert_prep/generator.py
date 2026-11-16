@@ -79,6 +79,32 @@ SECTIONS = {
         "prompt": "key_points - the must-remember facts: definitions, laws, formulae, chemical equations, "
                   "dates, names, differences, units.",
     },
+    "formulas": {
+        "label": "Formula summary",
+        "schema": {
+            "type": "array",
+            "description": "Every formula, identity and rule in the pages, grouped by topic; empty if there are none",
+            "items": {
+                "type": "object", "additionalProperties": False, "required": ["topic", "formulas"],
+                "properties": {
+                    "topic": _STR,
+                    "formulas": {"type": "array", "items": {
+                        "type": "object", "additionalProperties": False, "required": ["name", "formula", "use"],
+                        "properties": {"name": _STR,
+                                       "formula": {"type": "string",
+                                                   "description": "The formula or identity written with Unicode symbols"},
+                                       "use": {"type": "string",
+                                               "description": "What the symbols mean, units, and when to use it"}}}},
+                },
+            },
+        },
+        "prompt": "formulas - a formula sheet: every formula, identity, theorem statement written as an "
+                  "equation, and rule of calculation in the pages, grouped by topic in book order. For each: "
+                  "name (e.g. \"Area of a circle\"), formula (Unicode symbols, e.g. A = πr²), and use (what "
+                  "each symbol means, the unit if any, and when to use it, in one short line). Only formulas "
+                  "that appear in or follow directly from these pages. If the pages contain no formulas, "
+                  "return an empty list.",
+    },
     "revision_table": {
         "label": "Revision table",
         "schema": {
@@ -187,7 +213,7 @@ SECTIONS = {
     },
 }
 
-COUNT_WORDS = {"summary": "topics", "diagrams": "diagrams", "figures": "figure notes", "key_points": "key points",
+COUNT_WORDS = {"summary": "topics", "diagrams": "diagrams", "figures": "figure notes", "key_points": "key points", "formulas": "formula groups",
                "revision_table": "revision-table rows", "differences": "difference tables",
                "one_mark": "one-mark", "short_answer": "2/3-mark", "long_answer": "five-mark questions",
                "case_based": "case-based sets"}
@@ -195,8 +221,48 @@ COUNT_WORDS = {"summary": "topics", "diagrams": "diagrams", "figures": "figure n
 # Built from the generated questions by the app, not by Claude (no extra Claude use).
 PRACTICE_TEST = "practice_test"
 QUESTION_SECTIONS = ("one_mark", "short_answer", "long_answer", "case_based")
-DEFAULT_SECTIONS = ["summary", "key_points", "one_mark", "short_answer", "long_answer"]
+# The practice test is a paper of chosen size: how many questions of each kind (0 leaves the kind out).
+PRACTICE_COUNTS = {"m1": 10, "m2": 4, "m3": 4, "m5": 3, "case": 2}
+PRACTICE_LIMITS = {"m1": 40, "m2": 20, "m3": 20, "m5": 15, "case": 6}
+_COUNT_SECTION = {"m1": "one_mark", "m2": "short_answer", "m3": "short_answer", "m5": "long_answer",
+                  "case": "case_based"}
+DEFAULT_SECTIONS = ["summary", "key_points", "formulas", "one_mark", "short_answer", "long_answer"]
 ALL_OPTIONS = list(SECTIONS) + [PRACTICE_TEST]
+
+
+def practice_counts(value=None) -> dict:
+    """Validate the practice-test sizes (a dict like PRACTICE_COUNTS); missing kinds keep the default."""
+    out = dict(PRACTICE_COUNTS)
+    if value is None:
+        return out
+    if not isinstance(value, dict):
+        raise ValueError("Practice test counts must be a set of numbers.")
+    for k, v in value.items():
+        if k not in PRACTICE_COUNTS:
+            raise ValueError(f"Unknown practice test count: {k}")
+        try:
+            n = int(str(v).strip() or 0)
+        except ValueError:
+            raise ValueError("Practice test counts must be whole numbers.") from None
+        if not 0 <= n <= PRACTICE_LIMITS[k]:
+            raise ValueError(f"Practice test: use 0 to {PRACTICE_LIMITS[k]} questions of that kind.")
+        out[k] = n
+    return out
+
+
+def test_sections(counts: dict) -> list[str]:
+    """The question sections the AI must write so the practice test can be built (kinds with a count above 0)."""
+    need = {_COUNT_SECTION[k] for k, n in counts.items() if n > 0}
+    return [k for k in QUESTION_SECTIONS if k in need]
+
+
+def ai_sections(selected, counts=None) -> list[str]:
+    """What the AI has to write: the ticked sections plus, for a practice test, the questions it is made from
+    (they are not printed as sections unless ticked)."""
+    chosen = set(selected)
+    if PRACTICE_TEST in chosen:
+        chosen |= set(test_sections(counts or PRACTICE_COUNTS))
+    return [k for k in SECTIONS if k in chosen]
 
 
 def claude_sections(selected) -> list[str]:

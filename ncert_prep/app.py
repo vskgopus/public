@@ -123,6 +123,11 @@ def api_settings():
             changes["sections"] = _sections(f["sections"])
         except ValueError as e:
             return jsonify(error=str(e)), 400
+    if "practice_counts" in f:
+        try:
+            changes["practice_counts"] = generator.practice_counts(f["practice_counts"])
+        except ValueError as e:
+            return jsonify(error=str(e)), 400
     if "split_pages" in f:
         try:
             changes["split_pages"] = max(0, min(50, int(f["split_pages"] or 0)))
@@ -134,7 +139,7 @@ def api_settings():
     return jsonify(out)
 
 
-def describe_ai(s: dict | None = None, sections=None) -> list[str]:
+def describe_ai(s: dict | None = None, sections=None, counts=None) -> list[str]:
     """Plain lines saying which AI is used, which model, and what the AI writes versus what the app does."""
     s = s or settings.load()
     if s["engine"] == "claude_login":
@@ -152,14 +157,14 @@ def describe_ai(s: dict | None = None, sections=None) -> list[str]:
         lines = [f"AI: Claude API (pay per use), model {generator.MODEL} ({key})."]
     if sections is not None:
         what = {"diagrams": "diagram outlines", "figures": "notes on the book's figures"}
-        ai = [what.get(k, generator.SECTIONS[k]["label"].lower()) for k in generator.claude_sections(sections)]
+        ai = [what.get(k, generator.SECTIONS[k]["label"].lower()) for k in generator.ai_sections(sections, counts)]
         app_side = ["downloading the chapter from ncert.nic.in"]
         if "diagrams" in sections:
             app_side.append("drawing the diagrams from the AI's outline")
         if "figures" in sections:
             app_side.append("cutting the figures out of the book pages")
         if generator.PRACTICE_TEST in sections:
-            app_side.append("building the practice test from the AI's questions")
+            app_side.append("building the practice test paper and its answer key from the AI's questions")
         app_side.append("laying out the PDF")
         lines.append("The AI writes: " + ", ".join(ai) + ".")
         lines.append("The app does without AI: " + ", ".join(app_side) + ".")
@@ -222,10 +227,8 @@ def _sections(value) -> list[str]:
     if unknown:
         raise ValueError(f"Unknown section: {unknown[0]}")
     chosen = [k for k in generator.ALL_OPTIONS if k in value]
-    if not generator.claude_sections(chosen):
+    if not chosen:
         raise ValueError("Tick at least one section to include in the PDF.")
-    if generator.PRACTICE_TEST in chosen and not any(k in chosen for k in generator.QUESTION_SECTIONS):
-        raise ValueError("The practice test is made from the questions, so tick at least one question section too.")
     return chosen
 
 
@@ -239,6 +242,9 @@ def create_job():
         ch_to = _int(f.get("chapter_to")) or ch_from
         p_from, p_to = _int(f.get("page_from")), _int(f.get("page_to"))
         sections = _sections(f.get("sections", settings.load()["sections"]))
+        counts = generator.practice_counts(f.get("practice_counts", settings.load()["practice_counts"]))
+        if generator.PRACTICE_TEST in sections and not generator.test_sections(counts):
+            raise ValueError("The practice test needs at least one question: set a count above 0.")
     except (KeyError, ValueError) as e:
         return jsonify(error=f"Invalid request: {e}"), 400
     if not (book["first_chapter"] <= ch_from <= ch_to <= book["last_chapter"]):
@@ -248,7 +254,7 @@ def create_job():
     if p_from and p_to and p_from > p_to:
         return jsonify(error="'Pages from' must not be greater than 'Pages to'."), 400
 
-    s = settings.save({"sections": sections})   # remembered for next time
+    s = settings.save({"sections": sections, "practice_counts": counts})   # remembered for next time
     if s["engine"] == "claude_login":
         st = claude_cli.status()
         if not st["installed"]:
@@ -267,7 +273,7 @@ def create_job():
     JOBS[job_id] = {"status": "queued", "log": [], "file": None, "error": None, "started": time.time(),
                     "progress": "", "cancel": threading.Event()}
     params = dict(cls=cls, subject=subject, book=book, ch_from=ch_from, ch_to=ch_to, p_from=p_from,
-                  p_to=p_to, engine=s["engine"], split=s["split_pages"], sections=sections,
+                  p_to=p_to, engine=s["engine"], split=s["split_pages"], sections=sections, counts=counts,
                   api_key=(s["gemini_api_key"] or _env_gemini_key()) if s["engine"] == "gemini" else s["api_key"],
                   gemini_model=s["gemini_model"], gemini_output_limit=s["gemini_output_limit"])
     threading.Thread(target=_run_job, args=(job_id, params), daemon=True).start()
@@ -328,7 +334,7 @@ def _run_job(job_id: str, p: dict) -> None:
         book = p["book"]
         engine_name = {"claude_login": "your Claude login", "gemini": f"Google Gemini ({p['gemini_model']})"}.get(
             p["engine"], "the Claude API")
-        for line in describe_ai(settings.load(), p["sections"]):
+        for line in describe_ai(settings.load(), p["sections"], p["counts"]):
             log(line)
         model = _model_tag(p)
         log(f"Downloading chapter {p['ch_from']}" + (f"–{p['ch_to']}" if p["ch_to"] != p["ch_from"] else "")
@@ -342,7 +348,7 @@ def _run_job(job_id: str, p: dict) -> None:
                 note = ""
                 if piece.first_page != 1 or piece.last_page != piece.total_pages:
                     note = f", pages {piece.first_page}–{piece.last_page} of {piece.total_pages}"
-                needed = generator.claude_sections(p["sections"])
+                needed = generator.ai_sections(p["sections"], p["counts"])
                 earlier = _saved_result(book["code"], piece, needed, model)
                 if earlier is not None:
                     log(f"Chapter {piece.number}{note}: using the result saved earlier.")
@@ -376,7 +382,7 @@ def _run_job(job_id: str, p: dict) -> None:
         stamp = time.strftime("%Y%m%d-%H%M%S")
         out = OUT_DIR / (re.sub(r"[^A-Za-z0-9]+", "_", f"Class{p['cls']}_{name}_{chs}") + f"_{stamp}.pdf")
         render_pdf({"cls": p["cls"], "subject": p["subject"], "book": book["title"], "code": book["code"]},
-                   chapters, out, p["sections"])
+                   chapters, out, p["sections"], p["counts"])
         job.update(status="done", file=str(out), filename=out.name)
         log(f"Done. Saved to {out}")
     except (generator.Cancelled, gemini.Cancelled, claude_cli.Cancelled):

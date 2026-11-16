@@ -217,5 +217,32 @@
     "Calcium oxide (quick lime) reacts vigorously with water to form slaked lime and releases heat: a combination reaction that is exothermic."
    ]
   }
+ ],
+ "formulas": [
+  {
+   "topic": "Circles",
+   "formulas": [
+    {
+     "name": "Area of a circle",
+     "formula": "A = πr²",
+     "use": "r is the radius; A is in square units."
+    },
+    {
+     "name": "Circumference",
+     "formula": "C = 2πr",
+     "use": "Length of the boundary; same unit as r."
+    }
+   ]
+  },
+  {
+   "topic": "Quadratic equations",
+   "formulas": [
+    {
+     "name": "Quadratic formula",
+     "formula": "x = (−b ± √(b² − 4ac)) / 2a",
+     "use": "Roots of ax² + bx + c = 0 when a ≠ 0."
+    }
+   ]
+  }
  ]
 }

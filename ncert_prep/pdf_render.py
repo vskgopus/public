@@ -393,6 +393,18 @@ def _chapter_flow(ch: dict, meta: dict, sections: list[str]) -> list:
                     ("BOX", (0, 0), (-1, -1), 0.6, ACCENT),
                 ]))
                 flow.append(box)
+        elif key == "formulas":
+            flow += bar("Formula Summary")
+            for grp in items:
+                rows = [[f.get("name", ""), f.get("formula", ""), f.get("use", "")] for f in grp.get("formulas") or []]
+                if rows:
+                    flow.append(KeepTogether([
+                        Paragraph(_t(grp.get("topic", "")), S["topic"]),
+                        _grid(["Name", "Formula", "Meaning and use"], rows,
+                              [38 * mm, 52 * mm, WIDTH - 90 * mm])]))
+                    flow.append(Spacer(1, 4))
+            if not any(g.get("formulas") for g in items):
+                flow.append(Paragraph(_t("This chapter has no formulas to summarise."), S["body"]))
         elif key == "revision_table":
             flow += bar("Quick Revision Table")
             if items:
@@ -436,30 +448,32 @@ def _spread(items: list, k: int) -> list:
     return [items[int(i * len(items) / k)] for i in range(k)]
 
 
-def practice_paper(chapters: list[dict], sections: list[str]) -> list[tuple[str, int, list]]:
-    """[(heading, marks per question or 0, questions)] picked from the chapters' questions."""
-    pool = {k: [q for ch in chapters for q in ch.get(k) or []] for k in generator.QUESTION_SECTIONS if k in sections}
+def practice_paper(chapters: list[dict], counts: dict | None = None) -> list[tuple[str, int, list]]:
+    """[(heading, marks per question or 0, questions)] picked from the chapters' questions.
+    counts: how many of each kind (generator.PRACTICE_COUNTS); a kind with 0 is left out."""
+    counts = generator.practice_counts(counts)
+    pool = {k: [q for ch in chapters for q in ch.get(k) or []] for k in generator.QUESTION_SECTIONS}
+    sa = pool["short_answer"]
     paper = []
-    if pool.get("one_mark"):
-        paper.append(("Section A: 1 mark each", 1, [("one", q) for q in _spread(pool["one_mark"], 10)]))
-    sa = pool.get("short_answer") or []
-    two = _spread([q for q in sa if q.get("marks") == 2], 4)
-    three = _spread([q for q in sa if q.get("marks") == 3], 4)
+    if counts["m1"] and pool["one_mark"]:
+        paper.append(("Section A: 1 mark each", 1, [("one", q) for q in _spread(pool["one_mark"], counts["m1"])]))
+    two = _spread([q for q in sa if q.get("marks") == 2], counts["m2"])
+    three = _spread([q for q in sa if q.get("marks") == 3], counts["m3"])
     if two:
         paper.append(("Section B: 2 marks each", 2, [("plain", q) for q in two]))
     if three:
         paper.append(("Section C: 3 marks each", 3, [("plain", q) for q in three]))
-    if pool.get("long_answer"):
-        paper.append(("Section D: 5 marks each", 5, [("plain", q) for q in _spread(pool["long_answer"], 3)]))
-    if pool.get("case_based"):
-        paper.append(("Section E: Case-based questions", 0, [("case", c) for c in _spread(pool["case_based"], 2)]))
+    if counts["m5"] and pool["long_answer"]:
+        paper.append(("Section D: 5 marks each", 5, [("plain", q) for q in _spread(pool["long_answer"], counts["m5"])]))
+    if counts["case"] and pool["case_based"]:
+        paper.append(("Section E: Case-based questions", 0, [("case", c) for c in _spread(pool["case_based"], counts["case"])]))
     for i, (heading, _m, qs) in enumerate(paper):   # letters follow the sections actually present
         paper[i] = (f"Section {'ABCDE'[i]}:" + heading.split(":", 1)[1], _m, qs)
     return paper
 
 
-def _practice_flow(chapters: list[dict], sections: list[str]) -> list:
-    paper = practice_paper(chapters, sections)
+def _practice_flow(chapters: list[dict], counts: dict | None) -> list:
+    paper = practice_paper(chapters, counts)
     if not paper:
         return []
     total = sum(m * len(qs) if m else sum(sum(int(x.get("marks") or 0) for x in c.get("questions") or []) for _k, c in qs)
@@ -484,9 +498,10 @@ def _practice_flow(chapters: list[dict], sections: list[str]) -> list:
     return flow + [PageBreak(), _section_bar("Practice Test: Answer Key"), Spacer(1, 4)] + key
 
 
-def render_pdf(meta: dict, chapters: list[dict], out_path: str | Path, sections=None) -> Path:
+def render_pdf(meta: dict, chapters: list[dict], out_path: str | Path, sections=None, test_counts=None) -> Path:
     """meta: cls, subject, book, code. chapters: generator output + number/url/page_note.
-    sections: the ticked options (generator.ALL_OPTIONS); default: whatever the chapters contain."""
+    sections: the ticked options (generator.ALL_OPTIONS); default: whatever the chapters contain.
+    test_counts: questions of each kind in the practice test (generator.PRACTICE_COUNTS)."""
     out_path = Path(out_path)
     if sections is None:
         sections = [k for k in generator.SECTIONS if any(k in c for c in chapters)]
@@ -527,9 +542,10 @@ def render_pdf(meta: dict, chapters: list[dict], out_path: str | Path, sections=
             Spacer(1, 60 * mm),
             Paragraph(_t("Based on the official NCERT textbook (ncert.nic.in). "
                          f"Prepared {dt.date.today():%d %B %Y}."), S["small_c"])]
-    for ch in chapters:
-        flow += [PageBreak()] + _chapter_flow(ch, meta, sections)
+    if sections:
+        for ch in chapters:
+            flow += [PageBreak()] + _chapter_flow(ch, meta, sections)
     if practice:
-        flow += _practice_flow(chapters, sections)
+        flow += _practice_flow(chapters, test_counts)
     doc.build(flow, onLaterPages=on_page)
     return out_path

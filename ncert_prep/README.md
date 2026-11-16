@@ -11,12 +11,14 @@ official NCERT site (ncert.nic.in), has Claude or Google Gemini write the exam p
 | **Explanation diagrams**: flowcharts of processes, cycles and concept maps, drawn by the app from Claude's outline | **2-mark and 3-mark questions**, including the NCERT exercise questions |
 | **Figures from the book**: the chapter's numbered figures, cut from the NCERT pages by the app (no AI), each with its caption and short notes from the AI | |
 | **Key points** to remember: definitions, formulae, equations, laws | **5-mark questions** |
+| **Formula summary**: every formula with its meaning and use, by topic (maths, physics, chemistry; an empty chapter says so) | |
 | **Quick revision table**: one row per topic (topic, in short, remember) | **Case-based questions**: a passage with sub-questions |
-| **Differences tables**: "difference between X and Y" | **Practice test** at the end: questions picked from the ticked question sections, without answers, with the answer key on separate pages |
+| **Differences tables**: "difference between X and Y" | **Practice test paper with answer key**: you choose how many 1-, 2-, 3-, 5-mark and case-based questions (default 10/4/4/3/2); it can be ticked on its own (the AI then writes the questions for the paper only), and the answer key is on separate pages at the end |
 
-The first five (summary, key points, 1-, 2/3- and 5-mark questions) are ticked at first; the app
+Summary, key points, formula summary, 1-, 2/3- and 5-mark questions are ticked at first; the app
 remembers your choice. Each extra section adds time and AI usage per chapter. The practice
-test uses no extra AI usage: the app builds it from the questions already written.
+test adds no AI usage when the questions are already written; ticked alone, it asks the AI for the
+question kinds whose count is above 0 and prints only the paper and its key.
 
 The diagrams are simple box-and-arrow diagrams. For apparatus, anatomy and other pictures, tick
 **Figures from the book**: the app finds each "Fig. X.Y" caption in the chapter pages, cuts out the

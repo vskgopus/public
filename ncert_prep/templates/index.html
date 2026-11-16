@@ -78,6 +78,7 @@
            background-position: calc(100% - 20px) 20px, calc(100% - 15px) 20px; background-size: 5px 5px; background-repeat: no-repeat; }
   fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
   legend { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); padding: 0; margin-bottom: 8px; }
+  #testbox { grid-template-columns: repeat(5, 1fr); margin-top: 6px; }
   .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
   /* section chips (checkboxes) */
@@ -155,7 +156,7 @@
   .sect { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
   .msg { font-size: .85rem; min-height: 1.2em; }
   .msg.ok { color: var(--ok); } .msg.bad { color: var(--err); }
-  @media (max-width: 420px) { .grid, .pair { grid-template-columns: 1fr; } .iconbtn .lbl { display: none; } }
+  @media (max-width: 420px) { .grid, .pair { grid-template-columns: 1fr; } #testbox { grid-template-columns: repeat(3, 1fr); } .iconbtn .lbl { display: none; } }
 </style>
 </head>
 <body>
@@ -220,6 +221,7 @@
           <label class="chk"><input type="checkbox" name="sec" value="diagrams"> Explanation diagrams<span class="hint">flowcharts, cycles and concept maps</span></label>
           <label class="chk"><input type="checkbox" name="sec" value="figures"> Figures from the book<span class="hint">the book's own figures, with short notes</span></label>
           <label class="chk"><input type="checkbox" name="sec" value="key_points"> Key points to remember<span class="hint">definitions, formulae, laws</span></label>
+          <label class="chk"><input type="checkbox" name="sec" value="formulas"> Formula summary<span class="hint">every formula with meaning and use (maths, science)</span></label>
           <label class="chk"><input type="checkbox" name="sec" value="revision_table"> Quick revision table<span class="hint">one row per topic</span></label>
           <label class="chk"><input type="checkbox" name="sec" value="differences"> Differences tables<span class="hint">"difference between X and Y"</span></label>
         </fieldset>
@@ -229,7 +231,15 @@
           <label class="chk"><input type="checkbox" name="sec" value="short_answer"> 2- and 3-mark questions<span class="hint">including NCERT exercises</span></label>
           <label class="chk"><input type="checkbox" name="sec" value="long_answer"> 5-mark questions<span class="hint">full model answers</span></label>
           <label class="chk"><input type="checkbox" name="sec" value="case_based"> Case-based questions<span class="hint">a passage with sub-questions</span></label>
-          <label class="chk"><input type="checkbox" name="sec" value="practice_test" id="sec-test"> Practice test at the end<span class="hint">from the questions above, answer key separate</span></label>
+          <label class="chk"><input type="checkbox" name="sec" value="practice_test" id="sec-test"> Practice test paper with answer key<span class="hint">can be ticked on its own; the key is on separate pages at the end</span></label>
+          <div id="testbox" class="pair" hidden>
+            <div><label for="tc-m1">1-mark</label><input id="tc-m1" data-tc="m1" type="number" min="0" max="40"></div>
+            <div><label for="tc-m2">2-mark</label><input id="tc-m2" data-tc="m2" type="number" min="0" max="20"></div>
+            <div><label for="tc-m3">3-mark</label><input id="tc-m3" data-tc="m3" type="number" min="0" max="20"></div>
+            <div><label for="tc-m5">5-mark</label><input id="tc-m5" data-tc="m5" type="number" min="0" max="15"></div>
+            <div><label for="tc-case">Case-based</label><input id="tc-case" data-tc="case" type="number" min="0" max="6"></div>
+          </div>
+          <p class="hint full" id="testhint" hidden style="margin:2px 0 0">Number of questions of each kind in the paper; 0 leaves that kind out. The paper is spread across all chosen chapters. Kinds you have not ticked above are written by the AI for the paper only.</p>
         </fieldset>
       </div>
       <p class="hint" id="secmsg" style="margin:0">Each extra section adds to the time and the AI usage per chapter.</p>
@@ -433,22 +443,27 @@ $("quit").onclick = async () => {
 };
 // ---------------- sections to include
 const SEC = () => [...document.querySelectorAll("input[name=sec]")];
-const QUESTIONS = ["one_mark", "short_answer", "long_answer", "case_based"];
 function chosen() { return SEC().filter(b => b.checked).map(b => b.value); }
+const TC = () => [...document.querySelectorAll("[data-tc]")];
+function counts() { return Object.fromEntries(TC().map(i => [i.dataset.tc, i.value === "" ? 0 : +i.value])); }
 function checkSections() {
-  const c = chosen(), hasQ = c.some(v => QUESTIONS.includes(v)), test = $("sec-test");
-  test.disabled = !hasQ; if (!hasQ) test.checked = false;
-  test.closest("label").classList.toggle("off", !hasQ);
-  const any = chosen().some(v => v !== "practice_test");
-  $("secmsg").textContent = any ? "Each extra section adds to the time and the AI usage per chapter."
-                                : "Tick at least one section.";
-  $("secmsg").className = "hint" + (any ? "" : " error");
-  return any;
+  const test = $("sec-test").checked;
+  $("testbox").hidden = !test; $("testhint").hidden = !test;
+  const any = chosen().length > 0;
+  const noq = test && !Object.values(counts()).some(n => n > 0);
+  $("secmsg").textContent = !any ? "Tick at least one section."
+    : noq ? "The practice test needs at least one question: set a count above 0."
+    : "Each extra section adds to the time and the AI usage per chapter.";
+  $("secmsg").className = "hint" + (any && !noq ? "" : " error");
+  return any && !noq;
 }
-SEC().forEach(b => b.onchange = () => { if (checkSections()) post("/api/settings", { sections: chosen() }).catch(() => {}); });
+function saveChoices() { if (checkSections()) post("/api/settings", { sections: chosen(), practice_counts: counts() }).catch(() => {}); }
+SEC().forEach(b => b.onchange = saveChoices);
+TC().forEach(i => i.onchange = saveChoices);
 
 refresh().then(() => { const c = ST.claude, s = ST.settings;
-  SEC().forEach(b => b.checked = s.sections.includes(b.value)); checkSections();
+  SEC().forEach(b => b.checked = s.sections.includes(b.value));
+  TC().forEach(i => i.value = s.practice_counts[i.dataset.tc]); checkSections();
   if ((s.engine === "claude_login" && !(c.installed && c.logged_in)) || (s.engine === "api_key" && !(s.api_key_set || s.env_key))
       || (s.engine === "gemini" && !((s.gemini_key_set || s.env_gemini_key) && s.gemini_model))) openPanel(); });
 
@@ -461,7 +476,7 @@ $("f").onsubmit = async e => {
   try {
     const j = await post("/api/jobs", { cls: $("cls").value, subject: $("subject").value, book: $("book").value,
       chapter_from: $("chf").value, chapter_to: $("cht").value, page_from: $("pf").value, page_to: $("pt").value,
-      sections: chosen() });
+      sections: chosen(), practice_counts: counts() });
     JOB = j.id; $("stop").hidden = false; $("stop").disabled = false;
     poll(j.id);
   } catch (err) { fail(err.message); }
