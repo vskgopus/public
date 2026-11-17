@@ -93,6 +93,9 @@ def run_job(**extra):
 assert client.post("/api/quit", base_url=BASE).status_code == 403, "POST without token must be refused"
 assert client.get("/", base_url="http://evil.example/").status_code == 403, "foreign Host must be refused"
 assert b"NCERT Exam Prep" in client.get("/", base_url=BASE).data
+_page = client.get("/", base_url=BASE).data
+assert b'id="getgemkey" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener"' in _page, "Gemini key button"
+assert _page.count(b'<li>') >= 4 and b"Get a free Gemini key" in _page, "Gemini key steps"
 
 # --- 1. API key engine
 r = client.post("/api/settings", json={"engine": "api_key", "api_key": "sk-ant-test-1234567890"}, headers=H, base_url=BASE)

@@ -42,7 +42,7 @@ Settings (the **Settings** button at the top; **Quit** is next to it):
 | What you need | A Claude **Pro or Max** subscription (Free doesn't include Claude Code) | An API key from console.anthropic.com | A Gemini API key from [aistudio.google.com/apikey](https://aistudio.google.com/apikey); a **free** key works |
 | Cost | Included in your plan; uses your plan's usage limits | Pay per use, about $0.30–0.60 per chapter | Free within Google's free-tier limits (per minute and per day; Google changes them) |
 | How it works | Through Claude Code, Anthropic's command-line tool, signed in to your account | Direct calls to the Claude API | Direct calls to the Gemini API |
-| Setup | Click **Log in with Claude** in Settings | Paste the key in Settings | Paste the key in Settings; the app lists the models your key can use and picks a Flash model |
+| Setup | Click **Log in with Claude** in Settings | Paste the key in Settings | Press **Get a free Gemini key** in Settings (opens Google AI Studio), copy the key, paste it and press Save; the app lists the models your key can use and picks a Flash model |
 
 Each person uses their own account or key; nothing is shared.
 
