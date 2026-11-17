@@ -120,6 +120,11 @@ export async function geminiModels(apiKey) {
 
 class ModelUnavailable extends Error {}
 
+// Why Gemini stopped and what it counted, for messages and the console: "stop reason STOP;
+// promptTokenCount 1234, candidatesTokenCount 0". Every numeric usage field is shown as Google sends it.
+const stopInfo = (finish, usage) => `stop reason ${finish || "none given"}; ` +
+  (Object.entries(usage).filter(([, v]) => typeof v === "number").map(([k, v]) => `${k} ${v}`).join(", ") || "no token counts");
+
 async function geminiOnce({ pdfBase64, prompt, system, schema, apiKey, model, outputLimit, log, progress, signal, simplified = false }) {
   const config = { responseMimeType: "application/json", responseJsonSchema: simplified ? simplify(schema) : schema };
   if (outputLimit) config.maxOutputTokens = outputLimit;
@@ -197,12 +202,16 @@ async function readGemini(r, { log, progress, signal, sent }) {
     if (signal?.aborted) throw new Stopped("Stopped.");
     throw e;
   }
+  const info = stopInfo(finish, usage);
   if (block) throw new Error(`Gemini declined this request (${block}).`);
-  if (finish === "MAX_TOKENS") throw new Error("The output was too long for Gemini; split the chapter into smaller parts in Settings.");
-  if (finish && finish !== "STOP") throw new Error(`Gemini stopped early (${finish}). Try again, or split the chapter in Settings.`);
-  log(`Gemini finished writing: ${text.length.toLocaleString()} characters, ${mins((Date.now() - sent) / 1000)} after sending.`);
+  log(`Gemini finished writing: ${text.length.toLocaleString()} characters, ${mins((Date.now() - sent) / 1000)} after sending (${info}).`);
+  // A reply with no text (seen 2026-11-16 as "0 characters") counts as a model that is not answering,
+  // so the next model is tried; the reason Google gave is kept in the message.
+  if (!text.trim()) throw new ModelUnavailable(`it answered with no text (${info})`);
+  if (finish === "MAX_TOKENS") throw new Error(`The output was too long for Gemini; split the chapter into smaller parts in Settings (${info}).`);
+  if (finish && finish !== "STOP") throw new Error(`Gemini stopped early (${info}). Try again, or split the chapter in Settings.`);
   let data;
-  try { data = JSON.parse(text); } catch { throw new Error("Gemini returned incomplete material. Try again, or split the chapter in Settings."); }
+  try { data = JSON.parse(text); } catch { throw new Error(`Gemini returned incomplete material (${info}). Try again, or split the chapter in Settings.`); }
   return { data, usage: `${usage.promptTokenCount ?? "?"} in / ${usage.candidatesTokenCount ?? "?"} out tokens` };
 }
 
@@ -220,19 +229,33 @@ function simplify(schema) {
   return s;
 }
 
-// The chosen model first; if it is busy, withdrawn or out of quota, up to two other Flash models.
+// A model that answered while the chosen one did not is tried first for 30 minutes (same as the
+// desktop app's stand-in). Kept in memory only, with the key it was found for.
+const STANDIN_MS = 30 * 60 * 1000;
+let standin = null;
+
+// The chosen model first (or the stand-in, if one answered recently); if a model is busy, withdrawn,
+// out of quota or answers with no text, up to two other Flash models.
 export async function gemini(opts) {
   const { apiKey, model, log } = opts;
   const queue = [{ id: model, outputLimit: opts.outputLimit || 0 }], tried = [];
+  if (standin && standin.apiKey === apiKey && standin.until > Date.now() && standin.id !== model) {
+    log(`Trying ${standin.id} first: it answered recently while ${model} did not.`);
+    queue.unshift({ id: standin.id, outputLimit: standin.outputLimit });
+  }
   let lookedUp = false, limits = 0;
   while (queue.length) {
     const m = queue.shift();
     try {
       const res = await geminiOnce({ ...opts, model: m.id, outputLimit: m.outputLimit });
-      if (m.id !== model) log(`Tip: ${m.id} answered while ${model} did not. You can choose ${m.id} in Settings.`);
+      if (m.id !== model) {
+        standin = { id: m.id, outputLimit: m.outputLimit, apiKey, until: Date.now() + STANDIN_MS };
+        log(`Tip: ${m.id} answered while ${model} did not. You can choose ${m.id} in Settings.`);
+      } else standin = null;
       return { data: res.data, usage: `Gemini ${m.id}: ${res.usage}` };
     } catch (e) {
       if (!(e instanceof ModelUnavailable) && !(e instanceof UsageLimit)) throw e;
+      if (standin && standin.id === m.id) standin = null;
       limits += e instanceof UsageLimit ? 1 : 0;
       tried.push(`${m.id}: ${e instanceof UsageLimit ? "usage limit reached" : e.message}`);
       if (!lookedUp) {
