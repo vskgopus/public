@@ -26,57 +26,95 @@ function saveKeys() {
 
 // ------------------------------------------------------------------ chapter picker
 const C = DATA.catalog;
+const MAX_CHAPTERS = 6;                      // same limit as the desktop app
 const clsLabel = c => c === "11-12" ? "Class 11–12 (combined)" : `Class ${c}`;
 const book = () => (C[$("cls").value]?.[$("subject").value] || []).find(b => b[0] === $("book").value);
-const chapterCode = () => { const b = book(), n = +$("chapter").value; return `${b[0]}${String(n).padStart(2, "0")}`; };
-const chapterUrl = () => DATA.chapterUrl.replace("{code}", book()[0]).replace("{nn}", String(+$("chapter").value).padStart(2, "0"));
+const nn = n => String(n).padStart(2, "0");
+const chapterCode = n => `${book()[0]}${nn(n)}`;
+const chapterUrl = n => DATA.chapterUrl.replace("{code}", book()[0]).replace("{nn}", nn(n));
+const chapters = () => {                     // the chosen chapter numbers, first to last
+  const a = +$("chfrom").value, z = Math.max(a, +$("chto").value);
+  return Array.from({ length: z - a + 1 }, (_, i) => a + i);
+};
 function fillClasses() { opt($("cls"), Object.keys(C).map(c => [c, clsLabel(c)])); $("cls").value = C["10"] ? "10" : Object.keys(C)[0]; fillSubjects(); }
 function fillSubjects() { opt($("subject"), Object.keys(C[$("cls").value]).sort().map(s => [s, s])); if (C[$("cls").value].Science) $("subject").value = "Science"; fillBooks(); }
 function fillBooks() { opt($("book"), C[$("cls").value][$("subject").value].map(b => [b[0], b[1]])); fillChapters(); }
-function fillChapters() { const b = book(), chs = []; for (let i = b[2]; i <= b[3]; i++) chs.push([i, `Chapter ${i}`]); opt($("chapter"), chs); chapterChanged(); }
-function chapterChanged() {
-  $("dl").href = chapterUrl();
-  $("dl").textContent = `Download chapter ${+$("chapter").value} from NCERT`;
-  $("dlname").textContent = `${chapterCode()}.pdf`;
-  $("wantname").textContent = `${chapterCode()}.pdf`;
-  if (PDF) showFile();
+function fillChapters() {
+  const b = book(), chs = []; for (let i = b[2]; i <= b[3]; i++) chs.push([i, `Chapter ${i}`]);
+  opt($("chfrom"), chs); opt($("chto"), chs); chapterChanged();
 }
-$("cls").onchange = fillSubjects; $("subject").onchange = fillBooks; $("book").onchange = fillChapters; $("chapter").onchange = chapterChanged;
+function chapterChanged(changed) {
+  let from = +$("chfrom").value, to = +$("chto").value, note = "";
+  if (to < from) { if (changed === "to") $("chfrom").value = String(from = to); else $("chto").value = String(to = from); }
+  if (to - from + 1 > MAX_CHAPTERS) {
+    $("chto").value = String(to = from + MAX_CHAPTERS - 1);
+    note = ` Up to ${MAX_CHAPTERS} chapters at a time, so “Chapter to” was set to ${to}.`;
+  }
+  const ns = chapters(), many = ns.length > 1;
+  $("chhint").textContent = (many ? `${ns.length} chapters in one document: one AI request per chapter (more if you split long chapters), and one combined practice test.`
+    : `One chapter. Choose a later “Chapter to” to prepare several (up to ${MAX_CHAPTERS}) in one document.`) + note;
+  $("getpdfh").textContent = many ? "Get the chapter PDFs" : "Get the chapter PDF";
+  $("dls").innerHTML = ns.map(n => `<a class="bigbtn" href="${esc(chapterUrl(n))}" target="_blank" rel="noopener noreferrer">Download chapter ${n} from NCERT</a>`).join("");
+  $("choose").textContent = many ? "Next: use the downloaded files" : "Next: use the downloaded file";
+  $("wantname").textContent = ns.map(n => `${chapterCode(n)}.pdf`).join(", ");
+  $("choosehint").lastChild.textContent = many ? " from Downloads (select them all at once, or choose again to add more). You can also drop them here." : " from Downloads. You can also drop it here.";
+  $("pagesrange").hidden = many;            // a page range only makes sense for one chapter
+  fileNotes = [];
+  showFiles();
+}
+$("cls").onchange = fillSubjects; $("subject").onchange = fillBooks; $("book").onchange = fillChapters;
+$("chfrom").onchange = () => chapterChanged("from"); $("chto").onchange = () => chapterChanged("to");
 
-// ------------------------------------------------------------------ the chapter file
-let PDF = null;   // { name, bytes: Uint8Array, pages }
-async function useFile(file) {
-  if (!file) return;
-  const bytes = new Uint8Array(await file.arrayBuffer());
-  if (String.fromCharCode(...bytes.slice(0, 5)) !== "%PDF-") { showFileMsg(`“${file.name}” is not a PDF file. Choose the chapter PDF you downloaded.`, true); return; }
-  let pages = 0;
-  try { pages = (await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true })).getPageCount(); }
-  catch { showFileMsg(`“${file.name}” could not be read as a PDF. Download it again from NCERT.`, true); return; }
-  PDF = { name: file.name, bytes, pages };
-  showFile();
+// ------------------------------------------------------------------ the chapter files
+const FILES = new Map();   // "jesc101" -> { name, bytes: Uint8Array, pages, odd } (odd: a single chapter given a file with another name)
+let fileNotes = [];
+const fileKey = n => chapterCode(n).toLowerCase();
+async function useFiles(list) {
+  const files = [...list || []];
+  if (!files.length) return;
+  const ns = chapters(), want = ns.map(fileKey);
+  fileNotes = [];
+  for (const file of files) {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    if (String.fromCharCode(...bytes.slice(0, 5)) !== "%PDF-") { fileNotes.push(`“${file.name}” is not a PDF file. Choose the chapter PDFs you downloaded.`); continue; }
+    let pages = 0;
+    try { pages = (await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true })).getPageCount(); }
+    catch { fileNotes.push(`“${file.name}” could not be read as a PDF. Download it again from NCERT.`); continue; }
+    const base = file.name.toLowerCase().replace(/\s*\(\d+\)(?=\.pdf$)/, "").replace(/\.pdf$/, "");
+    if (want.includes(base)) FILES.set(base, { name: file.name, bytes, pages, odd: false });
+    else if (want.length === 1) FILES.set(want[0], { name: file.name, bytes, pages, odd: true });
+    else fileNotes.push(`“${file.name}” is not one of the chosen chapters (${ns.map(n => `${chapterCode(n)}.pdf`).join(", ")}); it was skipped.`);
+  }
+  showFiles();
 }
-function showFile() {
-  const want = `${chapterCode()}.pdf`;
-  const same = PDF.name.toLowerCase().replace(/\s*\(\d+\)(?=\.pdf$)/, "") === want;
-  showFileMsg(`<b>${esc(PDF.name)}</b> · ${(PDF.bytes.length / 1e6).toFixed(1)} MB · ${PDF.pages} pages` +
-    (same ? " ✓" : `<br>This is not the file NCERT names <b>${esc(want)}</b>. If it is the right chapter you can continue; otherwise choose ${esc(want)}.`), !same);
+function showFiles() {
+  const ns = chapters();
+  const rows = ns.map(n => {
+    const f = FILES.get(fileKey(n)), want = `${chapterCode(n)}.pdf`, size = f && `${(f.bytes.length / 1e6).toFixed(1)} MB · ${f.pages} pages`;
+    if (!f) return { warn: true, html: `<div class="miss">Chapter ${n}: <b>${esc(want)}</b> not chosen yet</div>` };
+    if (f.odd) return { warn: true, html: `<div><b>${esc(f.name)}</b> · ${size}<br>This is not the file NCERT names <b>${esc(want)}</b>. If it is the right chapter you can continue; otherwise choose ${esc(want)}.</div>` };
+    return { warn: false, html: `<div>${ns.length > 1 ? `Chapter ${n}: ` : ""}<b>${esc(f.name)}</b> · ${size} ✓</div>` };
+  });
+  const have = rows.some(r => !r.html.includes('class="miss"'));
+  if (!have && !fileNotes.length) { $("filebox").hidden = true; return; }
+  $("filebox").innerHTML = rows.map(r => r.html).join("") + fileNotes.map(m => `<div class="miss">${esc(m)}</div>`).join("");
+  $("filebox").hidden = false; $("filebox").classList.toggle("warn", rows.some(r => r.warn) || fileNotes.length > 0);
 }
-function showFileMsg(html, warn) { $("filebox").innerHTML = html; $("filebox").hidden = false; $("filebox").classList.toggle("warn", !!warn); }
 
 $("choose").onclick = async () => {
   if (window.showOpenFilePicker) {        // Chrome / Edge on a computer: open straight in Downloads
     try {
-      const [h] = await window.showOpenFilePicker({ startIn: "downloads", types: [{ description: "PDF", accept: { "application/pdf": [".pdf"] } }] });
-      return useFile(await h.getFile());
+      const hs = await window.showOpenFilePicker({ startIn: "downloads", multiple: true, types: [{ description: "PDF", accept: { "application/pdf": [".pdf"] } }] });
+      return useFiles(await Promise.all(hs.map(h => h.getFile())));
     } catch (e) { if (e.name === "AbortError") return; }
   }
   $("file").click();
 };
-$("file").onchange = () => useFile($("file").files[0]);
+$("file").onchange = () => { useFiles($("file").files); $("file").value = ""; };
 const box = $("getpdf");
 box.addEventListener("dragover", e => { e.preventDefault(); box.classList.add("drop"); });
 box.addEventListener("dragleave", () => box.classList.remove("drop"));
-box.addEventListener("drop", e => { e.preventDefault(); box.classList.remove("drop"); useFile(e.dataTransfer.files[0]); });
+box.addEventListener("drop", e => { e.preventDefault(); box.classList.remove("drop"); useFiles(e.dataTransfer.files); });
 
 // ------------------------------------------------------------------ sections
 const SEC = () => [...document.querySelectorAll("input[name=sec]")];
@@ -184,6 +222,7 @@ function merge(parts, keys) {
 }
 const fmt = (tpl, v) => tpl.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? "");
 
+const DONE = new Map();   // finished chapters of this tab, so a retry after an error or Stop does not ask the AI again
 let running = null;
 $("stop").onclick = () => { running?.abort(); $("stop").disabled = true; };
 function finish(msg, ok) {
@@ -197,14 +236,19 @@ $("f").onsubmit = async e => {
   const fail = m => { $("status").hidden = false; $("state").innerHTML = `<span class="error">${esc(m)}</span>`; $("status").scrollIntoView({ block: "center" }); };
   if (S.engine === "claude" && !K.claude) return (openPanel(), say("Add your Anthropic API key first.", true));
   if (S.engine === "gemini" && !(K.gemini && S.geminiModel)) return (openPanel(), say("Add your Gemini key first.", true));
-  if (!PDF) return fail("First download the chapter from NCERT, then press “Next: use the downloaded file” and choose it.");
+  const ns = chapters();
+  const missing = ns.filter(n => !FILES.has(fileKey(n)));
+  if (missing.length) return fail(ns.length === 1 ? "First download the chapter from NCERT, then press “Next: use the downloaded file” and choose it."
+    : `Still missing: ${missing.map(n => `${chapterCode(n)}.pdf`).join(", ")}. Download them from NCERT, then press “Next: use the downloaded files” and choose them (you can pick several at once).`);
   if (!checkSections()) return fail(chosen().length ? "The practice test needs at least one question: set a count above 0." : "Tick at least one section.");
-  const total = PDF.pages, pf = +$("pf").value || 1, pt = +$("pt").value || total;
-  if (pf < 1 || pt > total || pf > pt) return fail(`Pages must be between 1 and ${total}, and “From” not after “To”.`);
+  if (ns.length === 1) {
+    const total = FILES.get(fileKey(ns[0])).pages, pf = +$("pf").value || 1, pt = +$("pt").value || total;
+    if (pf < 1 || pt > total || pf > pt) return fail(`Pages must be between 1 and ${total}, and “From” not after “To”.`);
+  }
 
   const options = chosen(), testCounts = counts();
   const keys = DATA.order.filter(k => options.includes(k) || (options.includes(DATA.practiceTest) && testKinds(testCounts).includes(k)));
-  const b = book(), number = +$("chapter").value, cls = $("cls").value, subject = $("subject").value;
+  const b = book(), cls = $("cls").value, subject = $("subject").value;
   const schema = { type: "object", additionalProperties: false, required: ["chapter_title", ...keys],
                    properties: { chapter_title: { type: "string", description: "Official chapter title as printed in the book" },
                                  ...Object.fromEntries(keys.map(k => [k, DATA.sections[k].schema])) } };
@@ -222,32 +266,49 @@ $("f").onsubmit = async e => {
   log(`The AI writes: ${keys.map(k => k === "diagrams" ? "diagram outlines" : DATA.sections[k].label.toLowerCase()).join(", ")}.`);
   log(`The page does without AI: cutting pages${S.split ? " and splitting the chapter" : ""}, drawing diagrams${options.includes(DATA.practiceTest) ? ", building the practice paper and its answer key" : ""}, laying out the document.`);
   try {
-    let bytes = PDF.bytes;
-    if (pf !== 1 || pt !== total) { log(`Keeping pages ${pf}–${pt} of ${total}.`); bytes = await cut(PDF.bytes, pf, pt); }
-    const size = pt - pf + 1, step = S.split && size > S.split ? S.split : size;
-    const pieces = [];
-    for (let a = 0; a < size; a += step) pieces.push([a + 1, Math.min(size, a + step)]);
-    const results = [];
-    for (const [i, [a, z]] of pieces.entries()) {
+    const model = S.engine === "claude" ? S.claudeModel : S.geminiModel;
+    const datas = [];
+    for (const [ci, number] of ns.entries()) {
       if (signal.aborted) throw new Stopped("Stopped.");
-      const part = pieces.length > 1 ? await cut(bytes, a, z) : bytes;
-      const first = pf + a - 1, last = pf + z - 1;
-      const note = first !== 1 || last !== total ? `, pages ${first}–${last} of ${total}` : "";
-      log(`Writing the material for chapter ${number}${pieces.length > 1 ? ` (part ${i + 1} of ${pieces.length})` : ""}${note} …`);
-      const prompt = fmt(DATA.intro, { cls, subject, book: b[1], chapter: number, pages_note: note }) + items + outro;
-      const args = { pdfBase64: b64(part), prompt, system: DATA.system, schema, log, progress, signal, title: `${b[1]} - Chapter ${number}` };
-      const res = S.engine === "claude"
-        ? await claude({ ...args, apiKey: K.claude, model: S.claudeModel })
-        : await gemini({ ...args, apiKey: K.gemini, model: S.geminiModel, outputLimit: S.geminiOutputLimit });
-      for (const k of keys) res.data[k] ??= [];
-      log(`Chapter ${number}${note}: ${keys.map(k => `${res.data[k].length} ${DATA.countWords[k]}`).join(", ")} (${res.usage}).`);
-      results.push(res.data);
+      const f = FILES.get(fileKey(number)), total = f.pages, single = ns.length === 1;
+      const pf = single ? +$("pf").value || 1 : 1, pt = single ? +$("pt").value || total : total;
+      const which = ns.length > 1 ? `chapter ${number} (${ci + 1} of ${ns.length})` : `chapter ${number}`;
+      const pageNote = pf !== 1 || pt !== total ? `Pages ${pf}–${pt} of the chapter PDF` : "";
+      const cacheKey = [fileKey(number), f.bytes.length, pf, pt, S.split, keys.join(","), S.engine, model].join("|");
+      let data;
+      if (DONE.has(cacheKey)) {
+        data = { ...DONE.get(cacheKey) };
+        log(`Using the material already written for ${which} (from your earlier try in this tab).`);
+      } else {
+        let bytes = f.bytes;
+        if (pf !== 1 || pt !== total) { log(`Keeping pages ${pf}–${pt} of ${total}.`); bytes = await cut(f.bytes, pf, pt); }
+        const size = pt - pf + 1, step = S.split && size > S.split ? S.split : size;
+        const pieces = [];
+        for (let a = 0; a < size; a += step) pieces.push([a + 1, Math.min(size, a + step)]);
+        const results = [];
+        for (const [i, [a, z]] of pieces.entries()) {
+          if (signal.aborted) throw new Stopped("Stopped.");
+          const part = pieces.length > 1 ? await cut(bytes, a, z) : bytes;
+          const first = pf + a - 1, last = pf + z - 1;
+          const note = first !== 1 || last !== total ? `, pages ${first}–${last} of ${total}` : "";
+          log(`Writing the material for ${which}${pieces.length > 1 ? ` (part ${i + 1} of ${pieces.length})` : ""}${note} …`);
+          const prompt = fmt(DATA.intro, { cls, subject, book: b[1], chapter: number, pages_note: note }) + items + outro;
+          const args = { pdfBase64: b64(part), prompt, system: DATA.system, schema, log, progress, signal, title: `${b[1]} - Chapter ${number}` };
+          const res = S.engine === "claude"
+            ? await claude({ ...args, apiKey: K.claude, model: S.claudeModel })
+            : await gemini({ ...args, apiKey: K.gemini, model: S.geminiModel, outputLimit: S.geminiOutputLimit });
+          for (const k of keys) res.data[k] ??= [];
+          log(`Chapter ${number}${note}: ${keys.map(k => `${res.data[k].length} ${DATA.countWords[k]}`).join(", ")} (${res.usage}).`);
+          results.push(res.data);
+        }
+        data = results.length > 1 ? merge(results, keys) : results[0];
+        data.chapter_title ||= `Chapter ${number}`;
+        DONE.set(cacheKey, { ...data });
+      }
+      datas.push(Object.assign(data, { number, url: chapterUrl(number), page_note: pageNote }));
     }
-    const data = results.length > 1 ? merge(results, keys) : results[0];
-    data.chapter_title ||= `Chapter ${number}`;
-    Object.assign(data, { number, url: chapterUrl(), page_note: pf !== 1 || pt !== total ? `Pages ${pf}–${pt} of the chapter PDF` : "" });
     log("Laying out the document …");
-    $("doc").innerHTML = documentHtml({ cls: clsLabel(cls).replace(/^Class /, ""), subject, book: b[1], ai: aiName }, [data], options, testCounts);
+    $("doc").innerHTML = documentHtml({ cls: clsLabel(cls).replace(/^Class /, ""), subject, book: b[1], ai: aiName }, datas, options, testCounts);
     $("doc").hidden = false;
     log("Done. Press “Print / Save as PDF” (on a phone: Share → Print → Save as PDF).");
     clearInterval(ticker);

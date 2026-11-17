@@ -4,12 +4,12 @@ Use it here: https://vskgopus.github.io/public/ncert-prep/
 
 Printable CBSE exam-preparation material from NCERT textbook chapters, made in your browser
 (phone, tablet or computer, no install): summary notes, explanation diagrams, key points, a quick
-revision table, differences tables, 1/2/3/5-mark and case-based questions with answers, and a
-practice test with an answer key.
+formula summary, revision table, differences tables, 1/2/3/5-mark and case-based questions with
+answers, and a practice test with an answer key. One chapter or up to six in a single document.
 
-1. Choose the class, subject, book and chapter.
-2. Press **Download chapter N from NCERT** and save the official PDF, then **Next: use the
-   downloaded file** and pick it. (Browsers don't let a web page fetch NCERT's PDF or read your
+1. Choose the class, subject, book and the chapters (**Chapter from** and **Chapter to**).
+2. Press **Download chapter N from NCERT** for each and save the official PDFs, then **Next: use
+   the downloaded files** and pick them (all at once if you like). (Browsers don't let a web page fetch NCERT's PDF or read your
    Downloads folder by itself, so this one tap is needed.)
 3. Tick what to include and press **Prepare exam material**. Then **Print / Save as PDF**.
 

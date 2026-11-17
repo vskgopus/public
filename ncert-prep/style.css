@@ -66,6 +66,9 @@ legend { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-
 .bigbtn { display: flex; align-items: center; justify-content: center; height: 50px; border-radius: 14px; font: inherit; font-weight: 800; font-size: .98rem;
           text-decoration: none; cursor: pointer; color: #fff; border: 0; background: linear-gradient(135deg, var(--g1), var(--g2)); }
 .bigbtn.alt { background: var(--soft); color: var(--accent); border: 1.5px solid var(--accent); }
+.dls { display: grid; gap: 8px; }
+.filebox div + div { margin-top: 4px; }
+.filebox .miss { color: var(--warn); }
 .filebox { border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; background: var(--soft); border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line)); font-size: .9rem; }
 .filebox.warn { background: color-mix(in srgb, var(--warn) 12%, var(--card)); border-color: var(--warn); }
 #getpdf.drop { outline: 3px dashed var(--accent); outline-offset: -6px; }

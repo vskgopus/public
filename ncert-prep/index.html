@@ -28,26 +28,28 @@
 
   <form id="f" novalidate>
     <div class="card">
-      <div class="step"><b>1</b><h2>Choose the chapter</h2></div>
+      <div class="step"><b>1</b><h2>Choose the chapters</h2></div>
       <div class="grid">
         <div><label for="cls">Class</label><select id="cls"></select></div>
         <div><label for="subject">Subject</label><select id="subject"></select></div>
         <div class="full"><label for="book">Book</label><select id="book"></select></div>
-        <div class="full"><label for="chapter">Chapter</label><select id="chapter"></select></div>
+        <div><label for="chfrom">Chapter from</label><select id="chfrom"></select></div>
+        <div><label for="chto">Chapter to</label><select id="chto"></select></div>
       </div>
+      <p class="hint" id="chhint"></p>
     </div>
 
     <div class="card" id="getpdf">
-      <div class="step"><b>2</b><h2>Get the chapter PDF</h2></div>
+      <div class="step"><b>2</b><h2 id="getpdfh">Get the chapter PDF</h2></div>
       <ol class="howto">
-        <li><a class="bigbtn" id="dl" href="#" target="_blank" rel="noopener noreferrer">Download chapter from NCERT</a>
-          <span class="hint">Opens the official PDF (<span id="dlname">file</span>) in a new tab; a web page cannot make NCERT's file download by itself. To save it where you want: right-click the button and choose “Save link as…”, or use the download (↓) button in the PDF viewer. On a phone, press and hold the button and choose “Download link”.</span></li>
+        <li><div class="dls" id="dls"></div>
+          <span class="hint">Each button opens the official PDF in a new tab; a web page cannot make NCERT's file download by itself. To save it where you want: right-click the button and choose “Save link as…”, or use the download (↓) button in the PDF viewer. On a phone, press and hold the button and choose “Download link”.</span></li>
         <li><button class="bigbtn alt" id="choose" type="button">Next: use the downloaded file</button>
           <span class="hint" id="choosehint">Pick <b id="wantname">the file</b> from Downloads. You can also drop it here.</span>
-          <input type="file" id="file" accept="application/pdf,.pdf" hidden></li>
+          <input type="file" id="file" accept="application/pdf,.pdf" multiple hidden></li>
       </ol>
       <div class="filebox" id="filebox" hidden></div>
-      <fieldset class="range">
+      <fieldset class="range" id="pagesrange">
         <legend>Pages (optional)</legend>
         <div class="pair">
           <div><label for="pf">From</label><input id="pf" type="number" min="1" placeholder="1" inputmode="numeric"></div>
