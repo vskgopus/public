@@ -63,6 +63,17 @@
   .prompt-head h2 { font: 600 1rem/1.3 var(--display); margin: 0; }
   textarea { width: 100%; min-height: 520px; resize: vertical; font: 13px/1.55 var(--mono); color: var(--ink);
              background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 12px; }
+  fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 6px; }
+  legend { font: 600 12px/1 var(--mono); color: var(--muted); letter-spacing: .04em; text-transform: uppercase; padding: 0 0 4px; }
+  .opt { display: flex; gap: 10px; align-items: flex-start; font-weight: 500; border: 1px solid var(--rule); border-radius: 8px;
+         padding: 8px 10px; background: var(--paper); cursor: pointer; }
+  .opt:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+  .opt input { width: auto; margin-top: 3px; accent-color: var(--accent); }
+  .opt small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+  .counts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+  .counts[hidden] { display: none; }
+  @media (max-width: 420px) { .counts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .error { color: var(--margin); }
   ol.how { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
   .note { margin-top: 14px; font-size: 13px; color: var(--muted); background: var(--accent-soft); border-radius: 8px; padding: 10px 12px; }
   @media (prefers-reduced-motion: no-preference) { .btn, .files a { transition: border-color .15s, background .15s; } }
@@ -74,8 +85,8 @@
     <p>Make printable CBSE exam notes and question banks from the official NCERT textbook, using your own Claude Pro
       account. No API key needed: pick the chapter, download it from ncert.nic.in, and paste the ready-made prompt into claude.ai.</p>
     <div class="marks" aria-label="What you get">
-      <span class="chip">Summary notes</span><span class="chip">Key points</span>
-      <span class="chip">1 mark Q&amp;A</span><span class="chip">2 / 3 mark Q&amp;A</span><span class="chip">5 mark Q&amp;A</span>
+      <span class="chip">Summary notes</span><span class="chip">Formula summary</span><span class="chip">Key points</span>
+      <span class="chip">Revision table</span><span class="chip">Questions with answers</span><span class="chip">Practice test</span>
     </div>
   </header>
 
@@ -101,16 +112,43 @@
       </div>
 
       <div class="step">
-        <h2><span class="n">STEP 2</span>Download from NCERT</h2>
+        <h2><span class="n">STEP 2</span>What to include</h2>
+        <fieldset>
+          <legend>Notes</legend>
+          <label class="opt"><input type="checkbox" name="sec" value="summary"><span>Summary notes<small>topic by topic</small></span></label>
+          <label class="opt"><input type="checkbox" name="sec" value="key_points"><span>Key points to remember<small>definitions, laws, dates, units</small></span></label>
+          <label class="opt"><input type="checkbox" name="sec" value="formulas"><span>Formula summary<small>every formula with its meaning and use (maths, science)</small></span></label>
+          <label class="opt"><input type="checkbox" name="sec" value="revision_table"><span>Quick revision table<small>one row per topic</small></span></label>
+          <label class="opt"><input type="checkbox" name="sec" value="differences"><span>Differences tables<small>"difference between X and Y"</small></span></label>
+        </fieldset>
+        <fieldset>
+          <legend>Questions with answers</legend>
+          <label class="opt"><input type="checkbox" name="sec" value="one_mark"><span>One-mark questions<small>MCQ, fill in the blanks, true/false, assertion-reason</small></span></label>
+          <label class="opt"><input type="checkbox" name="sec" value="short_answer"><span>2- and 3-mark questions<small>including NCERT exercises</small></span></label>
+          <label class="opt"><input type="checkbox" name="sec" value="long_answer"><span>5-mark questions<small>full model answers</small></span></label>
+          <label class="opt"><input type="checkbox" name="sec" value="case_based"><span>Case-based questions<small>a passage with sub-questions</small></span></label>
+          <label class="opt"><input type="checkbox" name="sec" value="practice_test" id="sec-test"><span>Practice test paper with answer key<small>can be chosen on its own; the key is on separate pages at the end</small></span></label>
+        </fieldset>
+        <div class="counts" id="testbox" hidden>
+          <label for="tc-m1">1-mark<input id="tc-m1" data-tc="m1" type="number" min="0" max="40" inputmode="numeric"></label>
+          <label for="tc-m2">2-mark<input id="tc-m2" data-tc="m2" type="number" min="0" max="20" inputmode="numeric"></label>
+          <label for="tc-m3">3-mark<input id="tc-m3" data-tc="m3" type="number" min="0" max="20" inputmode="numeric"></label>
+          <label for="tc-m5">5-mark<input id="tc-m5" data-tc="m5" type="number" min="0" max="15" inputmode="numeric"></label>
+          <label for="tc-case">Case-based<input id="tc-case" data-tc="case" type="number" min="0" max="6" inputmode="numeric"></label>
+        </div>
+        <p class="hint" id="secmsg"></p>
+      </div>
+      <div class="step">
+        <h2><span class="n">STEP 3</span>Download from NCERT</h2>
         <ul class="files" id="files"></ul>
         <p class="hint">Official chapter PDFs from ncert.nic.in. Save them, then attach them in claude.ai.</p>
       </div>
 
       <div class="step">
-        <h2><span class="n">STEP 3</span>Ask Claude</h2>
+        <h2><span class="n">STEP 4</span>Ask Claude</h2>
         <ol class="how">
           <li>Open claude.ai and start a new chat.</li>
-          <li>Attach the chapter PDF(s) from step 2 (the paperclip or + button).</li>
+          <li>Attach the chapter PDF(s) from step 3 (the paperclip or + button).</li>
           <li>Copy the prompt on the right, paste it, and send.</li>
           <li>Claude makes a printable PDF for you to download and print.</li>
         </ol>
@@ -130,13 +168,14 @@
       <textarea id="prompt" spellcheck="false" aria-label="Prompt to paste into claude.ai"></textarea>
       <div class="note">If Claude replies with the material as text instead of a PDF, turn on file creation in claude.ai
         (Settings → Capabilities) and ask again, or say <em>"Put all of this in one document I can print."</em> For long chapters,
-        reply <em>"continue"</em> if Claude stops before the 5-mark questions.</div>
+        reply <em>"continue"</em> if Claude stops before the last section.</div>
     </section>
   </div>
 </div>
 
 <script>
 const CATALOG = {"1":{"English":[["aemr1","Mridang",1,9]],"Mathematics":[["aejm1","Joyful-Mathematics (English)",1,13]]},"2":{"Mathematics":[["bejm1","Joyful-Mathematics (English)",1,11]],"English":[["bemr1","Mridang",1,13]]},"3":{"Environmental Studies":[["ceap1","Looking Around",1,24]],"English":[["ceen1","Marigold",1,10],["cesa1","Santoor",1,12]],"Mathematics":[["cemh1","Mathematics",1,14],["cemm1","Maths Mela",1,14]],"The World Around Us":[["ceev1","Our Wondrous World",1,12]],"Arts":[["cebu1","Bansuri - I",1,20]],"Physical Education and Well Being":[["ceky1","Khel Yoga",1,7]]},"4":{"Mathematics":[["demh1","Math-Mela",1,14],["demm1","Math-Mela",1,14]],"Environmental Studies":[["deap1","Looking Around(EVS)",1,27]],"The World Around Us":[["deev1","Our Wonderous World",1,10]],"English":[["deen1","Santoor",1,9],["desa1","Santoor",1,12]],"Arts":[["debu1","Bansuri",1,18]],"Physical Education and Well Being":[["deky1","Khel Yoga",1,3]]},"5":{"Mathematics":[["eemm1","Math-Mela",1,15],["eemh1","Math-Magic",1,14]],"English":[["eesa1","Santoor",1,10],["eeen1","Marigold",1,10]],"The World Around Us":[["eeev1","Our Wonderous World",1,10]],"Arts":[["eebu1","Bansuri",1,19]],"Physical Education and Well Being":[["eeky1","Khel Yoga",1,3]],"Environmental Studies":[["eeap1","Looking Around",1,22]]},"6":{"Vocational Education":[["fekb1","Kaushal Bodh",1,6]],"Physical Education and Well Being":[["feky1","Khel Yatra",1,5]],"English":[["fepr1","Poorvi",1,5]],"Mathematics":[["fegp1","Ganita Prakash",1,10]],"Social Science":[["fees1","Exploring Society India and Beyond",1,14]],"Science":[["fecu1","Curiosity",1,12]],"Arts":[["fekr1","Kriti-I",1,22]]},"7":{"Mathematics":[["gegp1","Ganita Prakash",1,8],["gegp2","Ganita Prakash-II",1,7]],"Arts":[["gekr1","Kriti",1,20]],"Science":[["gecu1","Curiosity",1,12]],"English":[["gepr1","Poorvi",1,5]],"Social Science":[["gees1","Exploring Society India and Beyond Part-I",1,12],["gees2","Exploring Society India and Beyond Part-II",1,8]],"Physical Education and Well Being":[["geky1","Khel Yatra",1,6]],"Vocational Education":[["gekb1","Kaushal Bodh",1,7]]},"8":{"Mathematics":[["hegp1","Ganita Prakash Part-I",1,7],["hegp2","Ganita Prakash Part-II",1,7],["hemh1","Mathematics",1,13]],"Arts":[["hekr1","Kriti",1,19]],"Science":[["hecu1","Curiosity",1,13],["hesc1","Science",1,13]],"English":[["hepr1","Poorvi",1,5],["hehd1","Honeydew",1,8],["heih1","It So Happend",1,8]],"Social Science":[["hees1","Exploring Society India and Beyond Part-I",1,7],["hees2","Exploring Society India and Beyond Part-II",1,8],["hess4","Resource And Development(Geography)",1,5],["hess3","Social And Political Life",1,8],["hess2","Our-Pasts-III",1,8]],"Physical Education and Well Being":[["heky1","Khel Yatra",1,6]],"Vocational Education":[["hekb1","Kaushal Bodh",1,7]]},"9":{"English":[["iebe1","Kaveri",1,8]],"Mathematics":[["iemh1","Ganita Manjari",1,8],["iemh2","Ganita Manjari PART-II",1,6]],"Science":[["iesc1","Exploration",1,13]],"Social Science":[["iest1","Understanding Society India and Beyond PART-I",1,9],["iest2","Understanding Society India and Beyond PART-II",1,6]],"Physical Education and Well Being":[["iehp1","Khel Praveen",1,6]],"Skill Education":[["iekv1","Kaushal Vikas",1,12]],"Vocational":[["ievc1","Cashier",1,5],["ieva1","Store Operations Assistant",1,4],["ievs1","Solanceous Crop Cultivator",1,5],["ievt1","Assistant Beauty Therapist",1,3],["ievw1","Animal Health Workers (Agriculture)",1,4],["ieve1","Hand Embroiderer (Addawala)",1,5],["ievh1","Hand Embroiderer",1,5],["iepg1","Plumber General",1,5],["ieeo1","IT Domestic Data Entry Operator",1,5],["iees1","Employability Skill",1,5]],"Arts":[["iemr1","Madhurima",1,17]]},"10":{"Mathematics":[["jemh1","Mathematics",1,14]],"Science":[["jesc1","Science",1,13]],"English":[["jeff1","First Flight",1,9],["jefp1","Foot Prints Without feet Supp. Reader",1,9],["jewe2","Words and Expressions  2",1,9]],"Social Science":[["jess1","Contemporary India",1,7],["jess2","Understanding Economic Development",1,5],["jess3","India and the Contemporary World-II",1,5],["jess4","Democratic Politics",1,5]],"Health and Physical Education":[["jehp1","Health and Physical Education",1,13]]},"11":{"Accountancy":[["keac1","Financial Accounting-I",1,7],["keac2","Accountancy-II",1,2]],"Business Studies":[["kebs1","Business Studies",1,11]],"Chemistry":[["kech1","Chemistry Part-I",1,6],["kech2","Chemistry Part II",1,3]],"Mathematics":[["kemh1","Mathematics",1,14]],"Vocational":[["kepc1","Floriculturist- Protected Cultivation",1,5],["kevt1","Vision Technician",1,7],["keoc1","Floriculturist",1,6],["keda1","General Duty Assistant",1,5],["kedf1","Dairy Farmer Enterpreneur",1,4],["kefc1","Floriculturist",1,6]],"Biology":[["kebo1","Biology",1,19]],"Home Science":[["kehe1","Human Ecology and Family Sciences Part I",1,7],["kehe2","Human Ecology and Family Sciences Part II",1,4]],"Psychology":[["kepy1","Introduction to Psychology",1,8]],"Economics":[["keec1","Indian Economic Development",1,8],["kest1","Statistics for Economics",1,8]],"Geography":[["kegy2","Fundamental of Physical Geography",1,14],["kegy3","Pratical Work in Geography",1,6],["kegy1","India Physical Environment",1,6]],"Physics":[["keph1","Physics Part-I",1,7],["keph2","Physics Part-II",1,7]],"Sociology":[["kesy1","Introducing Sociology",1,5],["kesy2","Understanding Society",1,5]],"English":[["keww1","Woven Words",1,27],["kehb1","Hornbill",1,14],["kesp1","Snapshots Suppl.Reader English",1,5]],"Political Science":[["keps1","Political Theory",1,8],["keps2","India Constitution at Work",1,10]],"History":[["kehs1","Themes in World History",1,7]],"Heritage Crafts":[["kehc1","Living Craft Traditions of India",1,10]],"Graphics design":[["kegd1","The story of graphic design",1,8]],"Computers and Communication Technology":[["kect1","CCT Part-I",1,8],["kect2","CCT Part-II",1,6]],"Fine Art":[["kefa1","An Introduction to Indian Art Part-I",1,8]],"Informatics Practices":[["keip1","Informatics Practices",1,8]],"Biotechnology":[["kebt1","Biotechnology",1,12]],"Computer Science":[["kecs1","Computer Science",1,11]],"Health and Physical Education":[["kehp1","Health and Physical Education",1,11]],"Knowledge Traditions Practices of India":[["keks1","Knowledge Traditions Practices of India",1,9]]},"12":{"Accountancy":[["leac1","Accountancy-I",1,4],["leac2","Accountancy Part-II",1,6],["leca1","Computerised Accounting System",1,4]],"Mathematics":[["lemh1","Mathematics Part-I",1,6],["lemh2","Mathematics Part-II",1,7]],"Physics":[["leph1","Physics Part-I",1,8],["leph2","Physics Part-II",1,6]],"English":[["lekl1","Kaliedoscope",1,21],["lefl1","Flamingo",1,13],["levt1","Vistas",1,6]],"Biotechnology":[["lebt1","Biotechnology",1,13]],"Biology":[["lebo1","Biology",1,13]],"History":[["lehs1","Themes in Indian History-I",1,4],["lehs2","Themes in Indian History-II",1,4],["lehs3","Themes in Indian History-III",1,4]],"Geography":[["legy1","Fundamentals of Human Geography",1,8],["legy3","Practical Work in Geography Part II",1,4],["legy2","India -People And Economy",1,9]],"Psychology":[["lepy1","Psychology",1,7]],"Sociology":[["lesy1","Indian Society",1,7],["lesy2","Social Change and Development in India",1,8]],"Chemistry":[["lech1","Chemistry-I",1,5],["lech2","Chemistry-II",1,5]],"Political Science":[["leps1","Contemporary World Politics",1,7],["leps2","Politics in India Since Independence",1,8]],"Home Science":[["lehe1","Human Ecology and Family Sciences Part I",1,7],["lehe2","Human Ecology and Family Sciences Part II",1,7],["lehh1","Manav Paristhitik avam Parivar Vigyan Bhag 1",1,7],["lehh2","Manav Paristhitiki avam Parivar Vigyan Bhag 2",1,7]],"Economics":[["leec2","Introductory Microeconomics",1,5],["leec1","Introductory Macroeconomics",1,6]],"Business Studies":[["lebs1","Business Studies-I",1,8],["lebs2","Business Studies-II",1,3]],"Heritage Crafts":[["lehc1","Craft Tradition of India",1,9]],"New Age Graphics Design":[["legd1","New Age Graphics Design",1,12]],"Fine Art":[["lefa1","An Introduction to Indian Art Part-II",1,8]],"Computer Science":[["lecs1","Computer Science",1,13]],"Informatics Practices":[["leip1","Informatics Practices",1,7]]},"11-12":{"Heritage Crafts":[["mehc1","Exploring Craft Tradition of India",1,10]]}};
+const DEFAULT_SECTIONS = ["summary","key_points","formulas","one_mark","short_answer","long_answer"], DEFAULT_COUNTS = {"m1":10,"m2":4,"m3":4,"m5":3,"case":2};
 const $ = id => document.getElementById(id);
 const fill = (sel, items) => { sel.innerHTML = ""; items.forEach(([v, t]) => sel.add(new Option(t, v))); };
 const clsLabel = c => c === "11-12" ? "Class 11–12 (combined)" : `Class ${c}`;
@@ -175,26 +214,56 @@ function update() {
   const classText = cls === "11-12" ? "Class 11–12" : `Class ${cls}`;
   $("meta").textContent = `${classText} · ${subject} · ${chText}`;
 
+  const chosen = SEC().filter(x => x.checked).map(x => x.value), counts = testCounts();
+  const noq = chosen.includes("practice_test") && !Object.values(counts).some(n => n > 0);
+  $("testbox").hidden = !chosen.includes("practice_test");
+  $("secmsg").className = "hint" + (!chosen.length || noq ? " error" : "");
+  $("secmsg").textContent = !chosen.length ? "Tick at least one section."
+    : noq ? "The practice test needs at least one question: set a count above 0."
+    : "Each extra section makes Claude's answer longer. Explanation diagrams and the book's own figures are in the desktop app (diagrams also in the browser version).";
+  $("copy").disabled = !chosen.length || noq;
+  if (!chosen.length || noq) { $("prompt").value = $("secmsg").textContent; return; }
+  const notes = chosen.filter(k => k !== "practice_test"), hasQ = notes.some(k => QUESTION_KEYS.includes(k)), test = chosen.includes("practice_test");
+  const items = notes.map(k => `${SECTION_TEXT[k][0]} - ${SECTION_TEXT[k][1]}`);
+  if (test) {
+    const kinds = [[counts.m1, "one-mark (Section A)"], [counts.m2, "two-mark"], [counts.m3, "three-mark"], [counts.m5, "five-mark"], [counts.case, "case-based (a passage with 3-4 sub-questions, about 4 marks each)"]]
+      .filter(([n]) => n > 0).map(([n, t]) => `${n} ${t}`).join(", ");
+    items.push(`PRACTICE TEST WITH ANSWER KEY - a practice question paper with: ${kinds}. Letter the sections A, B, C ... in that order for the kinds present, with the marks of each question and the maximum marks at the top. ` +
+      (hasQ ? "Pick the questions from your question sections above, spread across the topics" : "Write fresh questions that cover the whole chapter evenly") +
+      (a === b ? "" : " and across all the chapters (one combined paper)") + ". The paper itself has NO answers; put the complete answer key on separate pages after the paper.");
+  }
+  const numbered = items.map((t, i) => `${i + 1}. ${t}`).join("\n\n");
+  const only = test && !notes.length
+    ? "\n\nIMPORTANT: include ONLY the practice test paper and its answer key in the document. Do not print notes or question banks."
+    : "";
+  const answers = hasQ || test ? ` Put each answer directly below its question, starting with "Ans.", except in the practice test paper, whose answers go only in the answer key.` : "";
   $("prompt").value =
 `You are an experienced CBSE teacher and board paper-setter. I have attached the official NCERT textbook PDF for ${classText}, ${subject}${bookText}, ${chText}${pages}.
 
 Using ONLY these NCERT pages, prepare complete exam preparation material${a === b ? "" : " for each chapter in turn"}, in this order:
 
-1. SUMMARY NOTES - explain every topic and sub-topic in book order as short, clear points: definitions, explanations, examples, processes, reasons. A student who reads only these notes should understand the whole chapter.
+${numbered}${only}
 
-2. KEY POINTS TO REMEMBER - must-remember facts: definitions, laws, formulae, equations, dates, names, differences, units.
+Rules: everything must be correct, match NCERT wording and (for questions) be complete enough for full marks in a CBSE board exam. Write formulae with proper symbols (H₂O, x², √, π, →).${answers}
 
-3. ONE MARK QUESTIONS WITH ANSWERS - every 1-mark question that could reasonably be asked: MCQs (4 options, give the correct option), fill in the blanks, true/false (with the correction when false), very short answer, and assertion-reason (standard CBSE four options). Aim for 30-50 for a full chapter.
-
-4. 2 AND 3 MARK QUESTIONS WITH ANSWERS - include all NCERT in-text and end-of-chapter exercise questions of this length plus other likely questions, and numericals with full working where relevant. Label each [2 marks] or [3 marks]. Answers the right length to score full marks (2 marks: 2-3 points; 3 marks: 3-4 points). Aim for 15-30.
-
-5. 5 MARK QUESTIONS WITH ANSWERS - complete model answers (5+ points, with derivations, steps, diagram descriptions or case-based reasoning as the subject needs), including the long NCERT exercise questions. Aim for 6-12.
-
-Rules: answers must be correct, match NCERT wording and be complete enough for full marks in a CBSE board exam. Write formulae with proper symbols (H₂O, x², √, π, →). Put each answer directly below its question, starting with "Ans.".
-
-When the content is ready, create a printable A4 PDF file of all of it, with a cover title "${classText} ${subject}${bookText.replace(', book "', ' - ').replace('"', '')} - ${chText} - Exam Preparation", a heading for each of the five sections, numbered questions in bold and answers below each. If you cannot create files, put everything in one document that I can print.`;
+When the content is ready, create a printable A4 PDF file of all of it, with a cover title "${classText} ${subject}${bookText.replace(', book "', ' - ').replace('"', '')} - ${chText} - Exam Preparation", a heading for each section, numbered questions and clear page breaks. Give me the PDF to download.`;
 }
 
+const SEC = () => [...document.querySelectorAll("input[name=sec]")];
+const TC = () => [...document.querySelectorAll("[data-tc]")];
+const LIMITS = { m1: 40, m2: 20, m3: 20, m5: 15, case: 6 };
+const testCounts = () => Object.fromEntries(TC().map(i => [i.dataset.tc, Math.max(0, Math.min(LIMITS[i.dataset.tc], Math.floor(+i.value || 0)))]));
+const QUESTION_KEYS = ["one_mark", "short_answer", "long_answer", "case_based"];
+const SECTION_TEXT = {"summary":["SUMMARY NOTES","explain every topic and sub-topic in book order as short, clear points: definitions, explanations, examples, processes, reasons. A student who reads only these notes should understand the whole chapter."],"key_points":["KEY POINTS TO REMEMBER","must-remember facts: definitions, laws, formulae, equations, dates, names, differences, units."],"formulas":["FORMULA SUMMARY","every formula, identity and rule of calculation in the pages, grouped by topic in book order, as a table with three columns: name, formula (written with proper symbols), and meaning and use (what each symbol means, the unit, and when to use it). Only formulae that appear in or follow directly from these pages. If there are none, say so in one line."],"revision_table":["QUICK REVISION TABLE","a table with one row per topic in book order and three columns: topic, in short (the idea in one or two sentences), remember (the fact, formula, example or keyword most likely to be asked). Keep each cell brief."],"differences":["DIFFERENCES TABLES","\"difference between X and Y\" tables for the pairs of terms, processes or things in the pages that students are asked to distinguish (as many as the pages support, usually 2-6), each with 3-6 rows of basis of comparison."],"one_mark":["ONE MARK QUESTIONS WITH ANSWERS","every 1-mark question that could reasonably be asked: MCQs (4 options, give the correct option), fill in the blanks, true/false (with the correction when false), very short answer, and assertion-reason (standard CBSE four options). Aim for 30-50 for a full chapter."],"short_answer":["2 AND 3 MARK QUESTIONS WITH ANSWERS","include all NCERT in-text and end-of-chapter exercise questions of this length plus other likely questions, and numericals with full working where relevant. Label each [2 marks] or [3 marks]. Answers the right length to score full marks (2 marks: 2-3 points; 3 marks: 3-4 points). Aim for 15-30."],"long_answer":["5 MARK QUESTIONS WITH ANSWERS","complete model answers (5+ points, with derivations, steps, diagram descriptions or case-based reasoning as the subject needs), including the long NCERT exercise questions. Aim for 6-12."],"case_based":["CASE-BASED QUESTIONS WITH ANSWERS","case-based (source-based) questions in the style of recent CBSE papers for this subject: a short passage, situation, data or experiment description based on the pages (80-150 words), followed by 3-4 sub-questions with marks and full answers, usually totalling 4 marks. Roughly 3-5 cases for a full chapter."]};
+const SAVED = "ncert-pro-choices";
+(function restore() {
+  let c = {};
+  try { c = JSON.parse(localStorage.getItem(SAVED) || "{}"); } catch { /* none saved */ }
+  SEC().forEach(x => x.checked = (c.sections || DEFAULT_SECTIONS).includes(x.value));
+  TC().forEach(i => i.value = (c.counts || DEFAULT_COUNTS)[i.dataset.tc] ?? DEFAULT_COUNTS[i.dataset.tc]);
+})();
+const choicesChanged = () => { try { localStorage.setItem(SAVED, JSON.stringify({ sections: SEC().filter(x => x.checked).map(x => x.value), counts: testCounts() })); } catch { /* private mode */ } update(); };
+SEC().forEach(x => x.onchange = choicesChanged); TC().forEach(i => i.oninput = choicesChanged);
 const clsKeys = Object.keys(CATALOG);
 fill($("cls"), clsKeys.map(c => [c, clsLabel(c)]));
 $("cls").value = clsKeys.includes("10") ? "10" : clsKeys[0];

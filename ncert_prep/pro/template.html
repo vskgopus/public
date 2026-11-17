@@ -63,6 +63,17 @@
   .prompt-head h2 { font: 600 1rem/1.3 var(--display); margin: 0; }
   textarea { width: 100%; min-height: 520px; resize: vertical; font: 13px/1.55 var(--mono); color: var(--ink);
              background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 12px; }
+  fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 6px; }
+  legend { font: 600 12px/1 var(--mono); color: var(--muted); letter-spacing: .04em; text-transform: uppercase; padding: 0 0 4px; }
+  .opt { display: flex; gap: 10px; align-items: flex-start; font-weight: 500; border: 1px solid var(--rule); border-radius: 8px;
+         padding: 8px 10px; background: var(--paper); cursor: pointer; }
+  .opt:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+  .opt input { width: auto; margin-top: 3px; accent-color: var(--accent); }
+  .opt small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+  .counts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+  .counts[hidden] { display: none; }
+  @media (max-width: 420px) { .counts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .error { color: var(--margin); }
   ol.how { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
   .note { margin-top: 14px; font-size: 13px; color: var(--muted); background: var(--accent-soft); border-radius: 8px; padding: 10px 12px; }
   @media (prefers-reduced-motion: no-preference) { .btn, .files a { transition: border-color .15s, background .15s; } }
@@ -74,8 +85,8 @@
     <p>Make printable CBSE exam notes and question banks from the official NCERT textbook, using your own Claude Pro
       account. No API key needed: pick the chapter, download it from ncert.nic.in, and paste the ready-made prompt into claude.ai.</p>
     <div class="marks" aria-label="What you get">
-      <span class="chip">Summary notes</span><span class="chip">Key points</span>
-      <span class="chip">1 mark Q&amp;A</span><span class="chip">2 / 3 mark Q&amp;A</span><span class="chip">5 mark Q&amp;A</span>
+      <span class="chip">Summary notes</span><span class="chip">Formula summary</span><span class="chip">Key points</span>
+      <span class="chip">Revision table</span><span class="chip">Questions with answers</span><span class="chip">Practice test</span>
     </div>
   </header>
 
@@ -101,16 +112,43 @@
       </div>
 
       <div class="step">
-        <h2><span class="n">STEP 2</span>Download from NCERT</h2>
+        <h2><span class="n">STEP 2</span>What to include</h2>
+        <fieldset>
+          <legend>Notes</legend>
+          <label class="opt"><input type="checkbox" name="sec" value="summary"><span>Summary notes<small>topic by topic</small></span></label>
+          <label class="opt"><input type="checkbox" name="sec" value="key_points"><span>Key points to remember<small>definitions, laws, dates, units</small></span></label>
+          <label class="opt"><input type="checkbox" name="sec" value="formulas"><span>Formula summary<small>every formula with its meaning and use (maths, science)</small></span></label>
+          <label class="opt"><input type="checkbox" name="sec" value="revision_table"><span>Quick revision table<small>one row per topic</small></span></label>
+          <label class="opt"><input type="checkbox" name="sec" value="differences"><span>Differences tables<small>"difference between X and Y"</small></span></label>
+        </fieldset>
+        <fieldset>
+          <legend>Questions with answers</legend>
+          <label class="opt"><input type="checkbox" name="sec" value="one_mark"><span>One-mark questions<small>MCQ, fill in the blanks, true/false, assertion-reason</small></span></label>
+          <label class="opt"><input type="checkbox" name="sec" value="short_answer"><span>2- and 3-mark questions<small>including NCERT exercises</small></span></label>
+          <label class="opt"><input type="checkbox" name="sec" value="long_answer"><span>5-mark questions<small>full model answers</small></span></label>
+          <label class="opt"><input type="checkbox" name="sec" value="case_based"><span>Case-based questions<small>a passage with sub-questions</small></span></label>
+          <label class="opt"><input type="checkbox" name="sec" value="practice_test" id="sec-test"><span>Practice test paper with answer key<small>can be chosen on its own; the key is on separate pages at the end</small></span></label>
+        </fieldset>
+        <div class="counts" id="testbox" hidden>
+          <label for="tc-m1">1-mark<input id="tc-m1" data-tc="m1" type="number" min="0" max="40" inputmode="numeric"></label>
+          <label for="tc-m2">2-mark<input id="tc-m2" data-tc="m2" type="number" min="0" max="20" inputmode="numeric"></label>
+          <label for="tc-m3">3-mark<input id="tc-m3" data-tc="m3" type="number" min="0" max="20" inputmode="numeric"></label>
+          <label for="tc-m5">5-mark<input id="tc-m5" data-tc="m5" type="number" min="0" max="15" inputmode="numeric"></label>
+          <label for="tc-case">Case-based<input id="tc-case" data-tc="case" type="number" min="0" max="6" inputmode="numeric"></label>
+        </div>
+        <p class="hint" id="secmsg"></p>
+      </div>
+      <div class="step">
+        <h2><span class="n">STEP 3</span>Download from NCERT</h2>
         <ul class="files" id="files"></ul>
         <p class="hint">Official chapter PDFs from ncert.nic.in. Save them, then attach them in claude.ai.</p>
       </div>
 
       <div class="step">
-        <h2><span class="n">STEP 3</span>Ask Claude</h2>
+        <h2><span class="n">STEP 4</span>Ask Claude</h2>
         <ol class="how">
           <li>Open claude.ai and start a new chat.</li>
-          <li>Attach the chapter PDF(s) from step 2 (the paperclip or + button).</li>
+          <li>Attach the chapter PDF(s) from step 3 (the paperclip or + button).</li>
           <li>Copy the prompt on the right, paste it, and send.</li>
           <li>Claude makes a printable PDF for you to download and print.</li>
         </ol>
@@ -130,13 +168,14 @@
       <textarea id="prompt" spellcheck="false" aria-label="Prompt to paste into claude.ai"></textarea>
       <div class="note">If Claude replies with the material as text instead of a PDF, turn on file creation in claude.ai
         (Settings → Capabilities) and ask again, or say <em>"Put all of this in one document I can print."</em> For long chapters,
-        reply <em>"continue"</em> if Claude stops before the 5-mark questions.</div>
+        reply <em>"continue"</em> if Claude stops before the last section.</div>
     </section>
   </div>
 </div>
 
 <script>
 const CATALOG = /*CATALOG*/{};
+const DEFAULT_SECTIONS = /*DEFAULTS*/[], DEFAULT_COUNTS = /*COUNTS*/{};
 const $ = id => document.getElementById(id);
 const fill = (sel, items) => { sel.innerHTML = ""; items.forEach(([v, t]) => sel.add(new Option(t, v))); };
 const clsLabel = c => c === "11-12" ? "Class 11–12 (combined)" : `Class ${c}`;
@@ -175,26 +214,56 @@ function update() {
   const classText = cls === "11-12" ? "Class 11–12" : `Class ${cls}`;
   $("meta").textContent = `${classText} · ${subject} · ${chText}`;
 
+  const chosen = SEC().filter(x => x.checked).map(x => x.value), counts = testCounts();
+  const noq = chosen.includes("practice_test") && !Object.values(counts).some(n => n > 0);
+  $("testbox").hidden = !chosen.includes("practice_test");
+  $("secmsg").className = "hint" + (!chosen.length || noq ? " error" : "");
+  $("secmsg").textContent = !chosen.length ? "Tick at least one section."
+    : noq ? "The practice test needs at least one question: set a count above 0."
+    : "Each extra section makes Claude's answer longer. Explanation diagrams and the book's own figures are in the desktop app (diagrams also in the browser version).";
+  $("copy").disabled = !chosen.length || noq;
+  if (!chosen.length || noq) { $("prompt").value = $("secmsg").textContent; return; }
+  const notes = chosen.filter(k => k !== "practice_test"), hasQ = notes.some(k => QUESTION_KEYS.includes(k)), test = chosen.includes("practice_test");
+  const items = notes.map(k => `${SECTION_TEXT[k][0]} - ${SECTION_TEXT[k][1]}`);
+  if (test) {
+    const kinds = [[counts.m1, "one-mark (Section A)"], [counts.m2, "two-mark"], [counts.m3, "three-mark"], [counts.m5, "five-mark"], [counts.case, "case-based (a passage with 3-4 sub-questions, about 4 marks each)"]]
+      .filter(([n]) => n > 0).map(([n, t]) => `${n} ${t}`).join(", ");
+    items.push(`PRACTICE TEST WITH ANSWER KEY - a practice question paper with: ${kinds}. Letter the sections A, B, C ... in that order for the kinds present, with the marks of each question and the maximum marks at the top. ` +
+      (hasQ ? "Pick the questions from your question sections above, spread across the topics" : "Write fresh questions that cover the whole chapter evenly") +
+      (a === b ? "" : " and across all the chapters (one combined paper)") + ". The paper itself has NO answers; put the complete answer key on separate pages after the paper.");
+  }
+  const numbered = items.map((t, i) => `${i + 1}. ${t}`).join("\n\n");
+  const only = test && !notes.length
+    ? "\n\nIMPORTANT: include ONLY the practice test paper and its answer key in the document. Do not print notes or question banks."
+    : "";
+  const answers = hasQ || test ? ` Put each answer directly below its question, starting with "Ans.", except in the practice test paper, whose answers go only in the answer key.` : "";
   $("prompt").value =
 `You are an experienced CBSE teacher and board paper-setter. I have attached the official NCERT textbook PDF for ${classText}, ${subject}${bookText}, ${chText}${pages}.
 
 Using ONLY these NCERT pages, prepare complete exam preparation material${a === b ? "" : " for each chapter in turn"}, in this order:
 
-1. SUMMARY NOTES - explain every topic and sub-topic in book order as short, clear points: definitions, explanations, examples, processes, reasons. A student who reads only these notes should understand the whole chapter.
+${numbered}${only}
 
-2. KEY POINTS TO REMEMBER - must-remember facts: definitions, laws, formulae, equations, dates, names, differences, units.
+Rules: everything must be correct, match NCERT wording and (for questions) be complete enough for full marks in a CBSE board exam. Write formulae with proper symbols (H₂O, x², √, π, →).${answers}
 
-3. ONE MARK QUESTIONS WITH ANSWERS - every 1-mark question that could reasonably be asked: MCQs (4 options, give the correct option), fill in the blanks, true/false (with the correction when false), very short answer, and assertion-reason (standard CBSE four options). Aim for 30-50 for a full chapter.
-
-4. 2 AND 3 MARK QUESTIONS WITH ANSWERS - include all NCERT in-text and end-of-chapter exercise questions of this length plus other likely questions, and numericals with full working where relevant. Label each [2 marks] or [3 marks]. Answers the right length to score full marks (2 marks: 2-3 points; 3 marks: 3-4 points). Aim for 15-30.
-
-5. 5 MARK QUESTIONS WITH ANSWERS - complete model answers (5+ points, with derivations, steps, diagram descriptions or case-based reasoning as the subject needs), including the long NCERT exercise questions. Aim for 6-12.
-
-Rules: answers must be correct, match NCERT wording and be complete enough for full marks in a CBSE board exam. Write formulae with proper symbols (H₂O, x², √, π, →). Put each answer directly below its question, starting with "Ans.".
-
-When the content is ready, create a printable A4 PDF file of all of it, with a cover title "${classText} ${subject}${bookText.replace(', book "', ' - ').replace('"', '')} - ${chText} - Exam Preparation", a heading for each of the five sections, numbered questions in bold and answers below each. If you cannot create files, put everything in one document that I can print.`;
+When the content is ready, create a printable A4 PDF file of all of it, with a cover title "${classText} ${subject}${bookText.replace(', book "', ' - ').replace('"', '')} - ${chText} - Exam Preparation", a heading for each section, numbered questions and clear page breaks. Give me the PDF to download.`;
 }
 
+const SEC = () => [...document.querySelectorAll("input[name=sec]")];
+const TC = () => [...document.querySelectorAll("[data-tc]")];
+const LIMITS = { m1: 40, m2: 20, m3: 20, m5: 15, case: 6 };
+const testCounts = () => Object.fromEntries(TC().map(i => [i.dataset.tc, Math.max(0, Math.min(LIMITS[i.dataset.tc], Math.floor(+i.value || 0)))]));
+const QUESTION_KEYS = ["one_mark", "short_answer", "long_answer", "case_based"];
+const SECTION_TEXT = /*SECTIONS*/{};
+const SAVED = "ncert-pro-choices";
+(function restore() {
+  let c = {};
+  try { c = JSON.parse(localStorage.getItem(SAVED) || "{}"); } catch { /* none saved */ }
+  SEC().forEach(x => x.checked = (c.sections || DEFAULT_SECTIONS).includes(x.value));
+  TC().forEach(i => i.value = (c.counts || DEFAULT_COUNTS)[i.dataset.tc] ?? DEFAULT_COUNTS[i.dataset.tc]);
+})();
+const choicesChanged = () => { try { localStorage.setItem(SAVED, JSON.stringify({ sections: SEC().filter(x => x.checked).map(x => x.value), counts: testCounts() })); } catch { /* private mode */ } update(); };
+SEC().forEach(x => x.onchange = choicesChanged); TC().forEach(i => i.oninput = choicesChanged);
 const clsKeys = Object.keys(CATALOG);
 fill($("cls"), clsKeys.map(c => [c, clsLabel(c)]));
 $("cls").value = clsKeys.includes("10") ? "10" : clsKeys[0];

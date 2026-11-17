@@ -142,7 +142,7 @@ finished are kept. If the app was started from a terminal, the same lines are pr
 | `certs/` | Public Let's Encrypt intermediate certificates. ncert.nic.in doesn't send its own, so this lets downloads verify properly |
 | `install.sh`, `ncert-prep.sh` | Linux installer and launcher |
 | `install.bat`, `install.ps1`, `start.bat` | Windows installer and launcher |
-| `pro/index.html` | A no-install page: NCERT links and a prompt to paste into claude.ai by hand |
+| `pro/index.html` | A no-install page: choose the sections, get NCERT links and a prompt to paste into claude.ai by hand (built by `pro/build_page.py` from `pro/template.html`) |
 
 Notes:
 - Only English-medium books are offered for now. Hindi and Urdu need different PDF fonts and text shaping.
