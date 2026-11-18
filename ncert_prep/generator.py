@@ -19,7 +19,7 @@ _STRS = {"type": "array", "items": _STR}
 
 SECTIONS = {
     "summary": {
-        "label": "Summary notes",
+        "label": "Summary notes (detailed)",
         "schema": {
             "type": "array",
             "description": "Topic-wise notes covering every topic/sub-topic in the selected pages, in book order",
@@ -29,6 +29,31 @@ SECTIONS = {
         "prompt": "summary - topic-wise notes that explain every topic and sub-topic in the pages, in book "
                   "order, as short clear points (definitions, explanations, examples, processes, reasons). A "
                   "student who reads only these notes should understand the whole chapter.",
+    },
+    "summary_basic": {
+        "label": "Summary notes (basic)",
+        "schema": {
+            "type": "array",
+            "description": "Short basic summary of the chapter: one heading per main topic, a few brief points each",
+            "items": {"type": "object", "additionalProperties": False, "required": ["topic", "points"],
+                      "properties": {"topic": _STR, "points": _STRS}},
+        },
+        "prompt": "summary_basic - a basic, brief summary of the chapter: one entry per main topic (not every "
+                  "sub-topic), each with 2 to 5 very short points (one line each) giving only the main ideas. "
+                  "No long explanations or worked examples; it should fit on one or two pages for a quick read.",
+    },
+    "definitions": {
+        "label": "Definitions of terms",
+        "schema": {
+            "type": "array",
+            "description": "Important terms of the chapter with their definitions, in book order",
+            "items": {"type": "object", "additionalProperties": False, "required": ["term", "meaning"],
+                      "properties": {"term": _STR, "meaning": _STR}},
+        },
+        "prompt": "definitions - every important term, technical word and defined concept in the pages, in "
+                  "book order, each with a clear one- or two-sentence definition as the book gives it (term: "
+                  "the word or phrase only; meaning: the definition). Include units or laws only if the book "
+                  "defines them as terms. If the chapter defines no terms, return an empty list.",
     },
     "diagrams": {
         "label": "Explanation diagrams",
@@ -213,7 +238,7 @@ SECTIONS = {
     },
 }
 
-COUNT_WORDS = {"summary": "topics", "diagrams": "diagrams", "figures": "figure notes", "key_points": "key points", "formulas": "formula groups",
+COUNT_WORDS = {"summary": "topics", "summary_basic": "basic summary topics", "definitions": "definitions","diagrams": "diagrams", "figures": "figure notes", "key_points": "key points", "formulas": "formula groups",
                "revision_table": "revision-table rows", "differences": "difference tables",
                "one_mark": "one-mark", "short_answer": "2/3-mark", "long_answer": "five-mark questions",
                "case_based": "case-based sets"}

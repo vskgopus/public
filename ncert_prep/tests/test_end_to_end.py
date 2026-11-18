@@ -174,7 +174,7 @@ argv = new[0]["argv"]
 schema = json.loads(argv[argv.index("--json-schema") + 1])
 assert schema["required"] == ["chapter_title"] + list(generator.SECTIONS), schema["required"]
 prompt = argv[argv.index("-p") + 1]
-for word in ("diagrams -", "revision_table -", "differences -", "case_based -"):
+for word in ("summary_basic -", "definitions -", "diagrams -", "revision_table -", "differences -", "case_based -"):
     assert word in prompt, word
 saved = client.get("/api/status", base_url=BASE).get_json()["settings"]["sections"]
 assert saved == everything, "the ticked sections should be remembered"
@@ -182,7 +182,8 @@ assert saved == everything, "the ticked sections should be remembered"
 pdf = Path(webapp.JOBS[list(webapp.JOBS)[-1]]["file"])
 text = "\n".join(p.extract_text() for p in PdfReader(pdf).pages)
 for heading in ("Diagrams to Understand the Chapter", "Quick Revision Table", "Differences",
-                "Case-Based Questions", "Practice Test", "Answer Key", "Formula Summary", "A = πr²", "Types of chemical reactions",
+                "Case-Based Questions", "Practice Test", "Answer Key", "Formula Summary", "Summary Notes (Basic)", "Definitions of Terms",
+                "Exothermic reaction", "Chemical reactions and equations", "A = πr²", "Types of chemical reactions",
                 "Difference between Exothermic reaction and Endothermic reaction"):
     assert heading in text, heading
 

@@ -7,7 +7,7 @@ official NCERT site (ncert.nic.in), has Claude or Google Gemini write the exam p
 
 | Notes | Questions with answers |
 |---|---|
-| **Summary notes**: every topic explained as short points | **One-mark questions**: MCQ, fill in the blanks, true/false, very short answer, assertion-reason |
+| **Summary notes (detailed)**: every topic explained as short points; **Summary notes (basic)**: only the main ideas, a few brief points per topic; **Definitions of terms**: a table of the chapter's important terms and their meanings | **One-mark questions**: MCQ, fill in the blanks, true/false, very short answer, assertion-reason |
 | **Explanation diagrams**: flowcharts of processes, cycles and concept maps, drawn by the app from Claude's outline | **2-mark and 3-mark questions**, including the NCERT exercise questions |
 | **Figures from the book**: the chapter's numbered figures, cut from the NCERT pages by the app (no AI), each with its caption and short notes from the AI | |
 | **Key points** to remember: definitions, formulae, equations, laws | **5-mark questions** |

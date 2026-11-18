@@ -369,12 +369,26 @@ def _chapter_flow(ch: dict, meta: dict, sections: list[str]) -> list:
     for key in sections:
         items = ch.get(key) or []
         if key == "summary":
-            flow += bar("Summary Notes")
+            flow += bar("Summary Notes (Detailed)")
             for block in items:
                 parts = [Paragraph(_t(block["topic"]), S["topic"])]
                 parts += [Paragraph(_t(p), S["bullet"], bulletText="•") for p in block["points"]]
                 flow.append(KeepTogether(parts[:3]))
                 flow += parts[3:]
+        elif key == "summary_basic":
+            flow += bar("Summary Notes (Basic)")
+            for block in items:
+                parts = [Paragraph(_t(block["topic"]), S["topic"])]
+                parts += [Paragraph(_t(p), S["bullet"], bulletText="•") for p in block["points"]]
+                flow.append(KeepTogether(parts[:3]))
+                flow += parts[3:]
+        elif key == "definitions":
+            flow += bar("Definitions of Terms")
+            rows = [[d["term"], d["meaning"]] for d in items]
+            if rows:
+                flow.append(_grid(["Term", "Meaning"], rows, [42 * mm, None]))
+            else:
+                flow.append(Paragraph("This chapter defines no terms to list.", S["body"]))
         elif key == "figures":
             flow += bar("Figures from the NCERT Book")
             flow += _book_figures_flow(ch.get("book_figures") or [], items)
