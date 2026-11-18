@@ -15,3 +15,12 @@ Google Gemini (your own Gemini API key; a free key works). Install on Ubuntu wit
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vskgopus/public/ncert-prep/ncert_prep/setup.sh | bash
 ```
+
+It installs to `~/ncert-app` and adds "NCERT Exam Prep" to the app menu. Run the same command again to
+update; your login, settings and PDFs are kept.
+
+On Windows, download <https://github.com/vskgopus/public/archive/refs/heads/ncert-prep.zip>, unzip it, and in the
+`ncert_prep` folder double-click `install.bat`.
+
+A browser version with no install (works on phones; your own Claude API key or free Gemini key) is at
+<https://vskgopus.github.io/public/ncert-prep/>. More detail: [`ncert_prep/README.md`](ncert_prep/README.md).
