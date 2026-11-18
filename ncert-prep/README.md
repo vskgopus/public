@@ -11,7 +11,7 @@ answers, and a practice test with an answer key. One chapter or up to six in a s
 2. Press **Download chapter N from NCERT** for each and save the official PDFs, then **Next: use
    the downloaded files** and pick them (all at once if you like). (Browsers don't let a web page fetch NCERT's PDF or read your
    Downloads folder by itself, so this one tap is needed.)
-3. Tick what to include and press **Prepare exam material**. Then **Print / Save as PDF**.
+3. Tick what to include and press **Prepare exam material**. Then **Save as PDF** (the browser's print window opens; choose "Save as PDF" as the destination).
 
 The AI is your own: a Claude API key (pay per use, from console.anthropic.com) or a free Gemini key
 (from aistudio.google.com/apikey). Keys stay in your browser; the chapter goes only to the AI you

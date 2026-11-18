@@ -4,11 +4,21 @@
 import { DATA } from "./data.js";
 import { CLAUDE_MODELS, Stopped, UsageLimit, claude, gemini, geminiModels } from "./ai.js";
 import { documentHtml, esc } from "./render.js";
+import { inAppBrowser } from "./inapp.js";
 
 const $ = id => document.getElementById(id);
 const opt = (sel, items) => { sel.innerHTML = items.map(([v, t]) => `<option value="${esc(v)}">${esc(t)}</option>`).join(""); };
 
 // ------------------------------------------------------------------ settings (this browser only)
+// A built-in browser (Instagram, Facebook …) often cannot print or save a PDF: say so at the top.
+const IN_APP = inAppBrowser();
+if (IN_APP) {
+  $("inappname").textContent = IN_APP; $("inapp").hidden = false;
+  $("copylink").onclick = async () => {
+    try { await navigator.clipboard.writeText(location.href); $("copylink").textContent = "Link copied. Paste it in Chrome or Safari."; }
+    catch { $("copylink").textContent = "Could not copy: press and hold the address and copy it."; }
+  };
+}
 const SAVED = "ncert-prep-settings", KEYS = "ncert-prep-keys";
 const store = {
   get(k, area = localStorage) { try { return JSON.parse(area.getItem(k) || "{}"); } catch { return {}; } },
@@ -310,11 +320,19 @@ $("f").onsubmit = async e => {
     log("Laying out the document …");
     $("doc").innerHTML = documentHtml({ cls: clsLabel(cls).replace(/^Class /, ""), subject, book: b[1], ai: aiName }, datas, options, testCounts);
     $("doc").hidden = false;
-    log("Done. Press “Print / Save as PDF” (on a phone: Share → Print → Save as PDF).");
+    if (IN_APP) log(`Warning: ${IN_APP}'s built-in browser may not be able to save the PDF. If “Save as PDF” does nothing, open this page in Chrome or Safari.`);
+    log("Done. Press “Save as PDF”. A print window opens: choose “Save as PDF” as the destination (on a phone: Share → Print → Save as PDF).");
     clearInterval(ticker);
     finish(`Ready in ${Math.max(1, Math.round((Date.now() - t0) / 60000))} min.`, true);
-    $("actions").innerHTML = '<button type="button" class="primary" id="print">Print / Save as PDF</button><button type="button" id="view">View the document</button>';
-    $("print").onclick = () => window.print();
+    $("actions").innerHTML = '<button type="button" class="primary" id="print">Save as PDF</button><button type="button" id="view">View the document</button>';
+    // The browser's print window is how a page saves a PDF; the page title becomes the suggested file name.
+    const fileTitle = `NCERT Class ${clsLabel(cls).replace(/^Class /, "")} ${subject} ${datas.map(d => `Ch ${d.number}`).join(", ")}`.replace(/[\\/:*?"<>|]+/g, " ");
+    $("print").onclick = () => {
+      const old = document.title;
+      document.title = fileTitle;
+      window.addEventListener("afterprint", () => { document.title = old; }, { once: true });
+      window.print();
+    };
     $("view").onclick = () => $("doc").scrollIntoView({ behavior: "smooth" });
   } catch (err) {
     clearInterval(ticker);
