@@ -174,7 +174,7 @@ argv = new[0]["argv"]
 schema = json.loads(argv[argv.index("--json-schema") + 1])
 assert schema["required"] == ["chapter_title"] + list(generator.SECTIONS), schema["required"]
 prompt = argv[argv.index("-p") + 1]
-for word in ("summary_basic -", "definitions -", "diagrams -", "revision_table -", "differences -", "case_based -"):
+for word in ("summary_basic -", "diagrams -", "revision_table -", "differences -", "case_based -"):
     assert word in prompt, word
 saved = client.get("/api/status", base_url=BASE).get_json()["settings"]["sections"]
 assert saved == everything, "the ticked sections should be remembered"

@@ -6,27 +6,29 @@
     "A chemical change makes new substances.",
     "Reactions are written as balanced equations.",
     "Balancing keeps the number of atoms equal on both sides."
+   ],
+   "terms": [
+    {
+     "term": "Exothermic reaction",
+     "meaning": "A reaction in which heat is released."
+    },
+    {
+     "term": "Endothermic reaction",
+     "meaning": "A reaction in which heat is absorbed."
+    }
    ]
   },
   {
    "topic": "Types of reactions",
    "points": [
     "Combination, decomposition, displacement, double displacement and redox."
+   ],
+   "terms": [
+    {
+     "term": "Precipitate",
+     "meaning": "An insoluble solid that separates out in a reaction."
+    }
    ]
-  }
- ],
- "definitions": [
-  {
-   "term": "Exothermic reaction",
-   "meaning": "A reaction in which heat is released."
-  },
-  {
-   "term": "Endothermic reaction",
-   "meaning": "A reaction in which heat is absorbed."
-  },
-  {
-   "term": "Precipitate",
-   "meaning": "An insoluble solid that separates out in a reaction."
   }
  ],
  "diagrams": [
