@@ -40,14 +40,53 @@
     return BANK.filter(function (q) { return m === "all" || q.module === m; });
   }
 
+  var PER_MODULE = window.QUIZ_PER_MODULE || 25;
+  var SEEN_KEY = "est-quiz-seen-v1"; // per-device memory of asked question ids, used only to vary the draw
+
+  function loadSeen() {
+    try { return JSON.parse(window.localStorage.getItem(SEEN_KEY)) || {}; } catch (e) { return {}; }
+  }
+  function saveSeen(seen) {
+    try { window.localStorage.setItem(SEEN_KEY, JSON.stringify(seen)); } catch (e) { /* storage unavailable: ignore */ }
+  }
+
+  // Draw up to PER_MODULE random questions from one module, unseen ones first.
+  // When fewer than PER_MODULE are unseen, the remainder comes from the already-seen ones and the memory resets.
+  function drawModule(key, seen) {
+    var pool = shuffle(BANK.filter(function (q) { return q.module === key; }));
+    var fresh = pool.filter(function (q) { return !seen[q.id]; });
+    var old = pool.filter(function (q) { return seen[q.id]; });
+    var pick = fresh.slice(0, PER_MODULE);
+    if (pick.length < PER_MODULE) {
+      pick = pick.concat(old.slice(0, PER_MODULE - pick.length));
+      pool.forEach(function (q) { delete seen[q.id]; }); // whole module cycled: start a new round
+    }
+    pick.forEach(function (q) { seen[q.id] = 1; });
+    return pick;
+  }
+
+  function drawQuestions() {
+    var m = $("module-select").value, seen = loadSeen();
+    var keys = m === "all" ? Object.keys(MODULES) : [m];
+    var pick = [];
+    keys.forEach(function (k) { pick = pick.concat(drawModule(k, seen)); });
+    saveSeen(seen);
+    return shuffle(pick);
+  }
+
   function updatePoolInfo() {
-    var n = filteredPool().length;
-    $("pool-info").textContent = n + " question" + (n === 1 ? "" : "s") + " available for this selection.";
+    var pool = filteredPool(), m = $("module-select").value;
+    var keys = m === "all" ? Object.keys(MODULES) : [m];
+    var asked = keys.reduce(function (n, k) {
+      return n + Math.min(PER_MODULE, pool.filter(function (q) { return q.module === k; }).length);
+    }, 0);
+    $("pool-info").textContent = asked + " questions per attempt, drawn from " + pool.length + " in the bank for this selection.";
   }
 
   /* ---------- Setup ---------- */
   function initSetup() {
     $("pass-mark").textContent = PASS_MARK;
+    $("per-module").textContent = PER_MODULE;
     var sel = $("module-select");
     sel.innerHTML = '<option value="all">All modules</option>' + Object.keys(MODULES).map(function (k) {
       return '<option value="' + k + '">' + escapeHtml(MODULES[k]) + "</option>";
@@ -65,9 +104,7 @@
       if (!name) { $("name-error").hidden = false; $("learner-name").focus(); return; }
       $("name-error").hidden = true;
 
-      var pool = shuffle(filteredPool());
-      var count = parseInt($("count-select").value, 10);
-      if (count > 0) pool = pool.slice(0, count);
+      var pool = drawQuestions();
       if (pool.length === 0) { $("pool-info").textContent = "No questions match this selection."; return; }
 
       state = {

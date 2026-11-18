@@ -12,6 +12,12 @@
  *   answer      index (0-3) of the correct option in `options` (options are shuffled at run time)
  *   explanation shown on the results screen
  *
+ * Bank layout: this file holds the module list, the QUIZ_ADD helper and the first 12 questions per module
+ * (16 for mcdc). The extra questions live in q-c.js, q-mcu.js, q-comm.js, q-rtos.js and q-do178c.js and are added with
+ * QUIZ_ADD(module, rows), where each row is [question, code-or-null, [4 options, CORRECT FIRST], explanation].
+ * Ids are assigned in order (c13, c14, ...). APPEND ONLY: inserting or deleting a row renumbers every later id.
+ * Each attempt draws QUIZ_PER_MODULE questions per module at random (see quiz.js).
+ *
  * Run `npm run validate` after editing. Verify every MC/DC test set with tools/mcdc.js.
  */
 window.QUIZ_MODULES = {
@@ -23,6 +29,20 @@ window.QUIZ_MODULES = {
   mcdc:   "Coverage & MC/DC"
 };
 
+window.QUIZ_PER_MODULE = 25; // questions drawn per module in each attempt
+
+var QUIZ_PREFIX = { c: "c", mcu: "m", comm: "p", rtos: "r", do178c: "d", mcdc: "v" };
+window.QUIZ_ADD = function (module, rows) {
+  var n = window.QUIZ_QUESTIONS.filter(function (q) { return q.module === module; }).length;
+  rows.forEach(function (r) {
+    n++;
+    var q = { id: QUIZ_PREFIX[module] + (n < 10 ? "0" : "") + n, module: module, level: "expert", q: r[0] };
+    if (r[1]) q.code = r[1];
+    q.options = r[2]; q.answer = 0; q.explanation = r[3];
+    window.QUIZ_QUESTIONS.push(q);
+  });
+};
+
 window.QUIZ_QUESTIONS = [
   /* ---------------- Module 1: Embedded C ---------------- */
   {
@@ -30,10 +50,10 @@ window.QUIZ_QUESTIONS = [
     q: "On a target with 32-bit `int`, what does this condition evaluate to?",
     code: "uint16_t a = 0xFFFFU, b = 1U;\nif ((a + b) == 0U) { /* ... */ }",
     options: [
-      "False: a and b are promoted to int, so the sum is 65536",
-      "True: uint16_t arithmetic wraps to 0",
-      "Undefined behaviour because of unsigned overflow",
-      "Implementation-defined; most compilers make it true"
+      "False: both operands are promoted to int, so the sum is 65536 and not 0",
+      "True: uint16_t arithmetic wraps around to 0 at the 16-bit limit",
+      "Undefined behaviour, because the unsigned addition overflows the type",
+      "Implementation-defined, and most compilers evaluate it as true"
     ],
     answer: 0,
     explanation: "Both operands are promoted to (signed) int before the addition, so the result is int 65536, not 0. On a 16-bit-int target, the same code would wrap to 0 and the condition would be true, which is why MISRA's essential type rules flag it."
@@ -43,10 +63,10 @@ window.QUIZ_QUESTIONS = [
     q: "Why is this comparison false on a 32-bit-int target?",
     code: "uint8_t x = 0x0FU;\nif (~x == 0xF0U) { /* never taken */ }",
     options: [
-      "x is promoted to int before `~`, so `~x` is 0xFFFFFFF0, not 0xF0",
-      "`~` is not allowed on unsigned types",
-      "0xF0U is a 16-bit constant",
-      "The comparison is undefined behaviour"
+      "`~x` is evaluated after promotion to int, giving 0xFFFFFFF0 and not 0xF0",
+      "`~` is not permitted on unsigned operands, so the result is undefined",
+      "The constant 0xF0U is only a 16-bit value and cannot match 32 bits",
+      "The comparison is undefined behaviour because of the signed promotion"
     ],
     answer: 0,
     explanation: "Integer promotion happens before the bitwise complement. Casting the result back, as in `(uint8_t)~x`, gives 0xF0. MISRA C requires such results to be cast to the essential type that was intended."
@@ -56,10 +76,10 @@ window.QUIZ_QUESTIONS = [
     q: "A developer writes an overflow guard for a signed addition. What can an optimising compiler legally do with it?",
     code: "int32_t add100(int32_t a) {\n    if (a + 100 < a) { return INT32_MAX; }\n    return a + 100;\n}",
     options: [
-      "Remove the check entirely, because signed overflow is undefined behaviour and the compiler may assume it never happens",
-      "Nothing; the check always works",
-      "Convert the check into an unsigned comparison",
-      "Insert a run-time trap automatically"
+      "Remove the check, since signed overflow is undefined behaviour",
+      "Keep the check, because the compiler must preserve every comparison it sees",
+      "Convert the check into an unsigned comparison so it still detects overflow",
+      "Insert a run-time trap automatically whenever the addition overflows"
     ],
     answer: 0,
     explanation: "Because signed overflow is undefined, the compiler may assume `a + 100 < a` is always false and delete the branch. Check before the operation instead: `if (a > INT32_MAX - 100)`."
@@ -80,7 +100,7 @@ window.QUIZ_QUESTIONS = [
     id: "c05", module: "c", level: "expert",
     q: "Two cores share `data` and a `volatile` flag `ready`. Core 0 writes `data`, then sets `ready = 1`. What is the problem?",
     options: [
-      "volatile doesn't order the non-volatile write to `data`, or prevent hardware reordering. Use release/acquire atomics or memory barriers.",
+      "`volatile` does not order the write to `data`; use atomics or barriers",
       "There is no problem, because volatile guarantees ordering between cores",
       "volatile variables cannot be shared between cores",
       "The only risk is that the compiler deletes the write to `ready`"
@@ -92,7 +112,7 @@ window.QUIZ_QUESTIONS = [
     id: "c06", module: "c", level: "expert",
     q: "In MISRA C:2012, which statement about rule categories is correct?",
     options: [
-      "Mandatory rules can't be deviated; Required rules need a formal, documented deviation; Advisory rules are recommendations",
+      "Mandatory cannot be deviated; Required needs a formal deviation",
       "All rules can be deviated if a tool reports them as false positives",
       "Advisory rules need a formal deviation; Required rules don't",
       "Only Mandatory rules need to be checked by static analysis"
@@ -104,7 +124,7 @@ window.QUIZ_QUESTIONS = [
     id: "c07", module: "c", level: "expert",
     q: "Why do safety-critical coding standards usually forbid recursion?",
     options: [
-      "Worst-case stack usage can't be bounded by static analysis in general",
+      "Worst-case stack use cannot be bounded statically in general",
       "Recursion is undefined behaviour in C",
       "Recursive functions can't be unit tested",
       "Compilers can't generate code for recursion on microcontrollers"
@@ -117,10 +137,10 @@ window.QUIZ_QUESTIONS = [
     q: "What is the most likely `sizeof` for this struct on a typical 32-bit Arm ABI, and what follows from it?",
     code: "struct msg { uint8_t a; uint32_t b; uint8_t c; };",
     options: [
-      "12 bytes, because of padding for alignment. Don't overlay such structs on wire data.",
-      "6 bytes; members are packed by default",
-      "8 bytes; the compiler reorders members to minimise padding",
-      "Exactly 6 bytes on every platform, by the C standard"
+      "12 bytes, because of padding, so do not overlay it on wire data",
+      "6 bytes, because members are packed together unless told otherwise",
+      "8 bytes, because the compiler reorders members to minimise padding",
+      "Exactly 6 bytes on every platform, as the C standard defines the layout"
     ],
     answer: 0,
     explanation: "With 4-byte alignment for uint32_t, a sits at offset 0, b at 4 and c at 8, and the size is rounded up to 12. C doesn't allow member reordering, and padding is implementation-defined. Parse messages field by field."
@@ -130,10 +150,10 @@ window.QUIZ_QUESTIONS = [
     q: "What is wrong with this code?",
     code: "#define MAX(a, b) ((a) > (b) ? (a) : (b))\nm = MAX(i++, j);",
     options: [
-      "i may be incremented twice. Use a static inline function instead.",
-      "Nothing; the parentheses make the macro safe",
-      "It is a syntax error",
-      "The result is always j"
+      "`i++` is evaluated twice; use a `static inline` function",
+      "Nothing is wrong, because the parentheses make the macro safe for any argument",
+      "It is a syntax error, because a macro cannot contain a conditional operator",
+      "The result is always `j`, because the comparison is evaluated only once"
     ],
     answer: 0,
     explanation: "The macro argument is expanded twice, so the side effect runs twice when i++ is the larger value. Function-like macros with side-effecting arguments are restricted by MISRA C."
@@ -142,10 +162,10 @@ window.QUIZ_QUESTIONS = [
     id: "c10", module: "c", level: "expert",
     q: "Two Q15 values, both -32768 (= -1.0), are multiplied as `((int32_t)a * b) >> 15`. What must the code handle?",
     options: [
-      "The result is +32768, which doesn't fit in int16_t, so it must be saturated to 32767",
-      "Nothing; Q15 multiplication never overflows",
-      "The 32-bit product overflows",
-      "The shift should be by 16, not 15"
+      "The result +32768 does not fit in `int16_t`, so saturate it",
+      "Nothing special: Q15 multiplication can never overflow the 16-bit result",
+      "The 32-bit intermediate product overflows, so a 64-bit type is needed",
+      "The shift should be 16 bits instead of 15 to keep the sign"
     ],
     answer: 0,
     explanation: "-1 × -1 = +1.0, which isn't representable in Q15 (maximum about 0.99997). The 32-bit product (2^30) is fine; the problem is narrowing back to 16 bits, so saturate."
@@ -154,10 +174,10 @@ window.QUIZ_QUESTIONS = [
     id: "c11", module: "c", level: "expert",
     q: "A static stack-analysis tool reports an incomplete call graph for a module. What is the most likely cause?",
     options: [
-      "Calls through function pointers, which the tool can't resolve without annotations",
-      "Use of `static inline` functions",
-      "Use of `const` lookup tables",
-      "Functions with more than four parameters"
+      "Calls through function pointers, which the tool cannot resolve without annotations",
+      "The use of `static inline` functions, which hide their callers from the tool",
+      "The use of `const` lookup tables, which move data out of the analysed code",
+      "Functions with more than four parameters, which exceed the tool's frame model"
     ],
     answer: 0,
     explanation: "Indirect calls hide the call targets. Most analysers need the possible targets annotated (or the design restricted) to compute worst-case stack depth."
@@ -165,7 +185,12 @@ window.QUIZ_QUESTIONS = [
   {
     id: "c12", module: "c", level: "expert",
     q: "Which statement is undefined behaviour?",
-    options: ["i = i++ + 1;", "i = i + 1;", "i += 1;", "j = i++ + 1;"],
+    options: [
+      "`i = i++ + 1;` modifies `i` twice without sequencing",
+      "`i = i + 1;` assigns a value computed from the old `i`",
+      "`i += 1;` is a compound assignment to a single object",
+      "`j = i++ + 1;` modifies `i` once and assigns to a different object"
+    ],
     answer: 0,
     explanation: "In `i = i++ + 1;`, i is modified twice without sequencing, which is undefined. The other statements modify i at most once."
   },
@@ -175,10 +200,10 @@ window.QUIZ_QUESTIONS = [
     id: "m01", module: "mcu", level: "expert",
     q: "On a Cortex-M7 with D-cache enabled, a UART DMA receive buffer sometimes contains old data when the CPU reads it after the transfer completes. What is the correct fix?",
     options: [
-      "Invalidate the buffer's cache lines after the DMA completes, with the buffer aligned and sized to 32-byte cache lines (or place it in a non-cacheable region)",
-      "Clean the cache lines after the DMA completes",
-      "Declare the buffer volatile",
-      "Add a delay before reading the buffer"
+      "Invalidate the buffer's cache lines after DMA, with line-aligned buffers",
+      "Clean the cache lines before reading, so DMA data reaches the CPU",
+      "Disable the DMA interrupt and read the buffer in a polling loop",
+      "Declare the buffer `volatile` so the cache is bypassed on every read"
     ],
     answer: 0,
     explanation: "The CPU is reading stale cached copies. Invalidation discards them so that the next read comes from RAM. Alignment prevents invalidating unrelated variables that share a cache line. volatile doesn't affect the cache."
@@ -199,10 +224,10 @@ window.QUIZ_QUESTIONS = [
     id: "m03", module: "mcu", level: "expert",
     q: "An ISR clears the peripheral interrupt flag as its last instruction, and occasionally runs a second time for one event. What is the likely cause and fix?",
     options: [
-      "The flag-clearing write hadn't completed when the exception returned. Read the register back or execute DSB before returning.",
-      "The NVIC priority is too high; lower it",
-      "The ISR must be declared volatile",
-      "Tail-chaining is broken; disable it"
+      "The flag write had not completed at return; read it back or execute `DSB`",
+      "The NVIC pending bit must be cleared before the flag, in every case",
+      "The interrupt priority is too high and must be lowered by one level",
+      "The handler is too long and the flag must be cleared first thing"
     ],
     answer: 0,
     explanation: "Writes can sit in a write buffer or bus bridge. If the interrupt is still asserted when the exception returns, it is taken again. Arm and MCU vendors recommend a DSB or a read-back."
@@ -211,10 +236,10 @@ window.QUIZ_QUESTIONS = [
     id: "m04", module: "mcu", level: "expert",
     q: "Main code does `GPIOA->ODR |= LED1;` and an ISR does `GPIOA->ODR ^= LED2;`. LED2 occasionally fails to toggle. Best fix?",
     options: [
-      "Use the atomic bit set/reset register (for example BSRR), or protect the read-modify-write",
-      "Make ODR volatile",
-      "Move the ISR to a higher priority",
-      "Insert __NOP() after each write"
+      "Use the atomic set/reset register, or protect the read-modify-write",
+      "Declare `GPIOA` `const` so the compiler cannot reorder the write",
+      "Move the ISR to a lower priority than the main code",
+      "Replace `^=` with `|=` in the interrupt handler"
     ],
     answer: 0,
     explanation: "`|=` is read, modify, write. If the ISR runs between the read and the write, its update is overwritten. Atomic set/reset registers avoid the read entirely."
@@ -223,10 +248,10 @@ window.QUIZ_QUESTIONS = [
     id: "m05", module: "mcu", level: "expert",
     q: "What extra failure does a windowed watchdog detect compared with a simple watchdog?",
     options: [
-      "Refreshes that come too early, for example from a runaway loop that kicks it continuously",
-      "Stack overflow",
-      "Brown-out conditions",
-      "Corrupted flash"
+      "Refreshes that come too early, such as from a runaway loop",
+      "Refreshes that come too late, which any watchdog already detects",
+      "A failure of the oscillator that clocks the watchdog",
+      "A loss of power on the watchdog's own supply"
     ],
     answer: 0,
     explanation: "A windowed watchdog resets the MCU if it is refreshed before the window opens, as well as when the refresh comes too late."
@@ -236,9 +261,9 @@ window.QUIZ_QUESTIONS = [
     q: "How can an MPU turn a silent stack overflow into an immediately detectable fault?",
     options: [
       "Place a small no-access guard region just past the end of each stack",
-      "Mark the stack region as execute-never",
-      "Make the stack read-only",
-      "Enable the MPU background region"
+      "Mark the whole stack region read-only after it is initialised",
+      "Make the stack region execute-never so it cannot hold code",
+      "Map the stack into the same region as the heap"
     ],
     answer: 0,
     explanation: "Any access into the guard region raises a MemManage fault at the moment of overflow, instead of corrupting adjacent data."
@@ -247,10 +272,10 @@ window.QUIZ_QUESTIONS = [
     id: "m07", module: "mcu", level: "expert",
     q: "After writing `MPU->CTRL` to enable the MPU, Arm recommends `__DSB(); __ISB();`. Why?",
     options: [
-      "To make sure the configuration write has completed and that later instructions are fetched and executed with the new settings",
-      "To flush the data cache",
-      "To re-enable interrupts",
-      "To reset the pipeline counters"
+      "To make sure the write completed and later code uses the new settings",
+      "To flush the data cache before the MPU regions take effect",
+      "To switch the core into privileged mode for the MPU update",
+      "To clear all pending exceptions before the MPU starts checking"
     ],
     answer: 0,
     explanation: "DSB waits for the write to complete. ISB flushes the pipeline so that instructions already fetched under the old configuration are re-fetched."
@@ -259,10 +284,10 @@ window.QUIZ_QUESTIONS = [
     id: "m08", module: "mcu", level: "expert",
     q: "Which mechanism provides a lock-free atomic read-modify-write on Armv7-M (for example Cortex-M3/M4) without disabling interrupts?",
     options: [
-      "LDREX/STREX exclusive access, retried if the store fails",
-      "The volatile keyword",
-      "The WFI instruction",
-      "Bit-banding is the only option"
+      "`LDREX`/`STREX` exclusive access, retried if the store fails",
+      "A plain `LDR`/`STR` pair, because aligned accesses are atomic",
+      "A `DMB` barrier placed between the load and the store",
+      "A `WFE` instruction that holds the bus during the update"
     ],
     answer: 0,
     explanation: "Exclusive load/store with the local monitor detects intervening accesses (including exception entry) and lets the code retry. Armv6-M cores (Cortex-M0/M0+) don't have these instructions."
@@ -271,10 +296,10 @@ window.QUIZ_QUESTIONS = [
     id: "m09", module: "mcu", level: "expert",
     q: "Why is a March test (for example March C−) preferred over a simple write/read pattern for power-up RAM test?",
     options: [
-      "It detects stuck-at, transition and many coupling faults by walking ordered read/write sequences up and down memory",
-      "It is faster than any other test",
-      "It doesn't need to write to memory",
-      "It also checks flash memory"
+      "It detects stuck-at, transition and coupling faults in ordered passes",
+      "It runs faster than a write/read pattern on the same memory",
+      "It detects only faults in the address decoder of the RAM",
+      "It repairs faulty cells by remapping them to spare rows"
     ],
     answer: 0,
     explanation: "March algorithms apply ordered sequences in ascending and descending address order, which exposes faults where one cell affects another. A single pattern can miss these."
@@ -283,10 +308,10 @@ window.QUIZ_QUESTIONS = [
     id: "m10", module: "mcu", level: "expert",
     q: "What is the purpose of memory scrubbing in an ECC-protected RAM?",
     options: [
-      "Periodically reading and correcting memory so that single-bit upsets don't build up into uncorrectable multi-bit errors",
-      "Erasing memory before power-down for security",
-      "Measuring RAM access time",
-      "Defragmenting the heap"
+      "Periodic read and correct, so single-bit upsets do not build up",
+      "Wearing out the RAM cells evenly across the whole array",
+      "Erasing sensitive data from RAM after a security event",
+      "Copying RAM contents to flash before a power loss"
     ],
     answer: 0,
     explanation: "Single-event upsets (for example from radiation at altitude) are corrected only when a word is read. Scrubbing reads every word regularly, so errors are corrected before a second upset hits the same word."
@@ -295,10 +320,10 @@ window.QUIZ_QUESTIONS = [
     id: "m11", module: "mcu", level: "expert",
     q: "Enabling instruction and data caches on a control processor has what effect on certification-relevant timing evidence?",
     options: [
-      "Average execution time improves, but worst-case timing becomes harder to bound and needs analysis, stress measurement with margin, or cache control",
-      "WCET always improves by the same factor as the average",
-      "Caches make execution time fully deterministic",
-      "Caches have no effect on timing evidence"
+      "Average time improves, but the worst case is harder to bound",
+      "Execution time becomes exactly repeatable, which eases evidence",
+      "Worst-case timing improves by the same ratio as the average",
+      "Nothing changes, because caches are transparent to timing"
     ],
     answer: 0,
     explanation: "Execution time then depends on cache state and history. Worst-case evidence must take this into account, for example through static analysis that models the cache, worst-case measurements or cache locking."
@@ -307,10 +332,10 @@ window.QUIZ_QUESTIONS = [
     id: "m12", module: "mcu", level: "expert",
     q: "Your hardware team switches to a new silicon revision of the same MCU late in the program. What should the software team do first?",
     options: [
-      "Review the new revision's errata sheet against every peripheral and workaround used, and assess the impact on verification evidence",
-      "Nothing; same part number means identical behaviour",
-      "Only re-run the unit tests on a PC",
-      "Rewrite the drivers from scratch"
+      "Review the errata and assess the evidence impact",
+      "Assume the revision is compatible and keep all existing evidence",
+      "Rerun only the tests that failed on the earlier revision",
+      "Update the part number in the documents and carry on"
     ],
     answer: 0,
     explanation: "Errata (and fixes) differ between silicon revisions. Workarounds may become unnecessary or new issues may appear. In a certified project, a hardware change also triggers a change impact analysis."
@@ -321,10 +346,10 @@ window.QUIZ_QUESTIONS = [
     id: "p01", module: "comm", level: "expert",
     q: "A CAN node's transmit error counter (TEC) reaches 256. What state is it in?",
     options: [
-      "Bus-off: it must not take part in bus traffic until it recovers",
-      "Error passive",
-      "Error active",
-      "Sleep mode"
+      "Bus-off: it takes no part in bus traffic until it recovers",
+      "Error passive: it still sends, but with recessive error flags",
+      "Error active: it signals errors with dominant error flags",
+      "Sleep mode: it waits for a wake-up pattern on the bus"
     ],
     answer: 0,
     explanation: "A node becomes error passive when TEC or REC exceeds 127, and bus-off when TEC exceeds 255. Recovery from bus-off follows the protocol's recovery sequence and the application's policy."
@@ -333,9 +358,9 @@ window.QUIZ_QUESTIONS = [
     id: "p02", module: "comm", level: "expert",
     q: "A faulty CAN node continuously transmits valid, correctly formed frames with ID 0x001. What happens?",
     options: [
-      "Error confinement doesn't stop it; it starves lower-priority traffic. A bus guardian or an architectural mitigation is needed.",
-      "The other nodes' error counters push it into bus-off within milliseconds",
-      "The CAN controller automatically limits each ID to 10 % bus load",
+      "It starves lower-priority traffic; a bus guardian is needed",
+      "Other nodes' error counters push it into bus-off within milliseconds",
+      "The controller automatically limits each ID to 10 % bus load",
       "Arbitration rotates priority, so other frames still get through"
     ],
     answer: 0,
@@ -346,9 +371,9 @@ window.QUIZ_QUESTIONS = [
     q: "Bus load on a CAN network rises from 40 % to 80 %. Which messages are most at risk of missing their deadlines?",
     options: [
       "Those with the highest identifiers (lowest priority)",
-      "Those with the lowest identifiers",
-      "All messages equally",
-      "Only extended-ID frames"
+      "Those with the lowest identifiers, which have the highest priority",
+      "All messages equally, because arbitration is fair",
+      "Only the extended-ID frames on the bus"
     ],
     answer: 0,
     explanation: "Worst-case response time grows with interference from every higher-priority message, so the lowest-priority frames are affected most. Timing analysis must use worst-case frame lengths, including bit stuffing."
@@ -357,10 +382,10 @@ window.QUIZ_QUESTIONS = [
     id: "p04", module: "comm", level: "expert",
     q: "Why must CAN worst-case timing analysis use a stuffed frame length instead of the nominal frame length?",
     options: [
-      "Bit stuffing inserts extra bits depending on the data, so the actual frame can be longer than nominal",
-      "Stuffing shortens frames, so nominal length is pessimistic",
-      "Stuffing only happens in CAN FD",
-      "The ACK slot doubles the frame length"
+      "Stuffing adds data-dependent bits, so frames can be longer",
+      "Stuffing shortens frames, so the nominal length is pessimistic",
+      "Stuffing only happens in CAN FD, not in classic CAN",
+      "The ACK slot doubles the length of every frame"
     ],
     answer: 0,
     explanation: "After five consecutive equal bits a complementary bit is inserted, so the frame length depends on the content. Analysis uses the worst-case stuffed length."
@@ -369,10 +394,10 @@ window.QUIZ_QUESTIONS = [
     id: "p05", module: "comm", level: "expert",
     q: "Which statement about an ARINC 429 word is correct?",
     options: [
-      "It is 32 bits, with an 8-bit label in bits 1–8 identifying the parameter, and odd parity in bit 32",
-      "It is 16 bits with a CRC-8",
-      "It is 32 bits with even parity and a 4-bit label",
-      "Its length is variable, up to 256 bits"
+      "32 bits: an 8-bit label, data bits and an odd parity bit in bit 32",
+      "16 bits, with a CRC-8 appended so single-bit errors can be corrected",
+      "32 bits, with even parity and a 4-bit label for up to 16 parameters",
+      "A variable length of up to 256 bits, with a length field first"
     ],
     answer: 0,
     explanation: "ARINC 429 uses 32-bit words: label (bits 1–8), SDI, data, SSM and an odd parity bit (bit 32)."
@@ -381,10 +406,10 @@ window.QUIZ_QUESTIONS = [
     id: "p06", module: "comm", level: "expert",
     q: "What is the topology of an ARINC 429 bus?",
     options: [
-      "Unidirectional: one transmitter and multiple receivers. Two-way exchange needs two buses.",
-      "Multi-master with arbitration, like CAN",
-      "Command/response with a bus controller",
-      "Switched full-duplex Ethernet"
+      "One transmitter and several receivers, so two-way exchange needs two buses",
+      "Multi-master with bitwise arbitration, so any node may transmit at any time",
+      "Command/response, where a bus controller polls every connected terminal",
+      "Switched full-duplex Ethernet, with a virtual link for each flow"
     ],
     answer: 0,
     explanation: "Each ARINC 429 bus has exactly one transmitter. Command/response with a bus controller describes MIL-STD-1553B, and switched Ethernet describes AFDX."
@@ -393,10 +418,10 @@ window.QUIZ_QUESTIONS = [
     id: "p07", module: "comm", level: "expert",
     q: "Which description matches MIL-STD-1553B?",
     options: [
-      "1 Mbit/s, command/response with a bus controller and up to 31 remote terminals, usually dual-redundant",
-      "100 kbit/s, unidirectional, label-based",
-      "Up to 1 Mbit/s, multi-master with bitwise arbitration",
-      "Switched Ethernet with virtual links"
+      "1 Mbit/s command/response from a bus controller, usually on dual-redundant buses",
+      "100 kbit/s, one-way, with each word identified by a label",
+      "Up to 1 Mbit/s, multi-master, with bitwise arbitration on the identifier",
+      "Switched Ethernet with virtual links, bandwidth gaps and two networks"
     ],
     answer: 0,
     explanation: "MIL-STD-1553B is a deterministic command/response bus. The bus controller initiates all transfers, and buses A and B provide redundancy."
@@ -405,10 +430,10 @@ window.QUIZ_QUESTIONS = [
     id: "p08", module: "comm", level: "expert",
     q: "How does AFDX (ARINC 664 Part 7) provide deterministic latency over Ethernet?",
     options: [
-      "Traffic is sent on virtual links whose bandwidth is limited by a Bandwidth Allocation Gap (BAG), through statically configured switches",
-      "CSMA/CD collision detection with priority back-off",
-      "Token passing between end systems",
-      "It doesn't; AFDX latency is unbounded"
+      "Frames use virtual links whose bandwidth gap is policed by configured switches",
+      "CSMA/CD collision detection with a priority-based back-off after each collision",
+      "A token passes between the end systems, and only the holder transmits",
+      "It does not: AFDX latency stays unbounded, as on any Ethernet"
     ],
     answer: 0,
     explanation: "Each virtual link has a minimum interval between frames (BAG) and a maximum frame size, so worst-case switch queuing and latency can be bounded. Redundant networks A and B add availability."
@@ -417,10 +442,10 @@ window.QUIZ_QUESTIONS = [
     id: "p09", module: "comm", level: "expert",
     q: "A sender's software hangs but its communication controller keeps retransmitting the last valid frame. Which receiver-side mechanism detects this?",
     options: [
-      "A sequence (alive) counter in the payload that must change with every frame",
-      "The CRC",
-      "Parity checking",
-      "A larger receive buffer"
+      "A sequence (alive) counter in the payload that must change with each frame",
+      "The CRC of the payload, since it covers every byte of the message",
+      "Parity checking on every received byte of the frame",
+      "A larger receive buffer on the receiving node, so old frames are dropped"
     ],
     answer: 0,
     explanation: "The repeated frame is valid, so CRC and parity pass. Only a changing counter, or a freshness check on it, reveals stale data."
@@ -429,10 +454,10 @@ window.QUIZ_QUESTIONS = [
     id: "p10", module: "comm", level: "expert",
     q: "What is the safest way to decode a received byte buffer into message fields?",
     options: [
-      "Check the length, then assemble each field explicitly with shifts in the defined byte order, then range-check the values",
-      "Cast the buffer pointer to a packed struct pointer",
-      "memcpy the buffer into a struct and use it directly",
-      "Use a union of the byte array and a struct"
+      "Check the length, assemble fields with shifts, range-check",
+      "Cast the buffer pointer to a packed struct pointer and use it",
+      "Copy the buffer into a struct with `memcpy` and use it directly",
+      "Overlay the byte array with a struct in a union"
     ],
     answer: 0,
     explanation: "Struct overlays depend on padding, endianness and alignment (unaligned access can fault), and casts break strict aliasing. Explicit decoding is portable and reviewable."
@@ -441,10 +466,10 @@ window.QUIZ_QUESTIONS = [
     id: "p11", module: "comm", level: "expert",
     q: "After a processor reset during an I2C read, the bus stays busy because a slave holds SDA low. Standard recovery?",
     options: [
-      "Clock SCL (up to about 9 pulses) until the slave releases SDA, then generate a STOP condition",
-      "Drive SDA high with push-pull output",
-      "Increase the pull-up resistor value",
-      "Wait for the slave's watchdog"
+      "Clock SCL up to nine times until the slave releases SDA, then send a STOP",
+      "Drive SDA high with a push-pull output to overpower the slave",
+      "Increase the value of the pull-up resistors so the slave lets go",
+      "Wait for the slave's own watchdog to reset the stuck device"
     ],
     answer: 0,
     explanation: "The slave is in the middle of sending a byte and waits for clocks. Extra SCL pulses let it finish. A STOP then resets the bus state. Never drive an open-drain bus push-pull."
@@ -453,10 +478,10 @@ window.QUIZ_QUESTIONS = [
     id: "p12", module: "comm", level: "expert",
     q: "A UART at 921 600 baud with one interrupt per byte loses data under CPU load. Which design is most robust?",
     options: [
-      "DMA into a circular buffer, with an idle-line or receive-timeout interrupt to detect the end of a frame",
-      "Raise the UART interrupt to the highest priority and leave everything else unchanged",
-      "Poll the UART in the main loop",
-      "Reduce the stop bits to 0.5"
+      "DMA into a circular buffer, with an idle-line interrupt",
+      "Raise the UART interrupt to the highest priority and change nothing else",
+      "Poll the UART in the main loop between control tasks",
+      "Reduce the stop bits to 0.5 to gain time"
     ],
     answer: 0,
     explanation: "DMA removes the per-byte CPU deadline. The idle-line or timeout interrupt delimits variable-length frames. Size the buffer for the worst-case burst, and monitor overruns."
@@ -474,10 +499,10 @@ window.QUIZ_QUESTIONS = [
     id: "r02", module: "rtos", level: "expert",
     q: "On a single core, what does the priority ceiling protocol give you that basic priority inheritance doesn't?",
     options: [
-      "Freedom from deadlock, and blocking limited to at most one critical section",
-      "Zero blocking time",
-      "Automatic WCET reduction",
-      "Support for dynamic priorities"
+      "Freedom from deadlock, and blocking by at most one critical section",
+      "No blocking at all, because tasks never wait for lower priorities",
+      "A shorter WCET for every task that uses a shared resource",
+      "Task priorities that change dynamically to follow the deadlines"
     ],
     answer: 0,
     explanation: "Raising the holder to the resource ceiling prevents a task from being blocked by more than one lower-priority critical section, and rules out circular waits. Priority inheritance allows chained blocking and doesn't prevent deadlock."
@@ -486,10 +511,10 @@ window.QUIZ_QUESTIONS = [
     id: "r03", module: "rtos", level: "expert",
     q: "In a FreeRTOS Cortex-M port, an ISR calls `xQueueSendFromISR()` but its NVIC priority is numerically lower (more urgent) than `configMAX_SYSCALL_INTERRUPT_PRIORITY`. What is the risk?",
     options: [
-      "The ISR can pre-empt kernel critical sections and corrupt RTOS data structures intermittently",
-      "None; FromISR functions can be called from any priority",
-      "The call is ignored silently",
-      "The scheduler is disabled until reset"
+      "The ISR can pre-empt kernel critical sections and corrupt RTOS data",
+      "Nothing, because FromISR calls are safe at any interrupt priority",
+      "The call is ignored silently and the message is lost",
+      "The scheduler is disabled until the next reset"
     ],
     answer: 0,
     explanation: "The kernel masks interrupts only up to configMAX_SYSCALL_INTERRUPT_PRIORITY. Interrupts above it may run during kernel critical sections, so they must not call RTOS APIs. configASSERT can catch this in many ports."
@@ -499,9 +524,9 @@ window.QUIZ_QUESTIONS = [
     q: "A binary semaphore protects a shared resource used by high-, medium- and low-priority tasks. The high-priority task sometimes misses deadlines. What is the most likely fix?",
     options: [
       "Replace it with a mutex, which provides priority inheritance",
-      "Increase the tick rate",
-      "Give all three tasks the same priority",
-      "Use a larger queue"
+      "Increase the tick rate so the low-priority task finishes sooner",
+      "Give all three tasks the same priority so none can pre-empt",
+      "Use a larger queue to carry the data instead"
     ],
     answer: 0,
     explanation: "Binary semaphores have no owner and no priority inheritance, so the medium task can pre-empt the low-priority holder indefinitely (unbounded priority inversion)."
@@ -510,10 +535,10 @@ window.QUIZ_QUESTIONS = [
     id: "r05", module: "rtos", level: "expert",
     q: "In ARINC 653, what does time partitioning guarantee?",
     options: [
-      "Each partition runs only in its fixed windows within the major frame, so an overrunning partition can't take time from others",
-      "All partitions share the CPU through priority-based pre-emption",
-      "Partitions are scheduled by the health monitor on demand",
-      "Each partition gets a dedicated core"
+      "Each partition runs only in its own windows, so an overrun cannot steal time",
+      "Partitions share the CPU by priority, so critical ones always win",
+      "The health monitor hands out the CPU to partitions on demand",
+      "Every partition is bound to its own dedicated core"
     ],
     answer: 0,
     explanation: "A static schedule of partition windows repeats every major frame. Within its window, a partition schedules its own processes."
@@ -522,10 +547,10 @@ window.QUIZ_QUESTIONS = [
     id: "r06", module: "rtos", level: "expert",
     q: "What is the role of the ARINC 653 health monitor?",
     options: [
-      "Detect errors at process, partition and module level, and apply the configured recovery action",
-      "Measure CPU temperature",
-      "Schedule partitions",
-      "Allocate memory to partitions at run time"
+      "It detects errors at several levels and applies a configured recovery",
+      "It measures the processor temperature and throttles hot partitions",
+      "It schedules the partitions inside each major frame by priority",
+      "It allocates extra memory to partitions at run time on request"
     ],
     answer: 0,
     explanation: "The health monitor handles faults such as deadline misses, memory violations and hardware errors, using configured responses such as restarting a process or partition, or stopping the module."
@@ -534,10 +559,10 @@ window.QUIZ_QUESTIONS = [
     id: "r07", module: "rtos", level: "expert",
     q: "Why do many high-criticality control systems use a cyclic executive instead of a pre-emptive RTOS?",
     options: [
-      "The fixed, table-driven schedule is deterministic and simpler to analyse and verify",
-      "It uses less flash in every case",
-      "It handles sporadic events better",
-      "Changing it is easier than changing a pre-emptive design"
+      "Its fixed, table-driven schedule is deterministic and easier to analyse and verify",
+      "It always needs less flash than a pre-emptive RTOS of the same function",
+      "It handles sporadic external events better than a priority-based scheduler",
+      "It is easier to change late in a project than a pre-emptive design"
     ],
     answer: 0,
     explanation: "A cyclic executive gives a fixed, repeatable timeline. The cost is flexibility: long activities must be split by hand to fit minor frames, and changes can ripple through the table."
@@ -546,10 +571,10 @@ window.QUIZ_QUESTIONS = [
     id: "r08", module: "rtos", level: "expert",
     q: "Which FreeRTOS approach guarantees that no task, queue or semaphore is ever allocated from the heap?",
     options: [
-      "Use the ...CreateStatic() APIs with configSUPPORT_DYNAMIC_ALLOCATION set to 0",
-      "Call vTaskDelete() for unused tasks",
-      "Set configTOTAL_HEAP_SIZE to a large value",
-      "Use only vTaskDelayUntil()"
+      "Use the `...CreateStatic()` APIs with `configSUPPORT_DYNAMIC_ALLOCATION` set to 0",
+      "Call `vTaskDelete()` on every task that is no longer needed, to free its heap block",
+      "Set `configTOTAL_HEAP_SIZE` large enough that no allocation can ever fail",
+      "Use only `vTaskDelayUntil()` for timing, because it avoids heap use"
     ],
     answer: 0,
     explanation: "With dynamic allocation disabled, the dynamic create APIs aren't compiled in, so heap use is impossible by construction."
@@ -558,10 +583,10 @@ window.QUIZ_QUESTIONS = [
     id: "r09", module: "rtos", level: "expert",
     q: "WCET for a task was taken as the maximum of 10 000 measured runs. Why might a certification reviewer challenge this?",
     options: [
-      "Testing may never have exercised the worst-case path or cache state. Evidence needs worst-case stimulus, path coverage and a justified margin, or static analysis.",
-      "10 000 runs is too many",
-      "Measured values are always higher than real WCET",
-      "WCET is not required for any software level"
+      "The tests may have missed the worst-case path or cache state",
+      "10 000 runs is more than any standard allows for timing tests",
+      "A measured maximum is always above the real WCET, so it is too pessimistic",
+      "No standard requires WCET evidence for any software level"
     ],
     answer: 0,
     explanation: "A maximum observed time is a lower bound on the true WCET. Reviewers expect an argument that the worst case was actually provoked, or a static analysis."
@@ -570,22 +595,22 @@ window.QUIZ_QUESTIONS = [
     id: "r10", module: "rtos", level: "expert",
     q: "On a multicore processor, an application's WCET doubles when the other core runs a memory-intensive task. What is this called, and what guidance addresses it for airborne systems?",
     options: [
-      "Interference through shared resources; addressed by CAST-32A and its successors, EASA AMC 20-193 and FAA AC 20-193",
-      "Priority inversion; addressed by ARINC 429",
-      "Cache coherency failure; addressed by MISRA C",
-      "Clock drift; addressed by DO-254"
+      "Interference through shared resources, addressed by CAST-32A and AMC/AC 20-193",
+      "Priority inversion between cores, addressed by the ARINC 429 rules",
+      "Cache coherency failure, addressed by the MISRA C rules",
+      "Clock drift between cores, addressed by DO-254"
     ],
     answer: 0,
-    explanation: "Shared caches, interconnects and memory controllers create interference channels between cores. Multicore guidance requires identifying, mitigating and verifying them."
+    explanation: "Shared caches, interconnects and memory controllers create interference channels between cores. Multicore guidance requires identifying, mitigating and verifying them. Verify which document (CAST-32A, EASA AMC 20-193, FAA AC 20-193) and which revision your authority applies."
   },
   {
     id: "r11", module: "rtos", level: "expert",
     q: "Why must a FreeRTOS mutex not be taken or given from an ISR?",
     options: [
-      "Mutexes rely on task ownership and priority inheritance, which have no meaning in interrupt context",
-      "Mutexes are slower than semaphores",
-      "ISRs can't access global variables",
-      "Mutexes can only be used by the idle task"
+      "Mutexes rely on task ownership and inheritance, which mean nothing in an ISR",
+      "Mutexes are slower than semaphores, which an ISR cannot afford",
+      "ISRs may not touch any global variable that a lock protects",
+      "Mutexes can only be used by the idle task, which an ISR cannot reach"
     ],
     answer: 0,
     explanation: "An ISR is not a task: it can't own a mutex, block, or inherit a priority. Use a binary semaphore, a queue or a task notification from ISRs."
@@ -594,10 +619,10 @@ window.QUIZ_QUESTIONS = [
     id: "r12", module: "rtos", level: "expert",
     q: "What is the best watchdog strategy in a multi-task system?",
     options: [
-      "A supervisor task kicks the watchdog only after every critical task has checked in within its deadline",
-      "Kick the watchdog from the tick interrupt",
-      "Each task kicks the watchdog whenever it runs",
-      "Kick the watchdog from the idle task only"
+      "A supervisor kicks it only after every critical task checked in on time",
+      "The tick interrupt kicks the watchdog, which proves the system is alive",
+      "Each task kicks the watchdog whenever it runs, so any live task keeps it fed",
+      "The idle task kicks the watchdog, because it runs when nothing else does"
     ],
     answer: 0,
     explanation: "A tick-interrupt kick survives a hung task, and per-task kicks hide a single failed task. Supervised check-ins detect any critical task that stops progressing."
@@ -608,10 +633,10 @@ window.QUIZ_QUESTIONS = [
     id: "d01", module: "do178c", level: "expert",
     q: "Who or what determines the software level (A–E) of an airborne software component?",
     options: [
-      "The system safety assessment, based on the most severe failure condition the software can cause or contribute to",
-      "The software team, based on code complexity",
-      "The certification authority, based on the size of the aircraft",
-      "The amount of testing budget available"
+      "The system safety assessment, from the worst failure condition",
+      "The software team, from the complexity of the code",
+      "The certification authority, from the size of the aircraft",
+      "The programme manager, from the testing budget available"
     ],
     answer: 0,
     explanation: "The level comes from the system process (ARP4754A/B with ARP4761). The failure condition category (catastrophic … no safety effect) maps to Levels A–E."
@@ -620,10 +645,10 @@ window.QUIZ_QUESTIONS = [
     id: "d02", module: "do178c", level: "expert",
     q: "What is the purpose of data coupling and control coupling analysis in DO-178C (Levels A–C)?",
     options: [
-      "To confirm that requirements-based testing exercised the interfaces between software components as used in the integrated software",
-      "To measure the coupling metrics of the design for maintainability",
-      "To prove that no global variables are used",
-      "To replace integration testing"
+      "To confirm tests exercised the interfaces between components",
+      "To measure design coupling metrics for maintainability reasons",
+      "To prove that no global variables are used in the software",
+      "To replace integration testing with a paper review"
     ],
     answer: 0,
     explanation: "Structural coverage of each component isn't enough. The analysis confirms that the data and control flows between components were exercised by requirements-based tests."
@@ -712,7 +737,7 @@ window.QUIZ_QUESTIONS = [
       "None, because verification tools never need qualification"
     ],
     answer: 0,
-    explanation: "Criterion 3 covers verification tools that could only fail to detect an error. Once the output is used to eliminate or reduce other processes, Criterion 2 applies (TQL-4 at Levels A and B, TQL-5 at C and D)."
+    explanation: "Criterion 3 covers verification tools that could only fail to detect an error. Once the output is used to eliminate or reduce other processes, Criterion 2 applies. As I recall DO-330 Table 2-1, that gives TQL-4 at Level A and TQL-5 at Levels B to D, but verify the table in the current DO-330 before quoting it."
   },
   {
     id: "d11", module: "do178c", level: "expert",
@@ -743,7 +768,12 @@ window.QUIZ_QUESTIONS = [
   {
     id: "v01", module: "mcdc", level: "expert",
     q: "What is the minimum number of tests that achieves unique-cause MC/DC for `if (A || B || C)`?",
-    options: ["4", "3", "6", "8"],
+    options: [
+      "4: FFF (F), then TFF, FTF and FFT (T)",
+      "3: one test for each condition",
+      "6: two tests for each condition",
+      "8: every combination of the three conditions"
+    ],
     answer: 0,
     explanation: "N + 1 = 4: FFF (F), then TFF, FTF and FFT (all T). For OR, the other conditions are held FALSE so that one TRUE condition decides the outcome."
   },
@@ -779,10 +809,10 @@ window.QUIZ_QUESTIONS = [
     id: "v06", module: "mcdc", level: "expert",
     q: "In C, `if (A && B)` is tested with A = FALSE. How is B normally treated in the MC/DC analysis of that test?",
     options: [
-      "As 'don't care': B isn't evaluated because of short-circuit evaluation, so TT vs F-x shows A's independence",
-      "B must be TRUE, otherwise the test is invalid",
-      "B must be FALSE, to make the test unique",
-      "The test must be discarded, because short-circuit code can't achieve MC/DC"
+      "As 'don't care': B is not evaluated, so TT against F-x shows A's independence",
+      "B must be TRUE in that test, otherwise the test is not valid",
+      "B must be FALSE in that test, so that the pair is unique",
+      "The test must be discarded, since short-circuit code cannot reach MC/DC"
     ],
     answer: 0,
     explanation: "With && the right operand isn't evaluated when the left one is FALSE, so B can't influence the outcome in that test. Coverage tools and analyses commonly mark it as 'don't care'. This is also why MISRA C forbids side effects in the right operand."
@@ -791,10 +821,10 @@ window.QUIZ_QUESTIONS = [
     id: "v07", module: "mcdc", level: "expert",
     q: "In `(A && B) || (A && C)`, the two occurrences of A always change together. How can MC/DC be shown for each occurrence?",
     options: [
-      "Use masking MC/DC: other conditions may change if their effect is masked, for example C = FALSE masks the second A",
-      "It can't; coupled conditions are exempt from MC/DC",
-      "Add a test that changes only the first A",
-      "Use multiple condition coverage instead, as DO-178C requires for coupled conditions"
+      "Use masking MC/DC: other conditions may change if their effect is masked, e.g. C = FALSE masks the second A",
+      "It cannot be shown; coupled conditions are exempt from MC/DC",
+      "Add a test that changes only the first A, leaving the second A unchanged",
+      "Use multiple condition coverage, which DO-178C requires for coupled conditions"
     ],
     answer: 0,
     explanation: "Unique-cause pairs are impossible for coupled conditions. With masking MC/DC, (A=T, B=T, C=F) vs (A=F, B=T, C=F) shows the first A: the second A also changes, but A && C stays FALSE. State the MC/DC variant in your plans (see CAST-6)."
@@ -803,10 +833,10 @@ window.QUIZ_QUESTIONS = [
     id: "v08", module: "mcdc", level: "expert",
     q: "Is `alarm = valid && over_limit;` (an assignment, not an if statement) a decision for MC/DC purposes?",
     options: [
-      "Yes, it is normally treated as a decision: a Boolean expression with a Boolean operator, whether or not it controls a branch",
-      "No, only conditions of if, while and for statements are decisions",
-      "Only at Level B",
-      "Only if the compiler turns it into a branch instruction"
+      "Yes: it is normally a decision, since it is a Boolean expression with Boolean operators",
+      "No: only conditions of if, while and for statements are decisions",
+      "Only at Level B, where decision coverage is the required criterion",
+      "Only if the compiler turns the expression into a branch instruction"
     ],
     answer: 0,
     explanation: "DO-178C defines a decision as a Boolean expression made of conditions and Boolean operators, without restricting it to branch points. CAST-10 discusses this. Agree the interpretation and the tool settings in your plans."
@@ -815,10 +845,10 @@ window.QUIZ_QUESTIONS = [
     id: "v09", module: "mcdc", level: "expert",
     q: "What does MC/DC require for `if (ready)`, which has a single condition?",
     options: [
-      "Two tests, ready = TRUE and ready = FALSE: the same as decision coverage",
-      "Three tests (N + 1 with N = 2)",
-      "One test, because there's nothing to be independent of",
-      "Four tests, to cover all bit patterns of the variable"
+      "Two tests, ready TRUE and FALSE, which is the same as decision coverage",
+      "Three tests, following N + 1 with N = 2 for the variable and its outcome",
+      "One test, because there is no other condition to be independent of",
+      "Four tests, to cover all bit patterns that the variable can hold"
     ],
     answer: 0,
     explanation: "With one condition, showing its independent effect means seeing both outcomes, so MC/DC equals decision coverage: N + 1 = 2."
@@ -834,10 +864,10 @@ window.QUIZ_QUESTIONS = [
     id: "v11", module: "mcdc", level: "expert",
     q: "Level A coverage analysis shows no independence pair for condition B, and no requirement leads to a test with B = FALSE while the others allow B to decide. What is the correct first step?",
     options: [
-      "Analyse why: a missing or incomplete requirement, an inadequate test, or a redundant condition in the code",
-      "Add a test that sets B = FALSE purely to complete the pair",
-      "Mark B as deactivated code",
-      "Lower the component to Level B so MC/DC isn't required"
+      "Analyse why: a missing requirement, an inadequate test, or a redundant condition in the code",
+      "Add a test that sets B = FALSE only to complete the pair",
+      "Mark B as deactivated code, since no requirement calls for it",
+      "Lower the component to Level B, so that MC/DC is no longer required"
     ],
     answer: 0,
     explanation: "Coverage analysis checks the completeness of requirements-based testing. The gap is resolved by fixing the requirement, the test or the code. A structure-only test would hide the real cause, and the software level is set by the safety assessment, not by coverage results."
@@ -853,10 +883,10 @@ window.QUIZ_QUESTIONS = [
     id: "v13", module: "mcdc", level: "expert",
     q: "For `if ((A && B) || C)`, what must hold in the two tests that show C's independent effect?",
     options: [
-      "A && B must be FALSE in both tests (otherwise the OR is already TRUE and masks C)",
-      "A and B must both be TRUE",
-      "A must be TRUE and B FALSE, in that order only",
-      "Nothing; C always affects the outcome"
+      "A && B must be FALSE in both tests, otherwise the OR is already TRUE and masks C",
+      "A and B must both be TRUE in both tests, so that the AND is satisfied",
+      "A must be TRUE and B FALSE, and only in that order",
+      "Nothing special: C always affects the outcome of the decision"
     ],
     answer: 0,
     explanation: "If A && B is TRUE, the outcome is TRUE whatever C is. Any of FF, FT or TF for A, B works: FFF/FFT, FTF/FTT or TFF/TFT."
@@ -865,10 +895,10 @@ window.QUIZ_QUESTIONS = [
     id: "v14", module: "mcdc", level: "expert",
     q: "Code: `if (x > 10) { y = 1; }` with no else branch. A single test with x = 20 is run. What coverage does it give?",
     options: [
-      "100 % statement coverage, but not decision coverage (the FALSE outcome wasn't exercised)",
-      "100 % statement and 100 % decision coverage",
-      "50 % statement coverage",
-      "Full MC/DC, because there's only one condition"
+      "100 % statement coverage, but not decision coverage, since the FALSE outcome never ran",
+      "100 % statement coverage and 100 % decision coverage, since every statement ran",
+      "50 % statement coverage, since the else path has no statements to run",
+      "Full MC/DC, because the decision has only one condition"
     ],
     answer: 0,
     explanation: "Every statement executes, but the decision only took the TRUE outcome. Decision coverage (Levels A and B) also needs a test with x <= 10, even though it executes no extra statement."
@@ -884,10 +914,10 @@ window.QUIZ_QUESTIONS = [
     id: "v16", module: "mcdc", level: "expert",
     q: "For `if ((x > 10) && (x > 5))`, no test can show an independence pair for `x > 5`. What does this most likely indicate?",
     options: [
-      "A redundant condition: x > 10 already implies x > 5, so this is a design or code issue to fix",
-      "The coverage tool is faulty",
-      "More tests with larger x values are needed",
-      "The condition must be masked using masking MC/DC"
+      "A redundant condition: x > 10 implies x > 5, so the code or design needs fixing",
+      "The coverage tool is faulty and its result should be disregarded",
+      "More tests with larger values of x are needed to show the pair",
+      "The condition must be handled with masking MC/DC instead"
     ],
     answer: 0,
     explanation: "Showing x > 5 independently needs x > 10 TRUE and x > 5 FALSE at the same time, which is impossible. Unachievable MC/DC often points to redundant or wrong logic. Review the requirement and the code rather than the tests."
