@@ -85,6 +85,11 @@ try:
 
     # 4. busy older copy is left alone
     import launcher  # noqa: E402
+    snap = launcher.browser_env({"GSETTINGS_SCHEMA_DIR": "/home/u/snap/code/1/schemas", "GSETTINGS_SCHEMA_DIR_VSCODE_SNAP_ORIG": "",
+                                 "XDG_DATA_DIRS": "/snap/x", "XDG_DATA_DIRS_VSCODE_SNAP_ORIG": "/usr/share", "HOME": "/home/u"})
+    assert snap == {"XDG_DATA_DIRS": "/usr/share", "HOME": "/home/u"}, snap
+    assert launcher.browser_env({"A": "1"}) == {"A": "1"}
+    print("OK - snap VS Code variables restored for the browser")
     opened, stopped = [], []
     launcher.running_instance = lambda: {"url": "http://127.0.0.1:1/", "version": "old", "busy": True,
                                          "token": "t", "pid": 1}

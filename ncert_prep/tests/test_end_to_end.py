@@ -120,6 +120,10 @@ print("OK - API key engine\n")
 client.post("/api/settings", json={"engine": "claude_login", "split_pages": 8}, headers=H, base_url=BASE)
 status = client.get("/api/status", base_url=BASE).get_json()
 assert status["claude"]["installed"] and status["claude"]["logged_in"], status
+import about
+assert status["about"] == about.info() and about.VERSION in status["about"]["line"] \
+    and "Gopu Sugumar" in status["about"]["line"] and "GPL-3.0-or-later" in status["about"]["line"], status["about"]
+assert "id=\"about\"" in client.get("/", base_url=BASE).get_data(as_text=True), "footer has the about line"
 st = run_job()
 print("\n".join(st["log"]))
 assert st["status"] == "done", st

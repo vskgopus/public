@@ -89,6 +89,21 @@ def stop_instance(inst: dict, wait: float = 15) -> bool:
     return False
 
 
+def browser_env(env: dict | None = None) -> dict:
+    """The environment for the browser. A terminal started from a snap-packaged VS Code carries the
+    snap's GTK/GLib settings (GSETTINGS_SCHEMA_DIR and others) and Chrome then aborts with
+    "Settings schema ... does not contain a key". The snap saves each original value in
+    <NAME>_VSCODE_SNAP_ORIG (empty = it was not set); put those back."""
+    env = dict(os.environ if env is None else env)
+    for key in [k for k in env if k.endswith("_VSCODE_SNAP_ORIG")]:
+        name, orig = key[:-len("_VSCODE_SNAP_ORIG")], env.pop(key)
+        if orig:
+            env[name] = orig
+        else:
+            env.pop(name, None)
+    return env
+
+
 def open_window(url: str) -> None:
     """Prefer a chromeless app window; fall back to the default browser."""
     if os.environ.get("NCERT_NO_BROWSER"):
@@ -103,11 +118,18 @@ def open_window(url: str) -> None:
         path = exe if os.path.isfile(exe) else shutil.which(exe)
         if path:
             try:
-                subprocess.Popen([path, f"--app={url}", "--window-size=1000,900"],
+                subprocess.Popen([path, f"--app={url}", "--window-size=1000,900"], env=browser_env(),
                                  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 return
             except OSError:
                 continue
+    opener = shutil.which("xdg-open") if os.name == "posix" else None
+    if opener:   # same clean environment for the default browser
+        try:
+            subprocess.Popen([opener, url], env=browser_env(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            return
+        except OSError:
+            pass
     webbrowser.open(url)
 
 

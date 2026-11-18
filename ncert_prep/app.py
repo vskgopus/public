@@ -23,6 +23,7 @@ import claude_cli
 import figures
 import gemini
 import generator
+import about
 import ncert
 import settings
 from pdf_render import render_pdf
@@ -77,7 +78,7 @@ def api_status():
     has_env_key = bool(os.environ.get("ANTHROPIC_API_KEY"))
     s_desc = describe_ai(s)
     busy = any(j["status"] in ("queued", "running") for j in JOBS.values())
-    return jsonify(version=VERSION, busy=busy, ai=s_desc[0], api_model=generator.MODEL,
+    return jsonify(version=VERSION, about=about.info(), busy=busy, ai=s_desc[0], api_model=generator.MODEL,
                    settings=settings.public(s) | {"env_key": has_env_key, "env_gemini_key": bool(_env_gemini_key())},
                    claude=claude_cli.status(), output_dir=str(OUT_DIR))
 

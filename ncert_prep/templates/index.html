@@ -259,7 +259,8 @@
 
     <div class="actionbar"><div class="inner"><button id="go" type="submit">Prepare exam material</button></div></div>
   </form>
-  <p class="foot">Chapters come from ncert.nic.in · Figures © NCERT · For personal study</p>
+  <p class="foot">Chapters come from ncert.nic.in · Figures © NCERT · For personal study<br>
+    <span id="about">NCERT Exam Prep</span></p>
 </div>
 
 <div id="shade" hidden>
@@ -356,6 +357,8 @@ fillClasses();
 let ST = null, loginPoll = null;
 async function refresh() {
   ST = await fetch("/api/status").then(r => r.json());
+  if (ST.about) { const a = $("about"); a.textContent = ST.about.line + " · "; const l = document.createElement("a");
+    l.href = ST.about.license_url; l.target = "_blank"; l.rel = "noopener"; l.textContent = "Licence"; a.append(l); }
   const s = ST.settings, c = ST.claude;
   $("eng-login").checked = s.engine === "claude_login"; $("eng-key").checked = s.engine === "api_key";
   $("eng-gem").checked = s.engine === "gemini"; $("opt-gem").classList.toggle("sel", s.engine === "gemini");
