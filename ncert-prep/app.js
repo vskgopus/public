@@ -326,5 +326,7 @@ $("f").onsubmit = async e => {
 };
 
 fillClasses();
+{ const A = DATA.about, el = $("about"), l = document.createElement("a");   // name, version, author, licence
+  el.textContent = A.line + " · "; l.href = A.license_url; l.target = "_blank"; l.rel = "noopener"; l.textContent = "Licence"; el.append(l); }
 aiCard();
 if (!(S.engine === "claude" ? K.claude : K.gemini)) setTimeout(openPanel, 400);
