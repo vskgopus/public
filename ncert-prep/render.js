@@ -96,7 +96,11 @@ function chapterHtml(ch, sections) {
   for (const key of sections) {
     const items = ch[key] || [];
     if (key === "summary") {
-      html += bar("Summary Notes") + items.map(b => `<div class="topic"><h4>${esc(b.topic)}</h4><ul>${(b.points || []).map(p => `<li>${esc(strip(p))}</li>`).join("")}</ul></div>`).join("");
+      html += bar("Summary Notes (Detailed)") + items.map(b => `<div class="topic"><h4>${esc(b.topic)}</h4><ul>${(b.points || []).map(p => `<li>${esc(strip(p))}</li>`).join("")}</ul></div>`).join("");
+    } else if (key === "summary_basic") {
+      html += bar("Summary Notes (Basic)") + items.map(b => `<div class="topic"><h4>${esc(b.topic)}</h4><ul>${(b.points || []).map(p => `<li>${esc(strip(p))}</li>`).join("")}</ul></div>`).join("");
+    } else if (key === "definitions") {
+      html += bar("Definitions of Terms") + (items.length ? grid(["Term", "Meaning"], items.map(d => [d.term, d.meaning])) : `<p>This chapter defines no terms to list.</p>`);
     } else if (key === "diagrams") {
       html += bar("Diagrams to Understand the Chapter") + items.map(diagram).join("");
     } else if (key === "key_points") {
