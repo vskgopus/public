@@ -99,8 +99,9 @@ function chapterHtml(ch, sections) {
       html += bar("Summary Notes (Detailed)") + items.map(b => `<div class="topic"><h4>${esc(b.topic)}</h4><ul>${(b.points || []).map(p => `<li>${esc(strip(p))}</li>`).join("")}</ul></div>`).join("");
     } else if (key === "summary_basic") {
       html += bar("Summary Notes (Basic)") + items.map(b => `<div class="topic"><h4>${esc(b.topic)}</h4><ul>${(b.points || []).map(p => `<li>${esc(strip(p))}</li>`).join("")}</ul></div>`).join("");
-    } else if (key === "definitions") {
-      html += bar("Definitions of Terms") + (items.length ? grid(["Term", "Meaning"], items.map(d => [d.term, d.meaning])) : `<p>This chapter defines no terms to list.</p>`);
+      const seen = new Set(), terms = [];   // older saved results have no terms
+      for (const b of items) for (const d of b.terms || []) { const k = String(d.term).trim().toLowerCase(); if (!seen.has(k)) { seen.add(k); terms.push([d.term, d.meaning]); } }
+      if (terms.length) html += `<div class="keep"><h4>Definitions of Terms</h4>${grid(["Term", "Meaning"], terms)}</div>`;
     } else if (key === "diagrams") {
       html += bar("Diagrams to Understand the Chapter") + items.map(diagram).join("");
     } else if (key === "key_points") {
