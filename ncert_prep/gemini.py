@@ -280,8 +280,9 @@ def _read_stream(r, *, progress, log, cancel, idle_timeout: int, started: float 
             if cancel is not None and cancel.is_set():
                 try:
                     r.close()
-                finally:
-                    return
+                except Exception:
+                    pass
+                return
             now = time.time()
             if state["first"] is None:
                 progress(f"Gemini is reading the chapter and thinking … {_mins(now - started)} since sending "

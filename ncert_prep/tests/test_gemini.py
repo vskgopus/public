@@ -373,7 +373,10 @@ st, _ = run_job(sections=["figures", "key_points", "one_mark", "practice_test"],
 assert st["status"] == "done", st
 said = "\n".join(st["log"])
 assert "AI: Google Gemini, model gemini-2.5-flash" in said, said
-assert "The AI writes: notes on the book's figures, key points to remember, one-mark questions." in said, said
+writes = next(l for l in st["log"] if "The AI writes:" in l)
+# the practice test is built from the AI's questions, so it adds the other question kinds to what the AI writes
+assert "notes on the book's figures, key points to remember, one-mark questions" in writes \
+    and "5-mark questions" in writes and "case-based questions" in writes, writes
 assert "The app does without AI:" in said and "cutting the figures out of the book pages" in said \
     and "building the practice test" in said, said
 page = client.get("/", base_url=BASE).data
