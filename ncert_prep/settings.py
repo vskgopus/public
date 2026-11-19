@@ -18,7 +18,7 @@ DEFAULTS = {
     "gemini_output_limit": 0,   # the model's output token limit, as reported by Google
     "split_pages": 0,           # 0 = send whole chapters; N = split chapters into parts of N pages
     # Sections ticked on the main page (keys of generator.ALL_OPTIONS); remembered between runs.
-    "sections": ["summary", "key_points", "formulas", "one_mark", "short_answer", "long_answer"],
+    "sections": ["summary_basic", "summary", "key_points", "formulas", "one_mark", "short_answer", "long_answer"],
     "practice_counts": {"m1": 10, "m2": 4, "m3": 4, "m5": 3, "case": 2},   # questions per kind in the practice test
 }
 

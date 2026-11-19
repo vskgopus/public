@@ -19,7 +19,7 @@ try {
   const prompt = () => page.inputValue("#prompt");
   const ticked = () => page.$$eval("input[name=sec]:checked", e => e.map(x => x.value));
 
-  assert(JSON.stringify(await ticked()) === JSON.stringify(["summary", "key_points", "formulas", "one_mark", "short_answer", "long_answer"]), "defaults match the app: " + await ticked());
+  assert(JSON.stringify(await ticked()) === JSON.stringify(["summary_basic", "summary", "key_points", "formulas", "one_mark", "short_answer", "long_answer"]), "defaults match the app: " + await ticked());
   let p = await prompt();
   for (const w of ["SUMMARY NOTES", "KEY POINTS TO REMEMBER", "FORMULA SUMMARY", "ONE MARK QUESTIONS", "2 AND 3 MARK", "5 MARK QUESTIONS"]) assert(p.includes(w), "default prompt has " + w);
   for (const w of ["QUICK REVISION", "DIFFERENCES", "CASE-BASED", "PRACTICE TEST"]) assert(!p.includes(w), "default prompt lacks " + w);

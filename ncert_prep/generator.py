@@ -18,18 +18,6 @@ _STR = {"type": "string"}
 _STRS = {"type": "array", "items": _STR}
 
 SECTIONS = {
-    "summary": {
-        "label": "Summary notes (detailed)",
-        "schema": {
-            "type": "array",
-            "description": "Topic-wise notes covering every topic/sub-topic in the selected pages, in book order",
-            "items": {"type": "object", "additionalProperties": False, "required": ["topic", "points"],
-                      "properties": {"topic": _STR, "points": _STRS}},
-        },
-        "prompt": "summary - topic-wise notes that explain every topic and sub-topic in the pages, in book "
-                  "order, as short clear points (definitions, explanations, examples, processes, reasons). A "
-                  "student who reads only these notes should understand the whole chapter.",
-    },
     "summary_basic": {
         "label": "Summary notes (basic)",
         "schema": {
@@ -41,13 +29,26 @@ SECTIONS = {
                                          "type": "object", "additionalProperties": False, "required": ["term", "meaning"],
                                          "properties": {"term": _STR, "meaning": _STR}}}}},
         },
-        "prompt": "summary_basic - a basic, brief summary of the chapter: one entry per main topic (not every "
+        "prompt": "summary_basic - a basic, brief summary of the chapter, written as points in very simple English "
+                  "(short sentences, everyday words): one entry per main topic (not every "
                   "sub-topic), each with 2 to 5 very short points (one line each) giving only the main ideas. "
                   "No long explanations or worked examples; it should fit on one or two pages for a quick read. "
                   "Each entry also has terms: the important terms and defined concepts of that topic, each with a "
                   "clear one- or two-sentence definition as the book gives it (term: the word or phrase only; "
                   "meaning: the definition); an empty list if the topic defines none. The app prints all terms "
                   "together as a Definitions of Terms table after the points.",
+    },
+    "summary": {
+        "label": "Summary notes (detailed)",
+        "schema": {
+            "type": "array",
+            "description": "Topic-wise notes covering every topic/sub-topic in the selected pages, in book order",
+            "items": {"type": "object", "additionalProperties": False, "required": ["topic", "points"],
+                      "properties": {"topic": _STR, "points": _STRS}},
+        },
+        "prompt": "summary - topic-wise notes that explain every topic and sub-topic in the pages, in book "
+                  "order, as short clear points (definitions, explanations, examples, processes, reasons). A "
+                  "student who reads only these notes should understand the whole chapter.",
     },
     "diagrams": {
         "label": "Explanation diagrams",
@@ -232,7 +233,7 @@ SECTIONS = {
     },
 }
 
-COUNT_WORDS = {"summary": "topics", "summary_basic": "basic summary topics", "diagrams": "diagrams", "figures": "figure notes", "key_points": "key points", "formulas": "formula groups",
+COUNT_WORDS = {"summary_basic": "basic summary topics", "summary": "topics", "diagrams": "diagrams", "figures": "figure notes", "key_points": "key points", "formulas": "formula groups",
                "revision_table": "revision-table rows", "differences": "difference tables",
                "one_mark": "one-mark", "short_answer": "2/3-mark", "long_answer": "five-mark questions",
                "case_based": "case-based sets"}
@@ -245,7 +246,7 @@ PRACTICE_COUNTS = {"m1": 10, "m2": 4, "m3": 4, "m5": 3, "case": 2}
 PRACTICE_LIMITS = {"m1": 40, "m2": 20, "m3": 20, "m5": 15, "case": 6}
 _COUNT_SECTION = {"m1": "one_mark", "m2": "short_answer", "m3": "short_answer", "m5": "long_answer",
                   "case": "case_based"}
-DEFAULT_SECTIONS = ["summary", "key_points", "formulas", "one_mark", "short_answer", "long_answer"]
+DEFAULT_SECTIONS = ["summary_basic", "summary", "key_points", "formulas", "one_mark", "short_answer", "long_answer"]
 ALL_OPTIONS = list(SECTIONS) + [PRACTICE_TEST]
 
 
@@ -306,7 +307,9 @@ SCHEMA = build_schema(list(SECTIONS))  # everything; kept for reference
 SYSTEM = """You are an experienced CBSE teacher and paper-setter who writes printed revision \
 material for students. You work strictly from the NCERT textbook pages you are given: \
 everything you write must be supported by those pages and match NCERT wording, terms, \
-examples and conventions. Write in clear, simple English suitable for the class level.
+examples and conventions. Write in clear, simple English suitable for the class level: short \
+sentences, everyday words, one idea per point; keep the book's technical terms, and explain a hard \
+word the first time you use it.
 
 Formatting rules (the output is printed, not rendered as Markdown):
 - Plain text only. No Markdown, no LaTeX, no asterisks or hashes.

@@ -187,6 +187,19 @@ for heading in ("Diagrams to Understand the Chapter", "Quick Revision Table", "D
                 "Difference between Exothermic reaction and Endothermic reaction"):
     assert heading in text, heading
 
+# Clear to read: the basic summary comes first (default and order), the question sections start
+# their own page, and the terms of the basic summary are printed in bold inside its points.
+assert generator.DEFAULT_SECTIONS[0] == "summary_basic" and list(generator.SECTIONS)[0] == "summary_basic"
+import pdf_render  # noqa: E402
+pages = [p.extract_text().strip() for p in PdfReader(pdf).pages]
+assert text.index("Summary Notes (Basic)") < text.index("Summary Notes (Detailed)"), "basic summary first"
+firsts = [t.split("\n")[0] for t in pages]
+for heading in ("One Mark Questions", "Short Answer Questions", "Long Answer Questions", "Case-Based Questions"):
+    assert any(heading in l for l in firsts), (heading + " begins at the top of a page", firsts)
+assert pdf_render._hl("An Exothermic reaction gives out heat.", ["exothermic reaction"]) == \
+    'An <font name="%s">Exothermic reaction</font> gives out heat.' % pdf_render.BOLD
+assert pdf_render._hl("Light & <b>", ["b"]) == "Light &amp; &lt;b&gt;", "no bolding inside escapes or tags"
+
 # A smaller selection reuses the saved parts (they hold every section) and leaves the rest out.
 st = run_job(sections=["diagrams", "revision_table"])
 assert st["status"] == "done" and sum("saved earlier" in l for l in st["log"]) == 2, st["log"]
@@ -194,6 +207,26 @@ assert len(calls_so_far()) == before + 2, "a subset of saved sections must not c
 pdf = Path(webapp.JOBS[list(webapp.JOBS)[-1]]["file"])
 text = "\n".join(p.extract_text() for p in PdfReader(pdf).pages)
 assert "Quick Revision Table" in text and "One Mark Questions" not in text and "Practice Test" not in text
+
+# Old saved results (made before the basic summary was a default) lack it: the AI is asked for just that
+# section, it is added to the saved file, and nothing is asked a second time.
+for f in webapp.RESULTS.glob("*.json"):
+    d = json.loads(f.read_text())
+    d.pop("summary_basic", None)
+    f.write_text(json.dumps(d, ensure_ascii=False))
+n_calls = len(calls_so_far())
+st = run_job(sections=["summary_basic", "summary"])
+assert st["status"] == "done", st
+new = calls_so_far()[n_calls:]
+assert len(new) == 2 and any("just that" in l for l in st["log"]), "one small request per saved part"
+for c in new:
+    sch = json.loads(c["argv"][c["argv"].index("--json-schema") + 1])
+    assert sch["required"] == ["chapter_title", "summary_basic"], sch["required"]
+text = "\n".join(p.extract_text() for p in PdfReader(Path(webapp.JOBS[list(webapp.JOBS)[-1]]["file"])).pages)
+assert "Summary Notes (Basic)" in text and "Definitions of Terms" in text
+n_calls = len(calls_so_far())
+st = run_job(sections=["summary_basic", "summary"])
+assert st["status"] == "done" and len(calls_so_far()) == n_calls, "now saved: no new request"
 
 # Practice test: sizes come from the counts; a count of 0 leaves a kind out.
 paper = pdf_render.practice_paper([FULL], {"m2": 0, "m3": 0, "case": 0})

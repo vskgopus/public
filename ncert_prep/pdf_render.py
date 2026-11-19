@@ -58,21 +58,22 @@ S = {
     "small_c": ParagraphStyle("small_c", fontName=FONT, fontSize=9, leading=12, alignment=TA_CENTER, textColor=MUTED),
     "chapter": ParagraphStyle("chapter", fontName=BOLD, fontSize=17, leading=22, textColor=ACCENT, spaceAfter=4),
     "section": ParagraphStyle("section", fontName=BOLD, fontSize=13, leading=17, textColor=colors.white),
-    "topic": ParagraphStyle("topic", fontName=BOLD, fontSize=11, leading=15, textColor=ACCENT, spaceBefore=6, spaceAfter=2),
-    "body": ParagraphStyle("body", fontName=FONT, fontSize=10, leading=14, textColor=INK),
-    "bullet": ParagraphStyle("bullet", fontName=FONT, fontSize=10, leading=14, textColor=INK, leftIndent=12, bulletIndent=2, spaceAfter=1),
-    "q": ParagraphStyle("q", fontName=BOLD, fontSize=10, leading=14, textColor=INK, leftIndent=18, firstLineIndent=-18, spaceBefore=5),
-    "opt": ParagraphStyle("opt", fontName=FONT, fontSize=10, leading=13.5, textColor=INK, leftIndent=30),
-    "a": ParagraphStyle("a", fontName=FONT, fontSize=10, leading=14, textColor=INK, leftIndent=18),
-    "a_bullet": ParagraphStyle("a_bullet", fontName=FONT, fontSize=10, leading=14, textColor=INK, leftIndent=30, bulletIndent=20),
-    "cell": ParagraphStyle("cell", fontName=FONT, fontSize=9, leading=12, textColor=INK),
-    "cell_b": ParagraphStyle("cell_b", fontName=BOLD, fontSize=9, leading=12, textColor=INK),
-    "cell_h": ParagraphStyle("cell_h", fontName=BOLD, fontSize=9, leading=12, textColor=colors.white),
+    "topic": ParagraphStyle("topic", fontName=BOLD, fontSize=12, leading=16, textColor=ACCENT, spaceBefore=9, spaceAfter=3),
+    "body": ParagraphStyle("body", fontName=FONT, fontSize=11, leading=16, textColor=INK),
+    "bullet": ParagraphStyle("bullet", fontName=FONT, fontSize=11, leading=16, textColor=INK, leftIndent=14, bulletIndent=2, spaceAfter=3),
+    "q": ParagraphStyle("q", fontName=BOLD, fontSize=11, leading=15.5, textColor=INK, leftIndent=18, firstLineIndent=-18, spaceBefore=8),
+    "opt": ParagraphStyle("opt", fontName=FONT, fontSize=11, leading=15, textColor=INK, leftIndent=30),
+    "a": ParagraphStyle("a", fontName=FONT, fontSize=11, leading=15.5, textColor=INK, leftIndent=18),
+    "a_bullet": ParagraphStyle("a_bullet", fontName=FONT, fontSize=11, leading=15.5, textColor=INK, leftIndent=30, bulletIndent=20, spaceAfter=1.5),
+    "cell": ParagraphStyle("cell", fontName=FONT, fontSize=9.5, leading=13, textColor=INK),
+    "cell_b": ParagraphStyle("cell_b", fontName=BOLD, fontSize=9.5, leading=13, textColor=INK),
+    "cell_h": ParagraphStyle("cell_h", fontName=BOLD, fontSize=9.5, leading=13, textColor=colors.white),
     "node": ParagraphStyle("node", fontName=FONT, fontSize=9, leading=12, textColor=INK, alignment=TA_CENTER),
     "cbullet": ParagraphStyle("cbullet", fontName=FONT, fontSize=9, leading=12, textColor=INK, leftIndent=9, bulletIndent=0),
     "caption": ParagraphStyle("caption", fontName=FONT, fontSize=8.5, leading=11, textColor=MUTED, alignment=TA_CENTER, spaceAfter=4),
-    "passage": ParagraphStyle("passage", fontName=FONT, fontSize=10, leading=14, textColor=INK),
+    "passage": ParagraphStyle("passage", fontName=FONT, fontSize=11, leading=15.5, textColor=INK),
 }
+QUESTION_PAGE_BREAKS = ("one_mark", "short_answer", "long_answer", "case_based")
 WIDTH = A4[0] - 30 * mm   # text width between the margins
 SOFT2 = colors.HexColor("#f7f9fc")
 
@@ -81,6 +82,17 @@ def _t(text: str) -> str:
     """Escape for ReportLab's mini-markup; strip stray Markdown emphasis."""
     text = re.sub(r"\*\*(.+?)\*\*", r"\1", str(text)).replace("`", "")
     return escape(text).replace("\n", "<br/>")
+
+
+def _hl(text: str, terms) -> str:
+    """Like _t, but the given terms are printed in bold (whole words, any case; tags are left alone)."""
+    out = _t(text)
+    words = sorted({str(t).strip() for t in terms or [] if str(t).strip()}, key=len, reverse=True)
+    if not words:
+        return out
+    pat = re.compile(r"(?<!\w)(%s)(?!\w)" % "|".join(re.escape(escape(w)) for w in words), re.I)
+    return "".join(part if part.startswith("<") else pat.sub(lambda m: '<font name="%s">%s</font>' % (BOLD, m.group(1)), part)
+                   for part in re.split(r"(<[^>]*>)", out))
 
 
 def _section_bar(title: str) -> Table:
@@ -361,26 +373,31 @@ def _chapter_flow(ch: dict, meta: dict, sections: list[str]) -> list:
 
     n = 0
 
-    def bar(title):
+    def bar(title, key):
         nonlocal n
         n += 1
-        return [Spacer(1, 8), CondPageBreak(50 * mm), _section_bar(f"{n}. {title}"), Spacer(1, 4)]
+        # the question sections start on a new page; the others follow each other with a gap
+        new_page = key in QUESTION_PAGE_BREAKS and n > 1
+        return ([PageBreak()] if new_page else [Spacer(1, 8), CondPageBreak(50 * mm)]) + [_section_bar(f"{n}. {title}"), Spacer(1, 6)]
 
     for key in sections:
         items = ch.get(key) or []
+        if key == "summary_basic" and key not in ch:    # a chapter whose saved result predates it
+            continue
         if key == "summary":
-            flow += bar("Summary Notes (Detailed)")
+            flow += bar("Summary Notes (Detailed)", key)
             for block in items:
                 parts = [Paragraph(_t(block["topic"]), S["topic"])]
                 parts += [Paragraph(_t(p), S["bullet"], bulletText="•") for p in block["points"]]
                 flow.append(KeepTogether(parts[:3]))
                 flow += parts[3:]
         elif key == "summary_basic":
-            flow += bar("Summary Notes (Basic)")
+            flow += bar("Summary Notes (Basic)", key)
             terms, seen = [], set()
             for block in items:
+                keys = [d["term"] for d in block.get("terms") or []]
                 parts = [Paragraph(_t(block["topic"]), S["topic"])]
-                parts += [Paragraph(_t(p), S["bullet"], bulletText="•") for p in block["points"]]
+                parts += [Paragraph(_hl(p, keys), S["bullet"], bulletText="•") for p in block["points"]]
                 flow.append(KeepTogether(parts[:3]))
                 flow += parts[3:]
                 for d in block.get("terms") or []:     # older saved results have no terms
@@ -391,14 +408,14 @@ def _chapter_flow(ch: dict, meta: dict, sections: list[str]) -> list:
                 flow += [Spacer(1, 6), Paragraph("Definitions of Terms", S["topic"]),
                          _grid(["Term", "Meaning"], terms, [42 * mm, None])]
         elif key == "figures":
-            flow += bar("Figures from the NCERT Book")
+            flow += bar("Figures from the NCERT Book", key)
             flow += _book_figures_flow(ch.get("book_figures") or [], items)
         elif key == "diagrams":
-            flow += bar("Diagrams to Understand the Chapter")
+            flow += bar("Diagrams to Understand the Chapter", key)
             for dg in items:
                 flow += _diagram(dg)
         elif key == "key_points":
-            flow += bar("Key Points to Remember")
+            flow += bar("Key Points to Remember", key)
             rows = [[Paragraph("★", S["body"]), Paragraph(_t(k), S["body"])] for k in items]
             if rows:
                 box = Table(rows, colWidths=[7 * mm, None])
@@ -409,7 +426,7 @@ def _chapter_flow(ch: dict, meta: dict, sections: list[str]) -> list:
                 ]))
                 flow.append(box)
         elif key == "formulas":
-            flow += bar("Formula Summary")
+            flow += bar("Formula Summary", key)
             for grp in items:
                 rows = [[f.get("name", ""), f.get("formula", ""), f.get("use", "")] for f in grp.get("formulas") or []]
                 if rows:
@@ -421,13 +438,13 @@ def _chapter_flow(ch: dict, meta: dict, sections: list[str]) -> list:
             if not any(g.get("formulas") for g in items):
                 flow.append(Paragraph(_t("This chapter has no formulas to summarise."), S["body"]))
         elif key == "revision_table":
-            flow += bar("Quick Revision Table")
+            flow += bar("Quick Revision Table", key)
             if items:
                 flow.append(_grid(["Topic", "In short", "Remember"],
                                   [[r.get("topic", ""), r.get("in_short", ""), r.get("remember", "")] for r in items],
                                   [42 * mm, 80 * mm, WIDTH - 122 * mm]))
         elif key == "differences":
-            flow += bar("Differences")
+            flow += bar("Differences", key)
             for df in items:
                 a, b = df.get("a", ""), df.get("b", "")
                 flow.append(KeepTogether([
@@ -436,19 +453,19 @@ def _chapter_flow(ch: dict, meta: dict, sections: list[str]) -> list:
                           [40 * mm, (WIDTH - 40 * mm) / 2, (WIDTH - 40 * mm) / 2])]))
                 flow.append(Spacer(1, 4))
         elif key == "one_mark":
-            flow += bar("One Mark Questions (1 mark each)")
+            flow += bar("One Mark Questions (1 mark each)", key)
             for i, q in enumerate(items, 1):
                 flow.append(_question(i, q["question"], q.get("kind", ""), q.get("options"), q["answer"]))
         elif key == "short_answer":
-            flow += bar("Short Answer Questions (2 / 3 marks)")
+            flow += bar("Short Answer Questions (2 / 3 marks)", key)
             for i, q in enumerate(sorted(items, key=lambda q: q["marks"]), 1):
                 flow.append(_question(i, q["question"], f"{q['marks']} marks", None, q["answer"]))
         elif key == "long_answer":
-            flow += bar("Long Answer Questions (5 marks)")
+            flow += bar("Long Answer Questions (5 marks)", key)
             for i, q in enumerate(items, 1):
                 flow.append(_question(i, q["question"], "5 marks", None, q["answer"]))
         elif key == "case_based":
-            flow += bar("Case-Based Questions")
+            flow += bar("Case-Based Questions", key)
             for i, case in enumerate(items, 1):
                 flow += _case(i, case, tag_total=True)
     return flow

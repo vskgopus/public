@@ -312,6 +312,24 @@ def _saved_result(code: str, part: ncert.ChapterPart, needed: list[str], model: 
     return None
 
 
+def _saved_lacking_basic(code: str, part: ncert.ChapterPart, needed: list[str], model: str):
+    """(data, path) of a saved result that has every needed section except the basic summary (it became a
+    default later), or None. The app asks the AI for just that section and adds it to the saved file."""
+    if "summary_basic" not in needed:
+        return None
+    rest = [k for k in needed if k != "summary_basic"]
+    if not rest:
+        return None
+    for path in sorted(RESULTS.glob(_result_stem(code, part, model) + "*.json")):
+        try:
+            data = json.loads(path.read_text())
+        except (OSError, ValueError):
+            continue
+        if "summary_basic" not in data and all(k in data for k in rest):
+            return data, path
+    return None
+
+
 def _run_job(job_id: str, p: dict) -> None:
     job = JOBS[job_id]
     cancel = job["cancel"]
@@ -354,6 +372,22 @@ def _run_job(job_id: str, p: dict) -> None:
                 if earlier is not None:
                     log(f"Chapter {piece.number}{note}: using the result saved earlier.")
                     results.append(earlier)
+                    continue
+                lacking = _saved_lacking_basic(book["code"], piece, needed, model)
+                if lacking is not None:
+                    check_stop()
+                    log(f"Chapter {piece.number}{note}: the result saved earlier has no basic summary; asking "
+                        f"{engine_name} for just that and adding it to the saved result …")
+                    extra = generator.generate_chapter(piece.pdf, cls=p["cls"], subject=p["subject"],
+                                                       book=book["title"], chapter=piece.number, page_note=note,
+                                                       engine=p["engine"], api_key=p["api_key"],
+                                                       sections=["summary_basic"], gemini_model=p["gemini_model"],
+                                                       gemini_output_limit=p["gemini_output_limit"], log=log,
+                                                       progress=progress, cancel=cancel)
+                    data, path = lacking
+                    data["summary_basic"] = extra["summary_basic"]
+                    path.write_text(json.dumps(data, ensure_ascii=False))
+                    results.append(data)
                     continue
                 check_stop()
                 label = f" (part {i} of {len(pieces)})" if len(pieces) > 1 else ""

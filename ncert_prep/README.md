@@ -15,7 +15,7 @@ official NCERT site (ncert.nic.in), has Claude or Google Gemini write the exam p
 | **Quick revision table**: one row per topic (topic, in short, remember) | **Case-based questions**: a passage with sub-questions |
 | **Differences tables**: "difference between X and Y" | **Practice test paper with answer key**: you choose how many 1-, 2-, 3-, 5-mark and case-based questions (default 10/4/4/3/2); it can be ticked on its own (the AI then writes the questions for the paper only), and the answer key is on separate pages at the end |
 
-Summary, key points, formula summary, 1-, 2/3- and 5-mark questions are ticked at first; the app
+Summary (basic), summary (detailed), key points, formula summary, 1-, 2/3- and 5-mark questions are ticked at first; the app
 remembers your choice. Each extra section adds time and AI usage per chapter. The practice
 test adds no AI usage when the questions are already written; ticked alone, it asks the AI for the
 question kinds whose count is above 0 and prints only the paper and its key.
