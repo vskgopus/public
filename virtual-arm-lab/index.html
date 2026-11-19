@@ -411,7 +411,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
 .m-heap{background:var(--mn)}.m-part{background:var(--ac)}.m-dtb{background:var(--kw)}.m-stack{background:var(--er)}.m-res{background:repeating-linear-gradient(45deg,var(--p3),var(--p3) 4px,var(--ln) 4px,var(--ln) 8px)}.m-tstk{background:var(--wn)}
 </style></head><body><div id="app">
 <header id="tb">
- <button class="brand" id="bAbout" title="About Virtual ARM Lab (version 0.17.0)" aria-label="About Virtual ARM Lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ac)"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg><b>Virtual ARM Lab</b><span>Cortex-M3 debugger</span></button>
+ <button class="brand" id="bAbout" title="About Virtual ARM Lab (version 0.18.0)" aria-label="About Virtual ARM Lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ac)"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg><b>Virtual ARM Lab</b><span>Cortex-M3 debugger</span></button>
  <div class="grp"><button class="tbtn bld" id="bAsm" title="Build the active file (Ctrl+B)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg><span>Build</span></button></div>
  <div class="grp">
   <button class="tbtn pri" id="bRun" title="Run / Continue (F5 or F8)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg><span>Run</span></button>
@@ -511,7 +511,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
 </div>
 <div id="about" hidden role="dialog" aria-modal="true" aria-labelledby="abT"><div class="abcard">
  <div class="abhd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg>
-  <div><h2 id="abT">Virtual ARM Lab</h2><div class="abv"><span>Version <b id="abVer">0.17.0</b></span> &middot; <span>released 2026-11-19</span></div></div>
+  <div><h2 id="abT">Virtual ARM Lab</h2><div class="abv"><span>Version <b id="abVer">0.18.0</b></span> &middot; <span>released 2026-11-19</span></div></div>
   <button class="tbtn" id="abX" title="Close (Esc)">Close</button></div>
  <div class="abbody">
   <p>A virtual ARM microcontroller board in the browser: a Cortex-M3 style CPU with an IDE, a debugger, a C compiler and a VxWorks 7 style real-time kernel, for learning embedded programming.</p>
@@ -529,6 +529,12 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
    <tr><td>Documents</td><td>User Manual, Datasheet and VxWorks API Reference (press <b>Manual</b> or F1)</td></tr>
   </table>
   <h3>What's new</h3>
+  <p><b>0.18.0</b> (2026-11-19):</p>
+  <ul>
+   <li>C compiler: structs can be passed to functions and returned by value, bit-fields (also in the Watch and Locals windows), compound literals such as <code>(struct point){1, 2}</code>, anonymous struct and union members, <code>goto</code>, <code>_Bool</code>, <code>offsetof</code>, <code>_Static_assert</code>, <code>__attribute__((packed))</code>, a simple <code>__asm("nop")</code>, <code>0b</code> and octal numbers, and <code>&lt;stdint.h&gt;</code> and friends in bare-metal programs</li>
+   <li><code>short</code> and <code>signed char</code> are now sign-extended when read, and <code>/ % &lt; &gt;</code> and <code>&gt;&gt;</code> follow signed and unsigned types, as in C (this changes the code the compiler makes); <code>long long</code> is an error instead of silently 32 bits</li>
+   <li>Assembler: <code>.byte</code>, <code>.hword</code>, <code>.ascii</code>, <code>.asciz</code> and <code>.space</code></li>
+  </ul>
   <p><b>0.17.0</b> (2026-11-19):</p>
   <ul>
    <li>Many more VxWorks kernel calls, in three steps: events for semaphores and message queues (<code>semEvStart</code>, <code>msgQEvStart</code>), task information and safety (<code>taskInfoGet</code>, <code>taskSafe</code>), and <code>semShow</code>, <code>msgQShow</code> and <code>wdShow</code></li>
