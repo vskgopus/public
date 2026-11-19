@@ -4,6 +4,14 @@
 import { DATA } from "./data.js";
 
 export const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const QUESTION_KEYS = ["one_mark", "short_answer", "long_answer", "case_based"];
+const hl = (text, terms) => {   // escaped text with the given terms in bold (whole words, any case)
+  const words = [...new Set((terms || []).map(t => String(t).trim()).filter(Boolean))].sort((a, b) => b.length - a.length);
+  const out = esc(strip(text));
+  if (!words.length) return out;
+  const re = new RegExp("(?<![\\p{L}\\p{N}_])(" + words.map(w => esc(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")(?![\\p{L}\\p{N}_])", "giu");
+  return out.split(/(&[#\w]+;)/).map(part => /^&[#\w]+;$/.test(part) ? part : part.replace(re, "<strong>$1</strong>")).join("");
+};
 const strip = s => String(s ?? "").replace(/\*\*(.+?)\*\*/g, "$1").replace(/`/g, "");
 
 // Answers: lines starting with "- " become bullets, other lines paragraphs.
@@ -89,40 +97,41 @@ function caseBlock(label, c, answers = true, totalTag = false) {
 
 function chapterHtml(ch, sections) {
   let n = 0;
-  const bar = t => `<h3 class="bar">${++n}. ${esc(t)}</h3>`;
+  const bar = (t, key) => `<h3 class="bar${n++ && QUESTION_KEYS.includes(key) ? " pg" : ""}">${n}. ${esc(t)}</h3>`;   // question sections start a new page
   let html = `<section class="chapter"><h2>Chapter ${esc(ch.number)}: ${esc(ch.chapter_title || "")}</h2>`;
   if (ch.page_note) html += `<p class="muted">${esc(ch.page_note)}</p>`;
   html += `<p class="src">Source: ${esc(ch.url)}</p>`;
   for (const key of sections) {
     const items = ch[key] || [];
+    if (key === "summary_basic" && !(key in ch)) continue;   // a saved result that predates it
     if (key === "summary") {
-      html += bar("Summary Notes (Detailed)") + items.map(b => `<div class="topic"><h4>${esc(b.topic)}</h4><ul>${(b.points || []).map(p => `<li>${esc(strip(p))}</li>`).join("")}</ul></div>`).join("");
+      html += bar("Summary Notes (Detailed)", key) + items.map(b => `<div class="topic"><h4>${esc(b.topic)}</h4><ul>${(b.points || []).map(p => `<li>${esc(strip(p))}</li>`).join("")}</ul></div>`).join("");
     } else if (key === "summary_basic") {
-      html += bar("Summary Notes (Basic)") + items.map(b => `<div class="topic"><h4>${esc(b.topic)}</h4><ul>${(b.points || []).map(p => `<li>${esc(strip(p))}</li>`).join("")}</ul></div>`).join("");
+      html += bar("Summary Notes (Basic)", key) + items.map(b => `<div class="topic"><h4>${esc(b.topic)}</h4><ul>${(b.points || []).map(p => `<li>${hl(p, (b.terms || []).map(d => d.term))}</li>`).join("")}</ul></div>`).join("");
       const seen = new Set(), terms = [];   // older saved results have no terms
       for (const b of items) for (const d of b.terms || []) { const k = String(d.term).trim().toLowerCase(); if (!seen.has(k)) { seen.add(k); terms.push([d.term, d.meaning]); } }
       if (terms.length) html += `<div class="keep"><h4>Definitions of Terms</h4>${grid(["Term", "Meaning"], terms)}</div>`;
     } else if (key === "diagrams") {
-      html += bar("Diagrams to Understand the Chapter") + items.map(diagram).join("");
+      html += bar("Diagrams to Understand the Chapter", key) + items.map(diagram).join("");
     } else if (key === "key_points") {
-      html += bar("Key Points to Remember") + (items.length ? `<ul class="keypoints">${items.map(k => `<li>${esc(strip(k))}</li>`).join("")}</ul>` : "");
+      html += bar("Key Points to Remember", key) + (items.length ? `<ul class="keypoints">${items.map(k => `<li>${esc(strip(k))}</li>`).join("")}</ul>` : "");
     } else if (key === "formulas") {
-      html += bar("Formula Summary");
+      html += bar("Formula Summary", key);
       const groups = items.filter(g => (g.formulas || []).length);
       html += groups.map(g => `<div class="keep"><h4>${esc(g.topic)}</h4>${grid(["Name", "Formula", "Meaning and use"], g.formulas.map(f => [f.name, f.formula, f.use]))}</div>`).join("")
         || `<p>This chapter has no formulas to summarise.</p>`;
     } else if (key === "revision_table") {
-      html += bar("Quick Revision Table") + (items.length ? grid(["Topic", "In short", "Remember"], items.map(r => [r.topic, r.in_short, r.remember])) : "");
+      html += bar("Quick Revision Table", key) + (items.length ? grid(["Topic", "In short", "Remember"], items.map(r => [r.topic, r.in_short, r.remember])) : "");
     } else if (key === "differences") {
-      html += bar("Differences") + items.map(d => `<div class="keep"><h4>Difference between ${esc(d.a)} and ${esc(d.b)}</h4>${grid(["Basis", d.a, d.b], (d.rows || []).map(r => [r.basis, r.a, r.b]))}</div>`).join("");
+      html += bar("Differences", key) + items.map(d => `<div class="keep"><h4>Difference between ${esc(d.a)} and ${esc(d.b)}</h4>${grid(["Basis", d.a, d.b], (d.rows || []).map(r => [r.basis, r.a, r.b]))}</div>`).join("");
     } else if (key === "one_mark") {
-      html += bar("One Mark Questions (1 mark each)") + items.map((q, i) => question(`${i + 1}.`, q.question, q.kind, q.options, q.answer)).join("");
+      html += bar("One Mark Questions (1 mark each)", key) + items.map((q, i) => question(`${i + 1}.`, q.question, q.kind, q.options, q.answer)).join("");
     } else if (key === "short_answer") {
-      html += bar("Short Answer Questions (2 / 3 marks)") + [...items].sort((a, b) => a.marks - b.marks).map((q, i) => question(`${i + 1}.`, q.question, `${q.marks} marks`, [], q.answer)).join("");
+      html += bar("Short Answer Questions (2 / 3 marks)", key) + [...items].sort((a, b) => a.marks - b.marks).map((q, i) => question(`${i + 1}.`, q.question, `${q.marks} marks`, [], q.answer)).join("");
     } else if (key === "long_answer") {
-      html += bar("Long Answer Questions (5 marks)") + items.map((q, i) => question(`${i + 1}.`, q.question, "5 marks", [], q.answer)).join("");
+      html += bar("Long Answer Questions (5 marks)", key) + items.map((q, i) => question(`${i + 1}.`, q.question, "5 marks", [], q.answer)).join("");
     } else if (key === "case_based") {
-      html += bar("Case-Based Questions") + items.map((c, i) => caseBlock(`${i + 1}.`, c, true, true)).join("");
+      html += bar("Case-Based Questions", key) + items.map((c, i) => caseBlock(`${i + 1}.`, c, true, true)).join("");
     }
   }
   return html + "</section>";

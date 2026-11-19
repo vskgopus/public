@@ -136,7 +136,7 @@ ol.keysteps { margin: 0; padding-left: 20px; color: var(--muted); font-size: .8r
 
 /* ---------------------------------------------------------------- the printable document */
 .doc { --dink: #1f2933; --dacc: #1d4e89; --dmuted: #52606d; --dsoft: #eef3f9;
-       max-width: 210mm; margin: 0 auto 120px; padding: 0 16px; color: var(--dink); font: 10.5pt/1.5 "DejaVu Sans", "Noto Sans", system-ui, sans-serif; }
+       max-width: 210mm; margin: 0 auto 120px; padding: 0 16px; color: var(--dink); font: 11.5pt/1.6 "DejaVu Sans", "Noto Sans", system-ui, sans-serif; }
 .doc section { background: #fff; padding: 16mm 15mm; margin: 0 0 16px; border-radius: 4px; box-shadow: 0 2px 14px rgba(0, 0, 0, .12); }
 .doc .cover { min-height: 240mm; display: grid; place-items: center; text-align: center; }
 .doc .cover .kick { font-size: 22pt; font-weight: 800; color: var(--dacc); margin: 0 0 6px; }
@@ -146,15 +146,16 @@ ol.keysteps { margin: 0; padding-left: 20px; color: var(--muted); font-size: .8r
 .doc h2 { color: var(--dacc); font-size: 16pt; margin: 0 0 2px; }
 .doc .src { font-size: 7.5pt; color: var(--dmuted); margin: 0 0 8px; word-break: break-all; }
 .doc .bar { background: var(--dacc); color: #fff; font-size: 12pt; padding: 5px 9px; margin: 16px 0 6px; border-radius: 2px; break-after: avoid; }
-.doc h4 { color: var(--dacc); font-size: 10.5pt; margin: 10px 0 3px; break-after: avoid; }
-.doc ul { margin: 2px 0; padding-left: 18px; } .doc li { margin: 1px 0; }
+.doc h4 { color: var(--dacc); font-size: 12pt; margin: 12px 0 4px; break-after: avoid; }
+.doc ul { margin: 2px 0; padding-left: 18px; } .doc li { margin: 3px 0; }
+.doc .bar.pg { break-before: page; }
 .doc .keypoints { list-style: "★  "; background: var(--dsoft); border: 1px solid var(--dacc); padding: 6px 10px 6px 26px; }
 .doc .q { margin: 7px 0 0; } .doc .qtext { font-weight: 600; } .doc .qtext b { margin-right: 4px; }
 .doc .tag { font-weight: 400; font-size: 8.5pt; color: var(--dmuted); }
 .doc .opt { padding-left: 22px; }
 .doc .ans { padding-left: 18px; } .doc .ans-label { color: #0b6e4f; font-weight: 700; } .doc .ans p { margin: 0; } .doc .ans ul { margin: 0 0 0 4px; }
 .doc .passage { background: var(--dsoft); border: 1px solid var(--dacc); padding: 6px 9px; margin: 4px 0 4px 18px; }
-.doc table.grid { width: 100%; border-collapse: collapse; font-size: 9pt; margin: 4px 0 8px; }
+.doc table.grid { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin: 4px 0 8px; }
 .doc table.grid th { background: var(--dacc); color: #fff; text-align: left; padding: 4px 6px; }
 .doc table.grid td { border: 1px solid #9fb3c8; padding: 3px 6px; vertical-align: top; } .doc table.grid td.b { font-weight: 700; }
 .doc table.grid tbody tr:nth-child(even) td { background: #f7f9fc; }
