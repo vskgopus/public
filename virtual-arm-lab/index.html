@@ -910,10 +910,11 @@ void main(void)
 <p><b>Registers as structs.</b> Real Cortex-M code usually reaches a peripheral through a struct whose fields are its registers, at the peripheral's address: <code>#define UART ((UART_Type *)0x40011000)</code>, then <code>UART-&gt;TX = c;</code>. The example <b>samples/structs.c</b> does this for GPIO and UART.</p>
 <p><button class="try" data-ex="samples/structs.c">Open samples/structs.c</button></p>
 <p><b>The preprocessor</b> also has function-like macros (<code>#define MAX(a, b) ((a) &gt; (b) ? (a) : (b))</code>, with <code>#</code>, <code>##</code> and <code>...</code>/<code>__VA_ARGS__</code>), <code>#if</code>, <code>#ifdef</code>, <code>#ifndef</code>, <code>#elif</code>, <code>#else</code>, <code>#endif</code> with <code>defined(NAME)</code>, <code>#undef</code> and <code>#error</code>.</p>
-<p><b>Debugging:</b> the Watch window accepts paths such as <code>s.w</code>, <code>p-&gt;next-&gt;val</code> and <code>shapes[1].h</code>, and the Locals window shows a struct's fields.</p>
+<p><b>Debugging:</b> the Watch window accepts paths such as <code>s.w</code>, <code>p-&gt;next-&gt;val</code> and <code>shapes[1].h</code>, and the Locals window shows a struct's fields. In the Watch window a struct, union, array or pointer to a struct has a <b>+</b> button: it expands to one row per member (<code>.x</code>, <code>[2]</code>, <code>-&gt;next</code>), and members that are structs or arrays can be expanded again. Every member row can be edited.</p>
 <p class="note">Not supported: floating point and 64-bit integers. Structs can be passed and returned by value, and there are bit-fields and compound literals: see the next section. The <a href="#ds-cc">Datasheet</a> lists what the compiler supports.</p>
 
 <h3 id="m-cmore">4.10 Struct by value, bit-fields, compound literals and more</h3>
+<p>Two structs of the same type can be compared with <code>==</code> and <code>!=</code> and chosen with <code>?:</code> (<code>r = k ? a : b;</code>). Standard C does not allow <code>==</code> on structs: here it compares the fields one by one (padding bytes are ignored; a union is compared byte by byte), and it gives an error above 128 compared fields.</p>
 <p>These work like in C. The example uses four of them:</p>
 <pre class="code" data-file="more/main.c" data-run="400" data-expect="more ok">/* more/main.c - struct by value, a compound literal, bit-fields, goto */
 struct point { int x, y; };
@@ -1005,7 +1006,7 @@ retry:
 <tr><td>Output</td><td>Build messages. Click an error to go to its line.</td></tr>
 <tr><td>Registers</td><td>The core registers r0-r12, sp, lr and pc, the flags N Z C V, whether interrupts are enabled (IRQ), whether the CPU is in a handler (ISR, with its name), whether thread mode uses the process stack (PSP), both stack pointers, and the interrupt enable and pending bits. Double-click a register to change it; registers that changed in the last step are highlighted.</td></tr>
 <tr><td>Breakpoints</td><td>See <a href="#m-bp">7.2</a>.</td></tr>
-<tr><td>Watch</td><td>Expressions you add. Each can be: a register (<code>r0</code> &hellip; <code>r12</code>, <code>sp</code>, <code>lr</code>, <code>pc</code>); a C variable (<code>count</code>, or <code>main.i</code> for the variable <code>i</code> of <code>main</code>); a peripheral register (<code>GPIO_OUT</code>); an array element (<code>buf[2]</code>); a struct field through any path (<code>pt.x</code>, <code>p-&gt;next-&gt;val</code>, <code>pts[1].y</code>); or memory (<code>*0x20000000</code>, with <code>:1</code>, <code>:2</code> or <code>:4</code> for the size in bytes). Type a new value and press <kbd>Enter</kbd> to change it.</td></tr>
+<tr><td>Watch</td><td>Expressions you add. Each can be: a register (<code>r0</code> &hellip; <code>r12</code>, <code>sp</code>, <code>lr</code>, <code>pc</code>); a C variable (<code>count</code>, or <code>main.i</code> for the variable <code>i</code> of <code>main</code>); a peripheral register (<code>GPIO_OUT</code>); an array element (<code>buf[2]</code>); a struct field through any path (<code>pt.x</code>, <code>p-&gt;next-&gt;val</code>, <code>pts[1].y</code>); a whole struct, union or array (its row has a <b>+</b> button that shows the members); or memory (<code>*0x20000000</code>, with <code>:1</code>, <code>:2</code> or <code>:4</code> for the size in bytes). Type a new value and press <kbd>Enter</kbd> to change it.</td></tr>
 <tr><td>Locals</td><td>The parameters and local variables of the function selected in the Call stack (the current one at first), and all global variables. Values can be edited. C programs only.</td></tr>
 <tr><td>Map</td><td>The memory map, drawn as two bars: flash (vector table, code, constants, the start values of <code>.data</code>) and RAM (<code>.data</code>, <code>.bss</code> or the global variables, the VxWorks heap with its blocks in use and the task stacks, the device tree, the main stack), with markers at MSP and PSP that move as the program runs. The table under the bars gives each region's addresses and size; click a region to open it in the Memory window.</td></tr>
 <tr><td>Memory</td><td>A hex dump from an address (or <code>sp</code>), 64 to 512 bytes. Bytes that changed are highlighted. <b>Live</b> updates it while the program runs. The Write row stores a byte, half-word or word.</td></tr>
@@ -1515,7 +1516,7 @@ void main(void)
 <tr><td>Built-in functions</td><td><code>delay_us(n) uart_putc(c) uart_puts(s)</code> (unless you define your own); <code>__enable_irq() __disable_irq() __wfi() __wfe() __nop() __bkpt() __ISB() __DSB() __DMB()</code>; <code>__get_PRIMASK() __set_PRIMASK(x) __get_BASEPRI() __set_BASEPRI(x) __get_IPSR() __get_PSP() __set_PSP(x) __get_MSP() __set_MSP(x) __get_CONTROL() __set_CONTROL(x)</code></td></tr>
 <tr><td>Register variables (bare metal only)</td><td><code>ADC_CTRL ADC_STATUS ADC_DATA WDT_CTRL WDT_RELOAD WDT_KICK WDT_COUNT WDT_STATUS WDT_RSTCAUSE GPIO_DIR GPIO_OUT GPIO_IN UART_TX UART_STATUS UART_RX TIM_COUNT TIM_LOAD TIM_CTRL TIM_FLAG I2C_ADDR I2C_DATA I2C_CTRL I2C_STATUS SPI_DATA SPI_STATUS NVIC_EN NVIC_PEND NVIC_ACTIVE NVIC_PRI0 NVIC_PRI1 SYST_CSR SYST_RVR SYST_CVR SCB_ICSR SCB_SHPR2 SCB_SHPR3</code></td></tr>
 </table>
-<p><b>Not supported:</b> floating point (<code>float</code>, <code>double</code>, <code>1.5</code>), 64-bit integers (<code>long long</code>, <code>int64_t</code>: an error), compound literals outside functions, whole-struct comparisons and <code>?:</code>, variable-length arrays, and inline assembly with operands. <code>/ % &lt; &gt; &lt;= &gt;=</code> and <code>&gt;&gt;</code> follow the types: unsigned if an operand is unsigned (also a pointer, <code>sizeof</code> or a constant above 0x7FFFFFFF), signed otherwise, with <code>&gt;&gt;</code> arithmetic for signed values. Section 4.10 describes the C features beyond the basics.</p>
+<p><b>Not supported:</b> floating point (<code>float</code>, <code>double</code>, <code>1.5</code>), 64-bit integers (<code>long long</code>, <code>int64_t</code>: an error), compound literals outside functions, variable-length arrays, and inline assembly with operands. <code>/ % &lt; &gt; &lt;= &gt;=</code> and <code>&gt;&gt;</code> follow the types: unsigned if an operand is unsigned (also a pointer, <code>sizeof</code> or a constant above 0x7FFFFFFF), signed otherwise, with <code>&gt;&gt;</code> arithmetic for signed values. Section 4.10 describes the C features beyond the basics.</p>
 <h3 id="ds-abi">8.2 Calling convention and stack frame</h3>
 <p>Like the ARM AAPCS: arguments 1-4 in r0-r3, further arguments on the stack, the result in r0. (A struct passed by value, and a struct result, follow this emulator's own rules: section 4.10.) A function keeps r4-r11 unchanged for its caller. r11 is the frame pointer. Every function starts with</p>
 <pre class="code" data-lang="s">PUSH {r4-r11, lr}      @ save the caller's registers and the return address
@@ -2927,6 +2928,17 @@ function cc(src){
  function scopy(a,b,S){const w=S.al>=4?4:S.al>=2?2:1,n=S.size;
   if(n<=64){for(let o=0;o<n;o+=w){em(`${LDX(w)} r10, [${b}, #${o}]`);em(`${STX(w)} r10, [${a}, #${o}]`)}return}
   const l=nl();em(`PUSH {${a}, ${b}}`);em(`LDR r12, =${n}`);lb(l);em(`${LDX(w)} r10, [${b}, #0]`);em(`${STX(w)} r10, [${a}, #0]`);em(`ADD ${a}, ${a}, #${w}`);em(`ADD ${b}, ${b}, #${w}`);em(`SUB r12, r12, #${w}`);em("CMP r12, #0");em(`BNE ${l}`);em(`POP {${a}, ${b}}`)}
+ /* compare two structs field by field (padding is ignored): addresses in registers a and b, result 1/0 (eq) or 0/1 (!eq) in a.
+    Every scalar is compared on its own; arrays are unrolled; a union is compared byte by byte. At most 128 compares. */
+ function scmp(a,b,S,eq){const lne=nl(),le=nl();let n=0;
+  const one=(off,w,bf)=>{if(++n>128)err("this struct is too large to compare with == (more than 128 fields): compare its fields");
+   const x=LDX(w);em(`${x} r10, [${a}, #${off}]`);em(`${x} r12, [${b}, #${off}]`);
+   if(bf){bfExtract("r10","r10",bf);bfExtract("r12","r12",bf)}em("CMP r10, r12");em(`BNE ${lne}`)};
+  const walk=(S,base)=>{if(S.u){for(let o=0;o<S.size;o++)one(base+o,1);return}
+   for(const f of S.f)leaf(f.t,base+f.off,f.bf)};
+  const leaf=(t,off,bf)=>{if(t.k==="s")walk(t.S,off);else if(t.k==="a"){const sz=sizeOf(t.of);for(let i=0;i<t.n;i++)leaf(t.of,off+i*sz)}else if(bf)one(off,bf.sz,bf);else one(off,t.k==="i"?t.sz:4)};
+  walk(S,0);
+  em(`MOV ${a}, #${eq?1:0}`);em(`B ${le}`);lb(lne);em(`MOV ${a}, #${eq?0:1}`);lb(le)}
  const isPtr=t=>t.k==="p",isInt=t=>t.k==="i",isStr=t=>t.k==="s";
  function member(X,d,arrow){const nm=nx();if(!isId(nm))err("expected a field name after "+(arrow?"->":"."));
   let t=X.t;
@@ -3063,6 +3075,7 @@ function cc(src){
  /* binary operators (precedence climbing) starting from an operand already parsed; returns the type */
  function cxFrom(X,m,d){let e=rv(X,d);const r=rr(d);
   for(;;){const o=pk(),q=PR[o];if(!q||q<m)break;nx();const a=rr(d),b=rr(d+1);
+   if(isStr(e)&&(o==="=="||o==="!=")){const e2=cx(q+1,d+1);if(!isStr(e2)||e2.S!==e.S)err("comparing "+tname(e)+" with "+tname(e2));scmp(a,b,e.S,o==="==");e=INT;continue}
    if(isStr(e))err("cannot use a struct with "+o+" (use one of its fields)");
    if(o==="&&"||o==="||"){const l=nl();em(`CMP ${a}, #0`);if(o==="&&")em(`BEQ ${l}`);else{em(`MOV ${a}, #1`);em(`BNE ${l}`)}
     cx(q+1,d+1);em(`CMP ${b}, #0`);em(`MOV ${a}, #1`);em(`BNE ${l}`);em(`MOV ${a}, #0`);lb(l);e=INT}
@@ -3071,7 +3084,7 @@ function cc(src){
     if((o==="+"||o==="-")&&isPtr(e)&&isInt(e2)){mulBy(b,sizeOf(e.to));bin(o,a,b);continue}
     if(o==="+"&&isInt(e)&&isPtr(e2)){mulBy(a,sizeOf(e2.to));bin(o,a,b);e=e2;continue}
     const su=o==="<<"||o===">>"?isU(e):(isU(e)||isU(e2));bin(o,a,b,su);e=CM[o]?INT:su?UINT:INT}}
-  if(m===0&&pk()==="?"){nx();const lf=nl(),le=nl();em(`CMP ${r}, #0`);em(`BEQ ${lf}`);const t1=E(d);need(":");em(`B ${le}`);lb(lf);E(d);lb(le);e=t1}
+  if(m===0&&pk()==="?"){nx();const lf=nl(),le=nl();em(`CMP ${r}, #0`);em(`BEQ ${lf}`);const t1=E(d);need(":");em(`B ${le}`);lb(lf);const t2=E(d);lb(le);if(isStr(t1)!==isStr(t2)||isStr(t1)&&t1.S!==t2.S)err("the two sides of ?: are "+tname(t1)+" and "+tname(t2));e=t1}
   return e}
  const cx=(m,d)=>cxFrom(unX(d),m,d);
  /* assignment (or any expression) from an operand already parsed. vd: the value is not needed (a statement) */
@@ -4058,8 +4071,8 @@ function wInfo(x){x=x.trim();let m;
  if(lsyms[x]!==undefined)return{k:"c",v:lsyms[x]};   // a linker script symbol: its value is an address
  if(m=x.match(/^(r(?:1[0-2]|\d)|sp|lr|pc)$/i)){const n=m[1].toLowerCase();return{k:"r",i:n==="sp"?13:n==="lr"?14:n==="pc"?15:+n.slice(1)}}
  if(m=x.match(/^\*\s*(0x[0-9a-f]+|\d+)(?::([124]))?$/i))return{k:"m",a:Number(m[1]),sz:+(m[2]||4)};
- if(m=x.match(/^([\w.]+)\[(\d+)\]$/)){const v=svar(m[1]);if(v&&!(v.t&&(v.t.k==="a"?v.t.of:v.t.to||{}).k==="s")){const e=v.e||4,b=v.arr?v.a:peek(v.a,4);return b===null?null:{k:"m",a:b+m[2]*e,sz:e}}}
- const v=svar(x);if(v)return v.arr||v.st?{k:"c",v:v.a}:{k:"m",a:v.a,sz:v.sz||4};
+ if(m=x.match(/^([\w.]+)\[(\d+)\]$/)){const v=svar(m[1]);if(v&&!(v.t&&(v.t.k==="a"?v.t.of:v.t.to||{}).k!=="i"&&(v.t.k==="a"||v.t.k==="p"))){const e=v.e||4,b=v.arr?v.a:peek(v.a,4);return b===null?null:{k:"m",a:b+m[2]*e,sz:e}}}
+ const v=svar(x);if(v)return v.arr||v.st?{k:"c",v:v.a,t:v.t}:{k:"m",a:v.a,sz:v.sz||4,t:v.t};
  return wPath(x)}
 /* a C path through structs, pointers and arrays: s.x, p->next->val, pts[1].y, fn.local.field */
 const tSize=t=>t.k==="i"?t.sz:t.k==="a"?Math.max(0,t.n)*tSize(t.of):t.k==="s"?t.S.size:4;
@@ -4070,7 +4083,7 @@ function wPath(x){const m=x.match(/^([A-Za-z_]\w*)((?:\s*(?:\[\s*\d+\s*\]|\.\s*[
  for(const s of rest.match(/\[\d+\]|\.\w+|->\w+/g)||[]){
   if(s[0]==="["){const i=+s.slice(1,-1);if(t.k==="a"){a+=i*tSize(t.of);t=t.of}else if(t.k==="p"){const b=peek(a,4);if(b===null)return null;a=b+i*tSize(t.to);t=t.to}else return null}
   else{let f;if(s[0]==="-"){if(t.k!=="p")return null;const b=peek(a,4);if(b===null)return null;a=b;t=t.to;f=fld(t,s.slice(2))}else f=fld(t,s.slice(1));if(!f)return null;a+=f.off;t=f.f.t;bf=f.f.bf||null}}
- a>>>=0;if(bf)return{k:"m",a,sz:bf.sz,bf};return t.k==="a"||t.k==="s"?{k:"c",v:a}:{k:"m",a,sz:t.k==="i"?t.sz:4}}
+ a>>>=0;if(bf)return{k:"m",a,sz:bf.sz,bf,t};return t.k==="a"||t.k==="s"?{k:"c",v:a,t}:{k:"m",a,sz:t.k==="i"?t.sz:4,t}}
 /* a field by name, also inside anonymous struct/union members: {f, off} */
 function fieldOf(S,nm){for(const f of S.f){if(f.name===nm)return{f,off:f.off};if(f.anon){const r=fieldOf(f.t.S,nm);if(r)return{f:r.f,off:f.off+r.off}}}return null}
 /* the value of a bit-field from its storage unit (sign-extended if the field is signed) */
@@ -4084,14 +4097,30 @@ const tLabel=v=>v.st&&v.t?(v.t.S.u?"union ":"struct ")+(v.t.S.tag||""):v.arr?(v.
 const wGet=w=>w.k==="r"?(w.i===15?0x08000000+4*pc:R[w.i]):w.k==="c"?w.v:w.bf?bfGet(peek(w.a,w.sz),w.bf):peek(w.a,w.sz);
 function setVal(w,v){noWp++;try{if(w.k==="r"){if(w.i===15)pc=v>=0x08000000?((v-0x08000000)>>>2):v;else R[w.i]=v|0}else if(w.k==="m"){if(w.bf){const u=peek(w.a,w.sz)||0,m=((w.bf.w>=32?0xFFFFFFFF:2**w.bf.w-1)*2**w.bf.sh)>>>0;wr(w.a,((u&~m)|((v<<w.bf.sh)&m))>>>0,w.sz)}else wr(w.a,v,w.sz)}}catch(x){setSt(x.message,"er")}noWp--;dirty=1}
 const parseNum=s=>/^0x[0-9a-f]+$/i.test(s)||/^-?\d+$/.test(s)?Number(s):NaN;
-function renderW(){$("wl").innerHTML=wl.length?`<table class="t"><tr><th>Expression</th><th>Value (edit)</th><th>Hex</th><th></th></tr>${wl.map((x,i)=>`<tr><td class="mono">${esc(x)}</td><td><input class="m" data-i="${i}" aria-label="Value of ${esc(x)}"></td><td class="mono"></td><td><button data-i="${i}" aria-label="Remove watch">×</button></td></tr>`).join("")}</table>`:"<small>No watch expressions yet.</small>";persist();updW()}
-function updW(){const tb=$("wl").querySelector("table");if(!tb)return;[...tb.rows].slice(1).forEach((r,i)=>{const w=wInfo(wl[i]),inp=r.cells[1].firstChild,hx=r.cells[2];
+/* Watch tree: a struct, union, array or pointer to a struct has a + / - button; its members are rows with their own path expression */
+const wxp=new Set();let wSig="";
+const wKids=(x,t)=>{const o=[];if(!t)return o;
+ const add=(S,pre,sep)=>{for(const f of S.f){if(f.anon)add(f.t.S,pre,sep);else if(f.name)o.push({x:pre+sep+f.name,l:sep+f.name})}};
+ if(t.k==="s"&&t.S.f)add(t.S,x,".");else if(t.k==="a"&&t.n>0)for(let i=0;i<Math.min(t.n,64);i++)o.push({x:x+"["+i+"]",l:"["+i+"]"});
+ else if(t.k==="p"&&t.to.k==="s"&&t.to.S.f)add(t.to.S,x,"->");return o};
+function wRows(){const rows=[];const go=(x,l,dep,top)=>{const w=wInfo(x),t=w&&w.t,kids=w&&t?wKids(x,t):[],open=kids.length&&wxp.has(x);
+  rows.push({x,l,dep,top,w,kids:kids.length,open:!!open});if(open)kids.forEach(c=>go(c.x,c.l,dep+1,-1))};
+ wl.forEach((x,i)=>go(x,x,0,i));return rows}
+function wShow(w){if(w.t&&w.t.k==="s"&&w.k==="c")return fmtStruct(w.v,w.t,0);
+ if(w.t&&w.t.k==="a"&&w.k==="c"){const q=[],n=tSize(w.t.of);if(w.t.of.k==="i"||w.t.of.k==="p"){for(let i=0;i<Math.min(8,w.t.n);i++){const y=peek(w.v+i*n,n);q.push(y===null?"?":w.t.of.k==="p"?"0x"+h(y,8):(n===4?y|0:y))}return"["+q.join(", ")+(w.t.n>8?" …":"")+"]"}return"["+w.t.n+" × "+(w.t.of.k==="s"?(w.t.of.S.u?"union ":"struct ")+(w.t.of.S.tag||""):"array")+"]"}
+ return null}
+function renderW(){const rows=wRows();wSig=rows.map(r=>r.x+"|"+r.open+r.kids).join(",");
+ $("wl").innerHTML=wl.length?`<table class="t"><tr><th>Expression</th><th>Value (edit)</th><th>Hex</th><th></th></tr>${rows.map(r=>`<tr data-x="${esc(r.x)}"><td class="mono" style="padding-left:${6+r.dep*16}px">${r.kids?`<button class="wtg" data-tg="${esc(r.x)}" aria-expanded="${r.open}" aria-label="${r.open?"Collapse":"Expand"} ${esc(r.x)}" style="width:18px;padding:0;margin-right:4px">${r.open?"−":"+"}</button>`:""}${esc(r.l)}</td><td><input class="m" data-x="${esc(r.x)}" aria-label="Value of ${esc(r.x)}"></td><td class="mono"></td><td>${r.top>=0?`<button data-i="${r.top}" aria-label="Remove watch">×</button>`:""}</td></tr>`).join("")}</table>`:"<small>No watch expressions yet.</small>";persist();updW()}
+function updW(){const tb=$("wl").querySelector("table");if(!tb)return;
+ const rows=wRows(),sig=rows.map(r=>r.x+"|"+r.open+r.kids).join(",");if(sig!==wSig&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#wl")&&document.activeElement.tagName==="INPUT")){renderW();return}
+ [...tb.rows].slice(1).forEach(r=>{const x=r.dataset.x,w=wInfo(x),inp=r.cells[1].firstChild,hx=r.cells[2];
  if(!w){if(document.activeElement!==inp)inp.value="?";hx.textContent="unknown (build first?)";return}
- const v=wGet(w),z=w.k==="m"?w.sz:4;inp.readOnly=w.k==="c";if(document.activeElement!==inp)inp.value=v===null?"?":z===4?v|0:v;hx.textContent=v===null?"":"0x"+h(v,z*2)})}
+ const sh=wShow(w);if(sh!==null){inp.readOnly=true;if(document.activeElement!==inp)inp.value=sh;hx.textContent="@0x"+h(w.v>>>0,8);return}
+ const v=wGet(w),z=w.k==="m"?w.sz:4;inp.readOnly=w.k==="c";if(document.activeElement!==inp)inp.value=v===null?"?":w.t&&w.t.k==="p"?"0x"+h(v,8):z===4?v|0:v;hx.textContent=v===null?"":"0x"+h(v,z*2)})}
 $("wa").onclick=()=>{const v=$("wi").value.trim();if(v){wl.push(v);$("wi").value="";renderW()}};
 $("wi").onkeydown=e=>{if(e.key==="Enter")$("wa").click()};
-$("wl").addEventListener("click",e=>{if(e.target.tagName==="BUTTON"){wl.splice(+e.target.dataset.i,1);renderW()}});
-$("wl").addEventListener("change",e=>{const i=+e.target.dataset.i,w=wInfo(wl[i]),v=parseNum(e.target.value.trim());if(w&&!isNaN(v)&&w.k!=="c")setVal(w,v);updW();e.target.blur()});
+$("wl").addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("button");if(!b)return;if(b.dataset.tg){const x=b.dataset.tg;if(wxp.has(x))wxp.delete(x);else wxp.add(x);renderW()}else if(b.dataset.i!==undefined){wl.splice(+b.dataset.i,1);renderW()}});
+$("wl").addEventListener("change",e=>{const w=wInfo(e.target.dataset.x||""),v=parseNum(e.target.value.trim());if(w&&!isNaN(v)&&w.k!=="c")setVal(w,v);updW();e.target.blur()});
 /* C builds: walk the frame-pointer chain. Each C frame holds saved r11 at [fp+28] and the
    return address at [fp+32]. EXC_RETURN as a return address marks an interrupted context. */
 const P4=a=>{const v=peek(a,4);return v===null?null:v|0};
