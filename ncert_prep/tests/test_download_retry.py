@@ -79,7 +79,16 @@ for i in range(6):
     c.showPage()
 c.save()
 CHAPTER = buf.getvalue()                      # a small real PDF (over 1000 bytes)
-STAMP = "20260913130613"
+STAMP = "20260913130613"                      # a whole copy
+NEWER = "20261101000000"                      # a newer capture that was cut short (like the real jesc103 one)
+CUT = CHAPTER[:len(CHAPTER) // 2]
+try:
+    PdfReader(io.BytesIO(CUT)).pages[0]
+    raise AssertionError("the cut-short stand-in must not open as a PDF")
+except AssertionError:
+    raise
+except Exception:
+    pass
 mode = {"ncert": "502", "archive": "ok"}      # what the fake servers do; changed per case
 hits = []
 
@@ -102,12 +111,20 @@ class Fake(BaseHTTPRequestHandler):
             if mode["ncert"] == "ok":
                 return self._send(200, CHAPTER)
             return self._send(int(mode["ncert"]), b"nope", "text/plain")
-        if u.path == "/wayback/available":                            # the Internet Archive's lookup
+        if u.path == "/cdx":                                          # the list of snapshots (oldest first)
+            if mode["archive"] == "cdx_down":
+                return self._send(500, b"down", "text/plain")
+            stamps = {"none": [], "newest_bad": [STAMP, NEWER], "all_bad": [STAMP, NEWER]}.get(mode["archive"], [STAMP])
+            rows = [["timestamp"]] + [[st] for st in stamps]
+            return self._send(200, json.dumps(rows).encode(), "application/json")
+        if u.path == "/wayback/available":                            # the single closest snapshot (last resort)
             snap = {"closest": {"status": "200", "available": True, "timestamp": STAMP}} \
-                if mode["archive"] != "none" else {}
+                if mode["archive"] not in ("none",) else {}
             return self._send(200, json.dumps({"archived_snapshots": snap}).encode(), "application/json")
+        if u.path.startswith(f"/web/{NEWER}id_/"):
+            return self._send(200, CUT)
         if u.path.startswith(f"/web/{STAMP}id_/"):                    # the copy as the archive saved it
-            return self._send(200, CHAPTER if mode["archive"] == "ok" else b"<html>not a pdf</html>")
+            return self._send(200, b"<html>not a pdf</html>" if mode["archive"] in ("bad", "all_bad") else CHAPTER)
         self._send(404, b"?", "text/plain")
 
 
@@ -115,6 +132,7 @@ fake = ThreadingHTTPServer(("127.0.0.1", 0), Fake)
 threading.Thread(target=fake.serve_forever, daemon=True).start()
 ROOT = f"http://127.0.0.1:{fake.server_port}"
 ncert.BASE, ncert.ARCHIVE_API, ncert.ARCHIVE_RAW = ROOT, f"{ROOT}/wayback/available", f"{ROOT}/web"
+ncert.ARCHIVE_CDX = f"{ROOT}/cdx"
 ncert.CACHE_DIR = Path(tempfile.mkdtemp())
 
 
@@ -175,6 +193,35 @@ fresh(); mode.update(ncert="502", archive="ok")
 assert ncert.download_chapter_pdf("tst1", 1) == CHAPTER
 print("OK - a leftover partial file is discarded before the archive download")
 
+
+# 5b. The newest archive copy is cut short: it is skipped and the next older whole copy is used (the real
+# jesc103 case, 2026-11-20). The date recorded is the one actually used.
+fresh(); mode.update(ncert="502", archive="newest_bad")
+logs = []
+assert ncert.download_chapter_pdf("tst1", 1, log=logs.append) == CHAPTER
+src = ncert.chapter_source("tst1", 1)
+assert (src.kind, src.date) == ("archive", "2026-09-13"), src
+assert f"/web/{NEWER}id_/" in "".join(h + "/" for h in hits) or any(NEWER in h for h in hits), hits
+assert any("damaged or incomplete" in x and "2026-11-01" in x for x in logs), logs
+assert any("saved on 2026-09-13" in x for x in logs), logs
+assert not list(ncert.CACHE_DIR.glob("*.part")), "leftover .part file"
+print("OK - newest archive copy cut short: skipped, the next whole copy used, its date recorded")
+
+# 5c. The snapshot list is unavailable: the single closest copy is still tried.
+fresh(); mode.update(ncert="502", archive="cdx_down")
+assert ncert.download_chapter_pdf("tst1", 1) == CHAPTER
+assert ncert.chapter_source("tst1", 1).date == "2026-09-13"
+print("OK - snapshot list down: falls back to the closest copy")
+
+# 5d. Every archive copy is damaged: one clear error, nothing left behind.
+fresh(); mode.update(ncert="502", archive="all_bad")
+try:
+    ncert.download_chapter_pdf("tst1", 1)
+    raise AssertionError("should have failed")
+except ncert.DownloadError as e:
+    assert "save the file" in str(e) and "was not usable" in str(e), e
+assert not list(ncert.CACHE_DIR.glob("tst1*")), list(ncert.CACHE_DIR.glob("*"))
+print("OK - every archive copy damaged: one clear message, no leftover files")
 
 # 6. First page of the PDF names the source of each chapter.
 def cover_text(sources):

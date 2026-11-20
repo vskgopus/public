@@ -262,7 +262,7 @@ os.environ["FAKE_CLAUDE_SLEEP"] = "60"
 r = client.post("/api/jobs", json={"cls": "10", "subject": "Science", "book": "jesc1", "chapter_from": "2",
                                    "chapter_to": "2", "sections": ["key_points"]}, headers=H, base_url=BASE)
 job = r.get_json()["id"]
-for _ in range(100):
+for _ in range(600):      # up to 2 minutes: with ncert.nic.in down, the retries and the Internet Archive copy take a while
     st = client.get(f"/api/jobs/{job}", base_url=BASE).get_json()
     if "Claude Code is reading" in st["progress"]:
         break

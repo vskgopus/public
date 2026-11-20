@@ -26,7 +26,9 @@ from pypdf import PdfReader, PdfWriter
 
 BASE = "https://ncert.nic.in"
 # Fallback when ncert.nic.in does not answer: the Internet Archive's saved copy of the same NCERT file.
-ARCHIVE_API = "https://archive.org/wayback/available"
+ARCHIVE_API = "https://archive.org/wayback/available"          # the single "closest" snapshot (last resort)
+ARCHIVE_CDX = "https://web.archive.org/cdx/search/cdx"        # the list of snapshots, newest tried first
+ARCHIVE_TRIES = 8                                              # how many snapshots to try before giving up
 ARCHIVE_RAW = "https://web.archive.org/web"      # .../<timestamp>id_/<url> = the file exactly as saved
 HERE = Path(__file__).resolve().parent
 CATALOG_FILE = HERE / "catalog.json"
@@ -204,37 +206,74 @@ def chapter_source(code: str, number: int) -> Source:
         return Source()
 
 
-def archive_copy(url: str) -> tuple[str, str] | None:
-    """The Internet Archive's newest good copy of `url`: (address of the file as saved, YYYY-MM-DD), or None."""
-    r = requests.get(ARCHIVE_API, params={"url": url}, headers=UA, timeout=30, verify=ca_bundle())
-    r.raise_for_status()
-    snap = (r.json().get("archived_snapshots") or {}).get("closest") or {}
-    stamp = str(snap.get("timestamp") or "")
-    if not (snap.get("available") and str(snap.get("status")) == "200" and re.fullmatch(r"\d{14}", stamp)):
-        return None
+def _snapshot(stamp: str, url: str) -> tuple[str, str]:
     return f"{ARCHIVE_RAW}/{stamp}id_/{url}", f"{stamp[:4]}-{stamp[4:6]}-{stamp[6:8]}"
 
 
+def archive_copies(url: str, limit: int = ARCHIVE_TRIES) -> list[tuple[str, str]]:
+    """The Internet Archive's saved copies of `url`, newest first: [(address of the file as saved, YYYY-MM-DD)].
+
+    Only captures the Archive marked 200 and whose content differs from the previous one. Some captures are
+    cut short, so the caller tries them one by one until one is a whole PDF."""
+    stamps: list[str] = []
+    try:
+        r = requests.get(ARCHIVE_CDX, params={"url": url, "output": "json", "fl": "timestamp",
+                                              "filter": "statuscode:200", "collapse": "digest", "limit": -limit},
+                         headers=UA, timeout=30, verify=ca_bundle())
+        r.raise_for_status()
+        stamps = [row[0] for row in r.json()[1:] if row and re.fullmatch(r"\d{14}", str(row[0]))]
+    except (requests.RequestException, ValueError, IndexError):
+        pass                                       # the list is unavailable: fall back to the single closest copy
+    if not stamps:
+        r = requests.get(ARCHIVE_API, params={"url": url}, headers=UA, timeout=30, verify=ca_bundle())
+        r.raise_for_status()
+        snap = (r.json().get("archived_snapshots") or {}).get("closest") or {}
+        stamp = str(snap.get("timestamp") or "")
+        if snap.get("available") and str(snap.get("status")) == "200" and re.fullmatch(r"\d{14}", stamp):
+            stamps = [stamp]
+    return [_snapshot(st, url) for st in sorted(set(stamps), reverse=True)]
+
+
+def _whole_pdf(path: Path) -> None:
+    """Raise unless `path` opens as a complete PDF (a cut-short capture fails here)."""
+    reader = PdfReader(str(path))
+    if not reader.pages:
+        raise ValueError("it has no pages")
+    reader.pages[len(reader.pages) - 1].mediabox          # reaching the last page object needs the whole file
+
+
 def _from_archive(url: str, path: Path, log, why: DownloadError) -> Source:
-    """ncert.nic.in failed: fetch the Internet Archive's copy into `path`, or raise with both reasons."""
+    """ncert.nic.in failed: fetch the newest whole copy saved by the Internet Archive into `path`.
+
+    Copies are tried newest first; a damaged one is skipped. Raises with every reason if none works."""
     for stale in (path.with_name(path.name + ".part"), path):
         stale.unlink(missing_ok=True)             # never mix half of one file with the rest of another
     if log:
         log("ncert.nic.in did not give the chapter; looking for the copy saved by the Internet Archive …")
+    problems: list[str] = []
     try:
-        found = archive_copy(url)
-        if found is None:
-            raise DownloadError("the Internet Archive has no saved copy of it")
-        archive_url, day = found
-        _download_file(archive_url, path, log=log, host="web.archive.org")
-        PdfReader(str(path))                      # must really be a readable PDF
-    except Exception as e:                        # network, JSON, bad PDF: report both failures together
-        path.unlink(missing_ok=True)
-        raise DownloadError(f"{why} Also tried the Internet Archive's copy: {e}") from e
-    if log:
-        log(f"Using the Internet Archive's copy of the chapter, saved on {day}. It may differ from NCERT's "
-            "current file; the first page of the PDF says so.")
-    return Source("archive", day, archive_url)
+        copies = archive_copies(url)
+    except Exception as e:                        # network or JSON trouble
+        copies = []
+        problems.append(str(e))
+    if not copies and not problems:
+        problems.append("the Internet Archive has no saved copy of it")
+    for archive_url, day in copies:
+        try:
+            _download_file(archive_url, path, attempts=3, log=log, host="web.archive.org")
+            _whole_pdf(path)
+        except Exception as e:                    # not found, dropped connection, cut-short or damaged file
+            path.unlink(missing_ok=True)
+            path.with_name(path.name + ".part").unlink(missing_ok=True)
+            problems.append(f"the copy from {day} was not usable ({type(e).__name__}: {e})")
+            if log:
+                log(f"The Internet Archive's copy from {day} is damaged or incomplete; trying an older one …")
+            continue
+        if log:
+            log(f"Using the Internet Archive's copy of the chapter, saved on {day}. It may differ from NCERT's "
+                "current file; the first page of the PDF says so.")
+        return Source("archive", day, archive_url)
+    raise DownloadError(f"{why} Also tried the Internet Archive's copies: " + "; ".join(problems[-3:]))
 
 
 def download_chapter_pdf(code: str, number: int, log=None) -> bytes:
