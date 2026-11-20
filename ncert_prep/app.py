@@ -7,6 +7,7 @@ Gemini with the person's own (free) Gemini API key.
 """
 from __future__ import annotations
 
+import dataclasses
 import hashlib
 import json
 import os
@@ -405,7 +406,7 @@ def _run_job(job_id: str, p: dict) -> None:
             note = ""
             if part.first_page != 1 or part.last_page != part.total_pages:
                 note = f"Pages {part.first_page}–{part.last_page} of the chapter PDF"
-            data.update(number=part.number, url=part.url, page_note=note)
+            data.update(number=part.number, url=part.url, page_note=note, source=dataclasses.asdict(part.source))
             if "figures" in p["sections"]:
                 data["book_figures"] = _book_figures(part, log)
             chapters.append(data)

@@ -17,7 +17,7 @@ import re
 import ssl
 import tempfile
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import certifi
@@ -25,6 +25,9 @@ import requests
 from pypdf import PdfReader, PdfWriter
 
 BASE = "https://ncert.nic.in"
+# Fallback when ncert.nic.in does not answer: the Internet Archive's saved copy of the same NCERT file.
+ARCHIVE_API = "https://archive.org/wayback/available"
+ARCHIVE_RAW = "https://web.archive.org/web"      # .../<timestamp>id_/<url> = the file exactly as saved
 HERE = Path(__file__).resolve().parent
 CATALOG_FILE = HERE / "catalog.json"
 CACHE_DIR = Path(os.environ.get("NCERT_CACHE_DIR", HERE / "cache"))
@@ -118,6 +121,14 @@ def find_book(catalog: dict, cls: str, subject: str, code: str) -> dict:
 # --------------------------------------------------------------------------- chapters
 
 @dataclass
+class Source:
+    """Where a chapter PDF came from; printed on the first page of the generated PDF."""
+    kind: str = "unknown"    # "ncert" (ncert.nic.in), "archive" (Internet Archive copy), "unknown" (saved by hand/earlier)
+    date: str = ""           # archive: the day the Internet Archive saved the copy (YYYY-MM-DD)
+    url: str = ""            # the address the file was downloaded from
+
+
+@dataclass
 class ChapterPart:
     number: int          # chapter number in the book
     url: str             # official NCERT PDF URL
@@ -125,6 +136,7 @@ class ChapterPart:
     first_page: int      # 1-based page numbers inside the chapter PDF that were kept
     last_page: int
     total_pages: int
+    source: Source = field(default_factory=Source)
 
 
 def chapter_url(code: str, number: int) -> str:
@@ -132,10 +144,10 @@ def chapter_url(code: str, number: int) -> str:
 
 
 class DownloadError(RuntimeError):
-    pass
+    not_found = False        # True when the server said 404: the file does not exist there
 
 
-def _download_file(url: str, dest: Path, attempts: int = 5, log=None) -> None:
+def _download_file(url: str, dest: Path, attempts: int = 5, log=None, host: str = "ncert.nic.in") -> None:
     """Download with retries; a dropped connection resumes from where it stopped."""
     part = dest.with_name(dest.name + ".part")
     last_err = None
@@ -156,25 +168,73 @@ def _download_file(url: str, dest: Path, attempts: int = 5, log=None) -> None:
             break
         except requests.exceptions.HTTPError as e:
             if e.response is not None and e.response.status_code == 404:
-                raise DownloadError(f"NCERT has no file at {url}.") from e
+                err = DownloadError(f"{host} has no file at {url}.")
+                err.not_found = True
+                raise err from e
             last_err = e
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
                 requests.exceptions.ChunkedEncodingError) as e:
             last_err = e
         if attempt < attempts:
             if log:
-                log(f"Connection to ncert.nic.in dropped; retrying ({attempt + 1}/{attempts}) …")
+                log(f"Connection to {host} dropped; retrying ({attempt + 1}/{attempts}) …")
             time.sleep(min(2 ** attempt, 20))
     else:
         raise DownloadError(
-            f"Could not download {url} - the connection to ncert.nic.in kept dropping ({last_err}). "
+            f"Could not download {url} - the connection to {host} kept dropping ({last_err}). "
             f"Check your internet connection and try again, or open that link in your browser, save the file "
             f"as {dest.name} in {dest.parent}, and click Prepare again.")
     with open(part, "rb") as f:
         if f.read(5) != b"%PDF-":
             part.unlink()
-            raise DownloadError(f"NCERT did not return a PDF for {url}. Try again later.")
+            raise DownloadError(f"{host} did not return a PDF for {url}. Try again later.")
     part.replace(dest)
+
+
+def _source_file(path: Path) -> Path:
+    return path.with_name(path.name + ".source.json")
+
+
+def chapter_source(code: str, number: int) -> Source:
+    """Where the saved copy of this chapter came from (unknown if it was saved by hand or by an older version)."""
+    try:
+        d = json.loads(_source_file(CACHE_DIR / f"{code}{number:02d}.pdf").read_text())
+        return Source(str(d.get("kind", "unknown")), str(d.get("date", "")), str(d.get("url", "")))
+    except (OSError, ValueError):
+        return Source()
+
+
+def archive_copy(url: str) -> tuple[str, str] | None:
+    """The Internet Archive's newest good copy of `url`: (address of the file as saved, YYYY-MM-DD), or None."""
+    r = requests.get(ARCHIVE_API, params={"url": url}, headers=UA, timeout=30, verify=ca_bundle())
+    r.raise_for_status()
+    snap = (r.json().get("archived_snapshots") or {}).get("closest") or {}
+    stamp = str(snap.get("timestamp") or "")
+    if not (snap.get("available") and str(snap.get("status")) == "200" and re.fullmatch(r"\d{14}", stamp)):
+        return None
+    return f"{ARCHIVE_RAW}/{stamp}id_/{url}", f"{stamp[:4]}-{stamp[4:6]}-{stamp[6:8]}"
+
+
+def _from_archive(url: str, path: Path, log, why: DownloadError) -> Source:
+    """ncert.nic.in failed: fetch the Internet Archive's copy into `path`, or raise with both reasons."""
+    for stale in (path.with_name(path.name + ".part"), path):
+        stale.unlink(missing_ok=True)             # never mix half of one file with the rest of another
+    if log:
+        log("ncert.nic.in did not give the chapter; looking for the copy saved by the Internet Archive …")
+    try:
+        found = archive_copy(url)
+        if found is None:
+            raise DownloadError("the Internet Archive has no saved copy of it")
+        archive_url, day = found
+        _download_file(archive_url, path, log=log, host="web.archive.org")
+        PdfReader(str(path))                      # must really be a readable PDF
+    except Exception as e:                        # network, JSON, bad PDF: report both failures together
+        path.unlink(missing_ok=True)
+        raise DownloadError(f"{why} Also tried the Internet Archive's copy: {e}") from e
+    if log:
+        log(f"Using the Internet Archive's copy of the chapter, saved on {day}. It may differ from NCERT's "
+            "current file; the first page of the PDF says so.")
+    return Source("archive", day, archive_url)
 
 
 def download_chapter_pdf(code: str, number: int, log=None) -> bytes:
@@ -186,7 +246,16 @@ def download_chapter_pdf(code: str, number: int, log=None) -> bytes:
             return path.read_bytes()
         except Exception:
             path.unlink()                         # damaged copy: download again
-    _download_file(chapter_url(code, number), path, log=log)
+    url = chapter_url(code, number)
+    _source_file(path).unlink(missing_ok=True)
+    try:
+        _download_file(url, path, log=log)
+        source = Source("ncert", url=url)
+    except DownloadError as e:
+        if e.not_found:                           # NCERT says the file does not exist: nothing to fall back to
+            raise
+        source = _from_archive(url, path, log, e)
+    _source_file(path).write_text(json.dumps({"kind": source.kind, "date": source.date, "url": source.url}))
     return path.read_bytes()
 
 
@@ -210,7 +279,7 @@ def split_part(part: ChapterPart, max_pages: int) -> list[ChapterPart]:
     for start in range(0, count, max_pages):
         end = min(start + max_pages, count) - 1
         pieces.append(ChapterPart(part.number, part.url, _slice_pdf(part.pdf, start, end),
-                                  part.first_page + start, part.first_page + end, part.total_pages))
+                                  part.first_page + start, part.first_page + end, part.total_pages, part.source))
     return pieces
 
 
@@ -233,7 +302,7 @@ def load_selection(code: str, first: int, last: int, page_from: int | None = Non
         if a > b:
             continue
         pdf = data if (a == 0 and b == total - 1) else _slice_pdf(data, a, b)
-        parts.append(ChapterPart(n, chapter_url(code, n), pdf, a + 1, b + 1, total))
+        parts.append(ChapterPart(n, chapter_url(code, n), pdf, a + 1, b + 1, total, chapter_source(code, n)))
     if not parts:
         raise ValueError("The page range does not overlap the selected chapters.")
     return parts

@@ -85,14 +85,14 @@ def _t(text: str) -> str:
 
 
 def _hl(text: str, terms) -> str:
-    """Like _t, but the given terms are printed in bold (whole words, any case; tags are left alone)."""
+    """Like _t, but the given terms are printed in bold (whole words, any case; tags and &entities; are left alone)."""
     out = _t(text)
     words = sorted({str(t).strip() for t in terms or [] if str(t).strip()}, key=len, reverse=True)
     if not words:
         return out
     pat = re.compile(r"(?<!\w)(%s)(?!\w)" % "|".join(re.escape(escape(w)) for w in words), re.I)
-    return "".join(part if part.startswith("<") else pat.sub(lambda m: '<font name="%s">%s</font>' % (BOLD, m.group(1)), part)
-                   for part in re.split(r"(<[^>]*>)", out))
+    return "".join(part if part.startswith(("<", "&")) else pat.sub(lambda m: '<font name="%s">%s</font>' % (BOLD, m.group(1)), part)
+                   for part in re.split(r"(<[^>]*>|&#?\w+;)", out))
 
 
 def _section_bar(title: str) -> Table:
@@ -530,6 +530,34 @@ def _practice_flow(chapters: list[dict], counts: dict | None) -> list:
     return flow + [PageBreak(), _section_bar("Practice Test: Answer Key"), Spacer(1, 4)] + key
 
 
+def _source_lines(chapters: list[dict]) -> list[str]:
+    """First-page lines saying where each chapter PDF came from (ncert.nic.in or the Internet Archive)."""
+    groups: dict[tuple, list[int]] = {}
+    for c in chapters:
+        s = c.get("source") or {}
+        groups.setdefault((s.get("kind", ""), s.get("date", "")), []).append(c["number"])
+    if not groups or set(groups) == {("", "")}:
+        return ["Based on the official NCERT textbook (ncert.nic.in)."]      # no source recorded (older data)
+    lines = []
+    for (kind, day), nums in groups.items():
+        who = "" if len(groups) == 1 else ("Chapter " if len(nums) == 1 else "Chapters ") + ", ".join(map(str, nums)) + ": "
+        if kind == "ncert":
+            what = "the official NCERT textbook, downloaded from ncert.nic.in."
+        elif kind == "archive":
+            try:
+                when = f"{dt.date.fromisoformat(day):%d %B %Y}"
+            except ValueError:
+                when = day or "an earlier date"
+            what = (f"a copy of the NCERT textbook saved by the Internet Archive (web.archive.org) on {when}, used "
+                    "because ncert.nic.in did not respond. It may differ from NCERT's current edition.")
+        else:
+            what = "the NCERT textbook PDF already saved on this computer (where it came from was not recorded)."
+        lines.append((who + what) if who else "Based on " + what)
+    if len(groups) > 1:
+        lines.insert(0, "Based on the NCERT textbook:")
+    return lines
+
+
 def render_pdf(meta: dict, chapters: list[dict], out_path: str | Path, sections=None, test_counts=None) -> Path:
     """meta: cls, subject, book, code. chapters: generator output + number/url/page_note.
     sections: the ticked options (generator.ALL_OPTIONS); default: whatever the chapters contain.
@@ -571,9 +599,10 @@ def render_pdf(meta: dict, chapters: list[dict], out_path: str | Path, sections=
             Paragraph(_t("Contents: " + "  ·  ".join(f"{i}. {c}" for i, c in enumerate(contents, 1))), S["small_c"]),
             Spacer(1, 4),
             Paragraph(_t(f"{qline} questions with answers") if qline else "", S["small_c"]),
-            Spacer(1, 60 * mm),
-            Paragraph(_t("Based on the official NCERT textbook (ncert.nic.in). "
-                         f"Prepared {dt.date.today():%d %B %Y}."), S["small_c"])]
+            Spacer(1, 50 * mm)]
+    for line in _source_lines(chapters):
+        flow += [Paragraph(_t(line), S["small_c"]), Spacer(1, 3)]
+    flow.append(Paragraph(_t(f"Prepared {dt.date.today():%d %B %Y}."), S["small_c"]))
     if sections:
         for ch in chapters:
             flow += [PageBreak()] + _chapter_flow(ch, meta, sections)

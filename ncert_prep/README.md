@@ -131,7 +131,7 @@ finished are kept. If the app was started from a terminal, the same lines are pr
 |---|---|
 | `launcher.py` | Starts the app on this computer only (127.0.0.1) and opens it in an app window; reuses a running copy of the same version and restarts an older one |
 | `app.py`, `templates/index.html` | The page, settings, background jobs |
-| `ncert.py` | Reads NCERT's catalogue into `catalog.json`; downloads chapter PDFs; cuts page ranges |
+| `ncert.py` | Reads NCERT's catalogue into `catalog.json`; downloads chapter PDFs (from ncert.nic.in, or the Internet Archive's saved copy if NCERT does not answer; the first page of the PDF says which); cuts page ranges |
 | `generator.py` | The selectable sections (prompt and output schema for each), and the API-key engine |
 | `claude_cli.py` | The Claude-login engine (Claude Code: status, login, one request per chapter) |
 | `gemini.py` | The Google Gemini engine (lists the models a key can use, one request per chapter) |

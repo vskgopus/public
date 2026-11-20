@@ -193,12 +193,15 @@ assert generator.DEFAULT_SECTIONS[0] == "summary_basic" and list(generator.SECTI
 import pdf_render  # noqa: E402
 pages = [p.extract_text().strip() for p in PdfReader(pdf).pages]
 assert text.index("Summary Notes (Basic)") < text.index("Summary Notes (Detailed)"), "basic summary first"
-firsts = [t.split("\n")[0] for t in pages]
+import re  # noqa: E402
+# The page footer ("... - Exam Preparation", "Page N") is drawn first, so skip it to get the first body line.
+firsts = [next((x for x in t.split("\n") if "Exam Preparation" not in x and not re.fullmatch(r"Page \d+", x.strip())), "")
+          for t in pages]
 for heading in ("One Mark Questions", "Short Answer Questions", "Long Answer Questions", "Case-Based Questions"):
     assert any(heading in l for l in firsts), (heading + " begins at the top of a page", firsts)
 assert pdf_render._hl("An Exothermic reaction gives out heat.", ["exothermic reaction"]) == \
     'An <font name="%s">Exothermic reaction</font> gives out heat.' % pdf_render.BOLD
-assert pdf_render._hl("Light & <b>", ["b"]) == "Light &amp; &lt;b&gt;", "no bolding inside escapes or tags"
+assert pdf_render._hl("Light & <b>", ["amp", "lt", "gt"]) == "Light &amp; &lt;b&gt;", "no bolding inside escapes or tags"
 
 # A smaller selection reuses the saved parts (they hold every section) and leaves the rest out.
 st = run_job(sections=["diagrams", "revision_table"])
