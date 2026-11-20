@@ -35,7 +35,7 @@ for i in range(16):
     c.drawString(100, 700, f"Stand-in chapter page {i + 1}")
     c.showPage()
 c.save()
-ncert.download_chapter_pdf = lambda code, number, log=None: buf.getvalue()
+ncert.download_chapter_pdf = lambda code, number, log=None, source="auto": buf.getvalue()
 gemini._sleep = lambda s: None
 
 FULL = json.loads((ROOT / "samples" / "class10_science_ch1.json").read_text())

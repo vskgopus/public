@@ -292,3 +292,20 @@ for words in ("Figures from the NCERT Book", "From the NCERT textbook", "Fig. 1.
 images = sum(len(p.images) for p in reader.pages)
 assert images >= 5, f"expected the book's figures as images in the PDF, found {images}"
 print(f"OK - figures from the book: {images} figure images in {pdf.name}")
+
+# --- Settings: where to get the chapters (Automatic / NCERT only / Internet Archive only)
+r = client.post("/api/settings", json={"chapter_source": "elsewhere"}, headers=H, base_url=BASE)
+assert r.status_code == 400, r.get_json()
+r = client.post("/api/settings", json={"chapter_source": "archive"}, headers=H, base_url=BASE)
+assert r.get_json()["settings"]["chapter_source"] == "archive", r.get_json()
+assert b'id="chsource"' in client.get("/", base_url=BASE).data, "the page has the chapter source choice"
+st = run_job(sections=["key_points"])
+print("\n".join(st["log"]))
+assert st["status"] == "done", st
+assert any("from the Internet Archive (as chosen in Settings)" in l for l in st["log"]), st["log"]
+assert not any("Connection to ncert.nic.in dropped" in l for l in st["log"]), "NCERT must not be asked when the archive is chosen"
+pdf = Path(webapp.JOBS[list(webapp.JOBS)[-1]]["file"])
+first = re.sub(r"\s+", " ", PdfReader(pdf).pages[0].extract_text())
+assert "saved by the Internet Archive" in first and "downloaded from ncert.nic.in" not in first, first
+client.post("/api/settings", json={"chapter_source": "auto"}, headers=H, base_url=BASE)
+print(f"OK - chapter source setting: Internet Archive only; the first page of {pdf.name} says so")

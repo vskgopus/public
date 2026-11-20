@@ -17,6 +17,7 @@ DEFAULTS = {
     "gemini_model": "",         # e.g. "gemini-2.5-flash"; chosen from the models the key can use
     "gemini_output_limit": 0,   # the model's output token limit, as reported by Google
     "split_pages": 0,           # 0 = send whole chapters; N = split chapters into parts of N pages
+    "chapter_source": "auto",   # where chapters come from: "auto" (NCERT, then the Internet Archive if NCERT fails), "ncert" or "archive"
     # Sections ticked on the main page (keys of generator.ALL_OPTIONS); remembered between runs.
     "sections": ["summary_basic", "summary", "key_points", "formulas", "one_mark", "short_answer", "long_answer"],
     "practice_counts": {"m1": 10, "m2": 4, "m3": 4, "m5": 3, "case": 2},   # questions per kind in the practice test
@@ -86,6 +87,7 @@ def public(data: dict) -> dict:
     key = data.get("api_key") or ""
     gkey = data.get("gemini_api_key") or ""
     return {"engine": data["engine"], "split_pages": data["split_pages"], "sections": data["sections"],
+            "chapter_source": data["chapter_source"] if data["chapter_source"] in ("auto", "ncert", "archive") else "auto",
             "practice_counts": data["practice_counts"],
             "api_key_set": bool(key), "api_key_hint": f"…{key[-4:]}" if len(key) > 8 else "",
             "gemini_key_set": bool(gkey), "gemini_key_hint": f"…{gkey[-4:]}" if len(gkey) > 8 else "",

@@ -119,6 +119,8 @@ finished are kept. If the app was started from a terminal, the same lines are pr
 ### Saving your Claude allowance
 
 - **Settings → Split long chapters** sends a chapter in parts of 8, 12 or 16 pages.
+- **Settings → Where to get the chapters**: Automatic (NCERT first, the Internet Archive's saved copy if NCERT does not
+  answer), NCERT only, or Internet Archive only. The first page of each PDF says where the chapter came from.
 - Every finished part is saved. If you hit your plan's usage limit, click **Prepare** again
   after it resets; the app reuses the saved parts and continues from where it stopped.
 - Saved parts are also reused when you later ask for fewer sections. Asking for a section the

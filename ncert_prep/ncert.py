@@ -242,14 +242,18 @@ def _whole_pdf(path: Path) -> None:
     reader.pages[len(reader.pages) - 1].mediabox          # reaching the last page object needs the whole file
 
 
-def _from_archive(url: str, path: Path, log, why: DownloadError) -> Source:
-    """ncert.nic.in failed: fetch the newest whole copy saved by the Internet Archive into `path`.
+def _from_archive(url: str, path: Path, log, why: DownloadError | None) -> Source:
+    """Fetch the newest whole copy saved by the Internet Archive into `path`.
 
-    Copies are tried newest first; a damaged one is skipped. Raises with every reason if none works."""
-    for stale in (path.with_name(path.name + ".part"), path):
-        stale.unlink(missing_ok=True)             # never mix half of one file with the rest of another
+    `why` is the NCERT failure that led here (None: the user chose the Internet Archive in Settings).
+    Copies are tried newest first; a damaged one is skipped. Each is downloaded to a side file and moved into
+    place only when it is a whole PDF, so an existing saved chapter is never damaged by a failed attempt.
+    Raises with the reasons if none works."""
+    if why is not None:
+        path.with_name(path.name + ".part").unlink(missing_ok=True)   # NCERT's half file must not be resumed later
     if log:
-        log("ncert.nic.in did not give the chapter; looking for the copy saved by the Internet Archive …")
+        log("ncert.nic.in did not give the chapter; looking for the copy saved by the Internet Archive …"
+            if why is not None else "Looking for the chapter among the copies saved by the Internet Archive …")
     problems: list[str] = []
     try:
         copies = archive_copies(url)
@@ -258,43 +262,71 @@ def _from_archive(url: str, path: Path, log, why: DownloadError) -> Source:
         problems.append(str(e))
     if not copies and not problems:
         problems.append("the Internet Archive has no saved copy of it")
+    side = path.with_name(path.name + ".archive")
     for archive_url, day in copies:
+        for stale in (side, side.with_name(side.name + ".part")):
+            stale.unlink(missing_ok=True)
         try:
-            _download_file(archive_url, path, attempts=3, log=log, host="web.archive.org")
-            _whole_pdf(path)
+            _download_file(archive_url, side, attempts=3, log=log, host="web.archive.org")
+            _whole_pdf(side)
         except Exception as e:                    # not found, dropped connection, cut-short or damaged file
-            path.unlink(missing_ok=True)
-            path.with_name(path.name + ".part").unlink(missing_ok=True)
+            for stale in (side, side.with_name(side.name + ".part")):
+                stale.unlink(missing_ok=True)
             problems.append(f"the copy from {day} was not usable ({type(e).__name__}: {e})")
             if log:
                 log(f"The Internet Archive's copy from {day} is damaged or incomplete; trying an older one …")
             continue
+        side.replace(path)
         if log:
             log(f"Using the Internet Archive's copy of the chapter, saved on {day}. It may differ from NCERT's "
                 "current file; the first page of the PDF says so.")
         return Source("archive", day, archive_url)
+    if why is None:
+        raise DownloadError(f"Could not get {url} from the Internet Archive ({'; '.join(problems[-3:])}). Choose "
+                            f"'Automatic' or 'NCERT only' under Settings, or open that link in your browser, save "
+                            f"the file as {path.name} in {path.parent}, and click Prepare again.")
     raise DownloadError(f"{why} Also tried the Internet Archive's copies: " + "; ".join(problems[-3:]))
 
 
-def download_chapter_pdf(code: str, number: int, log=None) -> bytes:
+SOURCES = ("auto", "ncert", "archive")      # Settings: NCERT first then the archive / NCERT only / archive only
+_SOURCE_NAMES = {"ncert": "ncert.nic.in", "archive": "the Internet Archive"}
+
+
+def download_chapter_pdf(code: str, number: int, log=None, source: str = "auto") -> bytes:
+    """The chapter PDF, from the saved copy if there is one, else downloaded.
+
+    source: "auto" = ncert.nic.in, and the Internet Archive's copy if that fails (not on a 404);
+    "ncert" = ncert.nic.in only; "archive" = the Internet Archive only. A saved copy that is known to come from
+    the other source is replaced; one of unknown origin (saved by hand, or by an older version) is kept."""
+    if source not in SOURCES:
+        raise ValueError(f"Unknown chapter source {source!r}")
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     path = CACHE_DIR / f"{code}{number:02d}.pdf"
     if path.exists() and path.stat().st_size > 1000:
         try:
             PdfReader(str(path))
-            return path.read_bytes()
         except Exception:
             path.unlink()                         # damaged copy: download again
+            _source_file(path).unlink(missing_ok=True)
+        else:
+            have = chapter_source(code, number).kind
+            if source == "auto" or have in ("unknown", source):
+                return path.read_bytes()
+            if log:
+                log(f"The saved copy came from {_SOURCE_NAMES.get(have, have)}; getting the chapter from "
+                    f"{_SOURCE_NAMES[source]} as chosen in Settings …")
     url = chapter_url(code, number)
-    _source_file(path).unlink(missing_ok=True)
-    try:
-        _download_file(url, path, log=log)
-        source = Source("ncert", url=url)
-    except DownloadError as e:
-        if e.not_found:                           # NCERT says the file does not exist: nothing to fall back to
-            raise
-        source = _from_archive(url, path, log, e)
-    _source_file(path).write_text(json.dumps({"kind": source.kind, "date": source.date, "url": source.url}))
+    if source == "archive":
+        got = _from_archive(url, path, log, None)
+    else:
+        try:
+            _download_file(url, path, log=log)
+            got = Source("ncert", url=url)
+        except DownloadError as e:
+            if e.not_found or source == "ncert":  # no such file at NCERT, or the user wants NCERT only
+                raise
+            got = _from_archive(url, path, log, e)
+    _source_file(path).write_text(json.dumps({"kind": got.kind, "date": got.date, "url": got.url}))
     return path.read_bytes()
 
 
@@ -323,7 +355,7 @@ def split_part(part: ChapterPart, max_pages: int) -> list[ChapterPart]:
 
 
 def load_selection(code: str, first: int, last: int, page_from: int | None = None,
-                   page_to: int | None = None, log=None) -> list[ChapterPart]:
+                   page_to: int | None = None, log=None, source: str = "auto") -> list[ChapterPart]:
     """Download chapters first..last of a book.
 
     page_from/page_to (1-based, inclusive, optional) pick pages counted across the
@@ -334,7 +366,7 @@ def load_selection(code: str, first: int, last: int, page_from: int | None = Non
     lo = (page_from or 1) - 1
     hi = (page_to or 10**9) - 1
     for n in range(first, last + 1):
-        data = download_chapter_pdf(code, n, log=log)
+        data = download_chapter_pdf(code, n, log=log, source=source)
         total = len(PdfReader(io.BytesIO(data)).pages)
         a, b = max(lo - offset, 0), min(hi - offset, total - 1)
         offset += total

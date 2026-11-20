@@ -130,6 +130,10 @@ def api_settings():
             changes["practice_counts"] = generator.practice_counts(f["practice_counts"])
         except ValueError as e:
             return jsonify(error=str(e)), 400
+    if "chapter_source" in f:
+        if f["chapter_source"] not in ncert.SOURCES:
+            return jsonify(error="Choose Automatic, NCERT only or Internet Archive only."), 400
+        changes["chapter_source"] = f["chapter_source"]
     if "split_pages" in f:
         try:
             changes["split_pages"] = max(0, min(50, int(f["split_pages"] or 0)))
@@ -276,6 +280,7 @@ def create_job():
                     "progress": "", "cancel": threading.Event()}
     params = dict(cls=cls, subject=subject, book=book, ch_from=ch_from, ch_to=ch_to, p_from=p_from,
                   p_to=p_to, engine=s["engine"], split=s["split_pages"], sections=sections, counts=counts,
+                  source=s["chapter_source"] if s["chapter_source"] in ncert.SOURCES else "auto",
                   api_key=(s["gemini_api_key"] or _env_gemini_key()) if s["engine"] == "gemini" else s["api_key"],
                   gemini_model=s["gemini_model"], gemini_output_limit=s["gemini_output_limit"])
     threading.Thread(target=_run_job, args=(job_id, params), daemon=True).start()
@@ -357,9 +362,12 @@ def _run_job(job_id: str, p: dict) -> None:
         for line in describe_ai(settings.load(), p["sections"], p["counts"]):
             log(line)
         model = _model_tag(p)
+        where = {"auto": "ncert.nic.in", "ncert": "ncert.nic.in (NCERT only)",
+                 "archive": "the Internet Archive (as chosen in Settings)"}[p["source"]]
         log(f"Downloading chapter {p['ch_from']}" + (f"–{p['ch_to']}" if p["ch_to"] != p["ch_from"] else "")
-            + f" of '{book['title']}' from ncert.nic.in …")
-        parts = ncert.load_selection(book["code"], p["ch_from"], p["ch_to"], p["p_from"], p["p_to"], log=log)
+            + f" of '{book['title']}' from {where} …")
+        parts = ncert.load_selection(book["code"], p["ch_from"], p["ch_to"], p["p_from"], p["p_to"], log=log,
+                                     source=p["source"])
         chapters = []
         for part in parts:
             pieces = ncert.split_part(part, p["split"])

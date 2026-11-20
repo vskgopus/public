@@ -326,6 +326,17 @@
     </div>
 
     <div class="sect">
+      <label for="chsource" style="margin:0">Where to get the chapters</label>
+      <select id="chsource">
+        <option value="auto">Automatic: NCERT first, the Internet Archive if NCERT does not answer</option>
+        <option value="ncert">NCERT only (ncert.nic.in)</option>
+        <option value="archive">Internet Archive only (a saved copy, possibly an older edition)</option>
+      </select>
+      <span class="hint">The first page of each PDF says where the chapter came from. A chapter already saved on this
+        computer from the other source is fetched again when you choose a source here.</span>
+    </div>
+
+    <div class="sect">
       <span class="hint">Finished PDFs are saved in <code id="outdir"></code></span>
       <div class="row"><button class="secondary" id="openfolder" type="button">Open PDF folder</button>
         <button class="secondary" id="quit" type="button">Quit app</button></div>
@@ -367,7 +378,7 @@ async function refresh() {
   $("gem-state").textContent = s.gemini_key_set ? `A key is saved (${s.gemini_key_hint}).` + (s.gemini_model ? ` Model: ${s.gemini_model}.` : "")
     : (s.env_gemini_key ? "Using the GEMINI_API_KEY environment variable." : "No key saved yet.");
   if ((s.gemini_key_set || s.env_gemini_key) && !gemModels) loadGemModels();
-  $("split").value = String(s.split_pages); $("outdir").textContent = ST.output_dir;
+  $("split").value = String(s.split_pages); $("chsource").value = s.chapter_source || "auto"; $("outdir").textContent = ST.output_dir;
   $("key-state").textContent = s.api_key_set ? `A key is saved (${s.api_key_hint}).` : (s.env_key ? "Using the ANTHROPIC_API_KEY environment variable." : "No key saved yet.");
 
   let html;
@@ -447,6 +458,7 @@ $("savegem").onclick = async () => {
 };
 $("gemmodel").onchange = async () => { try { await post("/api/settings", { gemini_model: $("gemmodel").value }); say("Saved."); refresh(); } catch (e) { say(e.message, true); } };
 $("split").onchange = async () => { await post("/api/settings", { split_pages: $("split").value }); say("Saved."); };
+$("chsource").onchange = async () => { try { await post("/api/settings", { chapter_source: $("chsource").value }); say("Saved."); } catch (e) { say(e.message, true); } };
 $("openfolder").onclick = () => post("/api/open-folder").catch(e => say(e.message, true));
 $("btnquit").onclick = () => $("quit").onclick();
 $("quit").onclick = async () => {

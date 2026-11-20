@@ -223,6 +223,60 @@ except ncert.DownloadError as e:
 assert not list(ncert.CACHE_DIR.glob("tst1*")), list(ncert.CACHE_DIR.glob("*"))
 print("OK - every archive copy damaged: one clear message, no leftover files")
 
+# 5e. The choice in Settings: Internet Archive only / NCERT only / replacing a copy from the other source.
+def asked(prefix):
+    return any(h.startswith(prefix) for h in hits)
+
+
+fresh(); mode.update(ncert="ok", archive="ok")
+logs = []
+assert ncert.download_chapter_pdf("tst1", 1, log=logs.append, source="archive") == CHAPTER
+assert ncert.chapter_source("tst1", 1).kind == "archive" and not asked("/textbook/"), hits
+hits.clear(); logs.clear()                       # a saved archive copy + "NCERT only": fetched from NCERT instead
+assert ncert.download_chapter_pdf("tst1", 1, log=logs.append, source="ncert") == CHAPTER
+assert ncert.chapter_source("tst1", 1).kind == "ncert" and asked("/textbook/"), hits
+assert any("as chosen in Settings" in x for x in logs), logs
+hits.clear()                                     # a saved NCERT copy: kept for Automatic and for NCERT only
+assert ncert.download_chapter_pdf("tst1", 1) == CHAPTER and ncert.download_chapter_pdf("tst1", 1, source="ncert") == CHAPTER
+assert not hits, hits
+assert ncert.download_chapter_pdf("tst1", 1, source="archive") == CHAPTER      # ...but replaced for "archive only"
+assert ncert.chapter_source("tst1", 1).kind == "archive" and not asked("/textbook/"), hits
+parts = ncert.load_selection("tst1", 1, 1, source="archive")
+assert parts[0].source.kind == "archive"
+# a copy of unknown origin (saved by hand) is kept whatever is chosen
+fresh()
+(ncert.CACHE_DIR / "tst101.pdf").write_bytes(CHAPTER)
+for choice in ncert.SOURCES:
+    assert ncert.download_chapter_pdf("tst1", 1, source=choice) == CHAPTER
+assert not hits, hits
+try:
+    ncert.download_chapter_pdf("tst1", 1, source="elsewhere")
+    raise AssertionError("an unknown choice must be refused")
+except ValueError:
+    pass
+print("OK - source choice: archive only, NCERT only, copies from the other source replaced, unknown origin kept")
+
+# 5f. NCERT only never asks the archive; archive only never asks NCERT; a failed switch keeps the saved copy intact.
+fresh(); mode.update(ncert="502", archive="ok")
+try:
+    ncert.download_chapter_pdf("tst1", 1, source="ncert")
+    raise AssertionError("should have failed")
+except ncert.DownloadError as e:
+    assert "save the file" in str(e), e
+assert not (asked("/cdx") or asked("/wayback") or asked("/web/")), hits
+fresh(); mode.update(ncert="ok", archive="ok")
+assert ncert.download_chapter_pdf("tst1", 1) == CHAPTER and ncert.chapter_source("tst1", 1).kind == "ncert"
+mode.update(archive="all_bad"); hits.clear()
+try:
+    ncert.download_chapter_pdf("tst1", 1, source="archive")
+    raise AssertionError("should have failed")
+except ncert.DownloadError as e:
+    assert "Automatic" in str(e) and "save the file" in str(e), e
+assert not asked("/textbook/"), hits
+assert (ncert.CACHE_DIR / "tst101.pdf").read_bytes() == CHAPTER and ncert.chapter_source("tst1", 1).kind == "ncert"
+assert not list(ncert.CACHE_DIR.glob("*.archive*")) and not list(ncert.CACHE_DIR.glob("*.part")), list(ncert.CACHE_DIR.glob("*"))
+print("OK - NCERT only / archive only keep to their source; a failed switch leaves the saved chapter intact")
+
 # 6. First page of the PDF names the source of each chapter.
 def cover_text(sources):
     base = json.loads((Path(__file__).resolve().parents[1] / "samples" / "class10_science_ch1.json").read_text())
