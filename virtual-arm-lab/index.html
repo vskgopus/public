@@ -420,7 +420,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
 #boardP .ph small{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style></head><body><div id="app">
 <header id="tb">
- <button class="brand" id="bAbout" title="About Virtual ARM Lab (version 0.24.0)" aria-label="About Virtual ARM Lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ac)"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg><b>Virtual ARM Lab</b><span>Cortex-M3 debugger</span></button>
+ <button class="brand" id="bAbout" title="About Virtual ARM Lab (version 0.25.0)" aria-label="About Virtual ARM Lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ac)"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg><b>Virtual ARM Lab</b><span>Cortex-M3 debugger</span></button>
  <div class="grp"><button class="tbtn bld" id="bAsm" title="Build the active file (Ctrl+B)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg><span>Build</span></button></div>
  <div class="grp">
   <button class="tbtn pri" id="bRun" title="Run / Continue (F5 or F8)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg><span>Run</span></button>
@@ -521,7 +521,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
 </div>
 <div id="about" hidden role="dialog" aria-modal="true" aria-labelledby="abT"><div class="abcard">
  <div class="abhd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg>
-  <div><h2 id="abT">Virtual ARM Lab</h2><div class="abv"><span>Version <b id="abVer">0.24.0</b></span> &middot; <span>released 2026-11-23</span></div></div>
+  <div><h2 id="abT">Virtual ARM Lab</h2><div class="abv"><span>Version <b id="abVer">0.25.0</b></span> &middot; <span>released 2026-11-23</span></div></div>
   <button class="tbtn" id="abX" title="Close (Esc)">Close</button></div>
  <div class="abbody">
   <p>A virtual ARM microcontroller board in the browser: a Cortex-M3, M33, M7 or A55 style CPU with an IDE, a debugger, a C compiler and a VxWorks 7 style real-time kernel, for learning embedded programming.</p>
@@ -539,6 +539,11 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
    <tr><td>Documents</td><td>User Manual, Datasheet and VxWorks API Reference (press <b>Manual</b> or F1)</td></tr>
   </table>
   <h3>What's new</h3>
+  <p><b>0.25.0</b> (2026-11-23):</p>
+  <ul>
+   <li>Linking: a file name written without a folder (for example a linker file naming <code>startup.s</code>) no longer picks up the VxWorks kernel's assembly file from another folder; the including file's folder and the project root come first</li>
+   <li>A Cortex-M assembly file linked into a Cortex-A55 build (for example <code>samples/startup.s</code>) now gives a clear message naming the file and the core, with what to do</li>
+  </ul>
   <p><b>0.24.0</b> (2026-11-23):</p>
   <ul>
    <li><b>VxWorks on the Cortex-A55</b>: the same kernel and demos run on one A55 core (cpu node <code>arm,cortex-a55</code> in <code>board.dts</code>) with the GIC and the Generic Timer; signals, reader/writer semaphores, task faults, call stacks; stack guards use debug watchpoints. <code>#pragma smp 2</code> schedules tasks on two A55 cores (demo <code>vx_smp.c</code>)</li>
@@ -553,13 +558,6 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
    <li>The A55 MMU: stage 1 translation with 4 KB pages, memory types, access permissions, the access flag, a TLB with <code>TLBI</code>, and <code>AT</code> address translation; example <code>a55/mmu.s</code></li>
    <li>Several A55 cores (<code>#pragma smp</code>): PSCI to start cores, exclusive loads and stores across cores, <code>SEV</code>/<code>WFE</code>, software-generated interrupts between cores; example <code>a55/smp.s</code></li>
    <li>An i.MX 93 style board: two Cortex-A55 cores and a Cortex-M33 (example <code>imx93/</code>); the debug pane shows "(off)" for a core not started yet; Datasheet chapter 14</li>
-  </ul>
-  <p><b>0.22.0</b> (2026-11-21):</p>
-  <ul>
-   <li>Three cores to choose from in the Board panel (or with <code>#pragma core</code>): the Cortex-M3, the <b>Cortex-M33</b> (DSP instructions, a single-precision FPU the compiler uses for <code>float</code>, stack limit registers, the ARMv8-M MPU, TrustZone with Secure and Non-secure programs: example <code>trustzone/</code>) and the <b>Cortex-M7</b> (DSP, a double-precision FPU the compiler uses for <code>double</code>, cache control registers, an ITCM); samples <code>m33.c</code> and <code>m7.c</code>; Datasheet chapters 11 and 12</li>
-   <li>Two cores on one board, as in the i.MX 95: <code>#pragma core1</code> builds a second program for a second core; shared RAM, a messaging unit, all-stop debugging with a core list in the debug pane; example <code>amp/</code> (Cortex-M33 + Cortex-M7)</li>
-   <li>VxWorks: the target shell runs C lines (<code>int x = 5; x * 2</code>), task stacks are guarded (MPU or PSPLIM), signals (<code>kill</code>, <code>sigaction</code>, <code>sigsuspend</code> ...) and reader/writer semaphores</li>
-   <li>Smaller: <code>samples/mpu.c</code> also on the Cortex-M33; compile errors name the file and line once; the Map tab shows both images of a TrustZone or two-core program; CMSIS intrinsics <code>__SMLALD</code> and family, <code>cmse_nonsecure_caller()</code></li>
   </ul>
   <h3>Notices</h3>
   <p>The VxWorks part is an independent teaching implementation of part of the public VxWorks API. It is not Wind River code and is not affiliated with Wind River. The CPU is modelled on the ARM Cortex-M3 but is not an exact or cycle-accurate model. Arm, Cortex and VxWorks are trademarks of their respective owners.</p>
