@@ -21,3 +21,5 @@ build):
   @tesseract.js-data/eng               MIT (English recognition data)
   @mediapipe/face_detection            Apache-2.0 (Passport Photo: face detection model and runtime)
   @mediapipe/selfie_segmentation       Apache-2.0 (Passport Photo: background removal model and runtime)
+  MODNet (github.com/ZHKKKe/MODNet)    Apache-2.0 (Passport Photo: portrait matting model)
+  onnxruntime-web                      MIT (runs the MODNet model in the browser)

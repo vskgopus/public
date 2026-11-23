@@ -1,0 +1,4 @@
+onnxruntime-web 1.31.1
+Declared license: MIT
+Homepage: n/a
+This package ships no separate license text; the above is taken from its package.json.
