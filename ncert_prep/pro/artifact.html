@@ -1,10 +1,11 @@
-<title>NCERT Prep with Claude</title>
+<title>NCERT Exam Prep</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-  /* Layout: answer-sheet page. A red margin rule runs down the left of the work area;
-     left column = choices + NCERT downloads, right column = the prompt to paste. */
+  /* Answer-sheet page: a red margin rule runs down the left of the work area. Built by pro/build_page.py:
+     the prompts, schemas and catalogue come from ncert_prep/generator.py (via web/data.js), the printable
+     document from web/render.js and web/style.css, so this page writes the same material as the apps. */
   :root {
     --paper: #fbfcfe; --sheet: #ffffff; --ink: #172036; --muted: #5a6478; --rule: #dde3ee;
     --accent: #1f4fa3; --accent-ink: #ffffff; --accent-soft: #e8eefb; --margin: #d4483b; --ok: #13795b;
@@ -26,15 +27,14 @@
   }
   * { box-sizing: border-box; }
   body { background: var(--paper); color: var(--ink); font: 15px/1.55 var(--body); }
-  .wrap { max-width: 1120px; margin: 0 auto; padding-block: 28px 56px;
+  .wrap { max-width: 760px; margin: 0 auto; padding-block: 28px 56px;
           padding-left: max(16px, env(safe-area-inset-left, 0px));
           padding-right: max(16px, env(safe-area-inset-right, 0px)); }
   header h1 { font: 700 clamp(1.6rem, 3.2vw, 2.2rem)/1.15 var(--display); margin: 0 0 6px; text-wrap: balance; }
   header p { margin: 0; color: var(--muted); max-width: 68ch; }
   .marks { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
   .chip { font: 500 12px/1 var(--mono); padding: 6px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
-  .grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 20px; margin-top: 24px; align-items: start; }
-  @media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+  .cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; margin-top: 24px; }
   .sheet { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 20px 20px 22px 30px; position: relative; min-width: 0; }
   .sheet::before { content: ""; position: absolute; left: 16px; top: 0; bottom: 0; width: 2px; background: var(--margin); opacity: .55; }
   .step { display: grid; gap: 10px; }
@@ -54,15 +54,19 @@
   .files a:hover { border-color: var(--accent); }
   .files .code { font: 12px/1 var(--mono); color: var(--muted); }
   .files .go { color: var(--accent); font-weight: 600; font-size: 13px; white-space: nowrap; }
+  .files .have { color: var(--ok); }
   .btns { display: flex; flex-wrap: wrap; gap: 10px; }
   .btn { font: 600 14px/1 var(--body); padding: 11px 16px; border-radius: 8px; cursor: pointer; text-decoration: none;
          border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); }
   .btn.ghost { background: transparent; color: var(--accent); }
-  .status { font-size: 13px; color: var(--ok); min-height: 1.2em; }
-  .prompt-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
-  .prompt-head h2 { font: 600 1rem/1.3 var(--display); margin: 0; }
-  textarea { width: 100%; min-height: 520px; resize: vertical; font: 13px/1.55 var(--mono); color: var(--ink);
-             background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 12px; }
+  .btn.stop { background: transparent; color: var(--margin); border-color: var(--margin); }
+  .btn:disabled { opacity: .55; cursor: progress; }
+  .pick { position: relative; display: block; text-align: center; border: 1.5px dashed var(--accent); border-radius: 8px; padding: 14px;
+          color: var(--accent); font-weight: 600; background: var(--accent-soft); cursor: pointer; }
+  .pick input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  #go { width: 100%; padding: 17px 18px; font: 700 1.05rem/1 var(--body); border: 0; border-radius: 12px; cursor: pointer; color: #fff;
+        background: linear-gradient(150deg, #2f4fa8, #1b3275); box-shadow: 0 12px 26px -12px rgba(27, 50, 117, .7); }
+  #go:disabled { opacity: .6; cursor: progress; }
   fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 6px; }
   legend { font: 600 12px/1 var(--mono); color: var(--muted); letter-spacing: .04em; text-transform: uppercase; padding: 0 0 4px; }
   .opt { display: flex; gap: 10px; align-items: flex-start; font-weight: 500; border: 1px solid var(--rule); border-radius: 8px;
@@ -74,24 +78,89 @@
   .counts[hidden] { display: none; }
   @media (max-width: 420px) { .counts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   .error { color: var(--margin); }
-  ol.how { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
-  .note { margin-top: 14px; font-size: 13px; color: var(--muted); background: var(--accent-soft); border-radius: 8px; padding: 10px 12px; }
+  .prep { margin-top: 20px; display: grid; gap: 10px; }
+  #state { margin: 0; font-weight: 600; }
+  #log { margin: 0; background: #121726; color: #d8dfee; border-radius: 8px; padding: 10px 12px; max-height: 220px; overflow-y: auto;
+         font: 12px/1.6 var(--mono); white-space: pre-wrap; word-break: break-word; }
+  #log .err { color: #ff9b8f; } #log .ok { color: #7ee2a8; } #log .live { color: #f5c97a; }
+  .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid var(--rule); border-top-color: var(--accent);
+             border-radius: 50%; animation: spin 1s linear infinite; vertical-align: -2px; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
   @media (prefers-reduced-motion: no-preference) { .btn, .files a { transition: border-color .15s, background .15s; } }
+  .foot { margin-top: 18px; font-size: 12px; color: var(--muted); }
+
+  /* ---------------------------------------------------------------- the printable document */
+.doc { --dink: #1f2933; --dacc: #1d4e89; --dmuted: #52606d; --dsoft: #eef3f9;
+       max-width: 210mm; margin: 0 auto 120px; padding: 0 16px; color: var(--dink); font: 11.5pt/1.6 "DejaVu Sans", "Noto Sans", system-ui, sans-serif; }
+.doc section { background: #fff; padding: 16mm 15mm; margin: 0 0 16px; border-radius: 4px; box-shadow: 0 2px 14px rgba(0, 0, 0, .12); }
+.doc .cover { min-height: 240mm; display: grid; place-items: center; text-align: center; }
+.doc .cover .kick { font-size: 22pt; font-weight: 800; color: var(--dacc); margin: 0 0 6px; }
+.doc .cover h1 { font-size: 14pt; font-weight: 600; margin: 0 0 6px; }
+.doc .cover .chs { font-size: 12pt; margin: 0 0 14px; }
+.doc .muted { color: var(--dmuted); font-size: 9pt; } .doc .small { font-size: 8pt; margin-top: 40mm; }
+.doc h2 { color: var(--dacc); font-size: 16pt; margin: 0 0 2px; }
+.doc .src { font-size: 7.5pt; color: var(--dmuted); margin: 0 0 8px; word-break: break-all; }
+.doc .bar { background: var(--dacc); color: #fff; font-size: 12pt; padding: 5px 9px; margin: 16px 0 6px; border-radius: 2px; break-after: avoid; }
+.doc h4 { color: var(--dacc); font-size: 12pt; margin: 12px 0 4px; break-after: avoid; }
+.doc ul { margin: 2px 0; padding-left: 18px; } .doc li { margin: 3px 0; }
+.doc .bar.pg { break-before: page; }
+.doc .keypoints { list-style: "★  "; background: var(--dsoft); border: 1px solid var(--dacc); padding: 6px 10px 6px 26px; }
+.doc .q { margin: 7px 0 0; } .doc .qtext { font-weight: 600; } .doc .qtext b { margin-right: 4px; }
+.doc .tag { font-weight: 400; font-size: 8.5pt; color: var(--dmuted); }
+.doc .opt { padding-left: 22px; }
+.doc .ans { padding-left: 18px; } .doc .ans-label { color: #0b6e4f; font-weight: 700; } .doc .ans p { margin: 0; } .doc .ans ul { margin: 0 0 0 4px; }
+.doc .passage { background: var(--dsoft); border: 1px solid var(--dacc); padding: 6px 9px; margin: 4px 0 4px 18px; }
+.doc table.grid { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin: 4px 0 8px; }
+.doc table.grid th { background: var(--dacc); color: #fff; text-align: left; padding: 4px 6px; }
+.doc table.grid td { border: 1px solid #9fb3c8; padding: 3px 6px; vertical-align: top; } .doc table.grid td.b { font-weight: 700; }
+.doc table.grid tbody tr:nth-child(even) td { background: #f7f9fc; }
+.doc figure.diagram { margin: 10px 0; } .doc figcaption { text-align: center; color: var(--dmuted); font-size: 8.5pt; margin-top: 4px; }
+.doc .flow { display: grid; justify-items: center; }
+.doc .flow .node { width: min(120mm, 100%); background: var(--dsoft); border: 1.2px solid var(--dacc); padding: 5px 8px; text-align: center; font-size: 9pt; }
+.doc .arrow-down { width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 10px solid var(--dacc); margin: 3px 0; position: relative; }
+.doc .arrow-down::before { content: ""; position: absolute; left: -1px; top: -24px; width: 2px; height: 14px; background: var(--dacc); }
+.doc .flow .arrow-down { margin-top: 16px; }
+.doc .cycle { position: relative; width: 100%; }
+.doc .cycle svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.doc .cycle svg line { stroke: var(--dacc); stroke-width: 1.6; } .doc .cycle svg path { fill: var(--dacc); }
+.doc .cnode { position: absolute; background: var(--dsoft); border: 1.2px solid var(--dacc); border-radius: 6px; padding: 4px 6px; font-size: 8.5pt; font-weight: 700; text-align: center; }
+.doc .legend { font-size: 9pt; list-style: none; padding-left: 4px; }
+.doc .cmap { margin: 4px 0 8px; } .doc .croot { margin: 0 auto 10px; width: fit-content; max-width: 100%; background: #dde8f6; border: 1.2px solid var(--dacc); border-radius: 6px; padding: 4px 12px; font-weight: 700; position: relative; }
+.doc .croot::after { content: ""; position: absolute; left: 50%; bottom: -11px; width: 1.5px; height: 10px; background: var(--dacc); }
+.doc .cbranches { display: grid; border: 1.2px solid var(--dacc); }
+.doc .cbranch { padding: 5px 6px; font-size: 8.5pt; background: #f7f9fc; border-left: 1px solid var(--dacc); } .doc .cbranch:first-child { border-left: 0; }
+.doc .ctitle { font-weight: 700; color: var(--dacc); text-align: center; }
+.doc .cbranch ul { padding-left: 12px; }
+.doc .keep { break-inside: avoid; }
+
+@media print {
+  @page { size: A4; margin: 14mm 15mm 16mm; }
+  body { background: #fff; }
+  .noprint, .actionbar { display: none !important; }
+  .doc { display: block !important; max-width: none; margin: 0; padding: 0; }
+  .doc section { box-shadow: none; padding: 0; margin: 0; border-radius: 0; }
+  .doc section + section { break-before: page; }
+  .doc .cover { min-height: 250mm; }
+}
+
+  .doc { margin-top: 20px; }
+  @media print { .wrap > header, .cols, .prep, .foot { display: none !important; } .wrap { max-width: none; padding: 0; } }
 </style>
 
 <div class="wrap">
   <header>
-    <h1>NCERT Prep with Claude</h1>
-    <p>Make printable CBSE exam notes and question banks from the official NCERT textbook, using your own Claude Pro
-      account. No API key needed: pick the chapter, download it from ncert.nic.in, and paste the ready-made prompt into claude.ai.</p>
+    <h1>NCERT Exam Prep</h1>
+    <p>Printable CBSE exam notes and question banks from the official NCERT textbook, written by Claude with your own
+      claude.ai account. No API key and no install: choose the chapter, download it from ncert.nic.in, choose the file, and press Prepare.</p>
     <div class="marks" aria-label="What you get">
-      <span class="chip">Summary notes</span><span class="chip">Formula summary</span><span class="chip">Key points</span>
+      <span class="chip">Summary notes</span><span class="chip">Formula summary</span><span class="chip">Diagrams</span>
       <span class="chip">Revision table</span><span class="chip">Questions with answers</span><span class="chip">Practice test</span>
     </div>
   </header>
 
-  <div class="grid">
-    <section class="sheet" aria-label="Choose and download">
+  <div class="cols">
+    <section class="sheet" aria-label="Choose the chapter and what to include">
       <div class="step">
         <h2><span class="n">STEP 1</span>Choose the chapter</h2>
         <div class="row">
@@ -104,11 +173,10 @@
           <label for="cht">Chapter to<select id="cht"></select></label>
         </div>
         <div class="row">
-          <label for="pf">Pages from (optional)<input id="pf" type="number" min="1" inputmode="numeric" placeholder="first"></label>
-          <label for="pt">Pages to (optional)<input id="pt" type="number" min="1" inputmode="numeric" placeholder="last"></label>
+          <label for="pf">Pages from (optional)<input id="pf" type="number" min="1" inputmode="numeric" placeholder="1"></label>
+          <label for="pt">Pages to (optional)<input id="pt" type="number" min="1" inputmode="numeric" placeholder="end"></label>
         </div>
-        <p class="hint">Page numbers are the ones printed on the textbook pages. Leave them empty for whole chapters.
-          One chapter per chat gives the most complete question bank.</p>
+        <p class="hint">Pages count from page 1 of the chapter's PDF (one chapter only). Leave them empty for whole chapters.</p>
       </div>
 
       <div class="step">
@@ -117,6 +185,7 @@
           <legend>Notes</legend>
           <label class="opt"><input type="checkbox" name="sec" value="summary_basic"><span>Summary notes (basic)<small>short points on the main topics, with definitions of terms</small></span></label>
           <label class="opt"><input type="checkbox" name="sec" value="summary"><span>Summary notes (detailed)<small>every topic explained, topic by topic</small></span></label>
+          <label class="opt"><input type="checkbox" name="sec" value="diagrams"><span>Explanation diagrams<small>flowcharts, cycles and concept maps</small></span></label>
           <label class="opt"><input type="checkbox" name="sec" value="key_points"><span>Key points to remember<small>definitions, laws, dates, units</small></span></label>
           <label class="opt"><input type="checkbox" name="sec" value="formulas"><span>Formula summary<small>every formula with its meaning and use (maths, science)</small></span></label>
           <label class="opt"><input type="checkbox" name="sec" value="revision_table"><span>Quick revision table<small>one row per topic</small></span></label>
@@ -139,50 +208,245 @@
         </div>
         <p class="hint" id="secmsg"></p>
       </div>
+
       <div class="step">
-        <h2><span class="n">STEP 3</span>Download from NCERT</h2>
+        <h2><span class="n">STEP 3</span>Download from NCERT, then choose the file</h2>
         <ul class="files" id="files"></ul>
-        <p class="hint">Official chapter PDFs from ncert.nic.in. Save them, then attach them in claude.ai.</p>
+        <label class="pick" for="pdfs"><span id="picktext">Choose the downloaded PDF</span>
+          <input id="pdfs" type="file" accept="application/pdf,.pdf" multiple></label>
+        <p class="hint">Save the chapter from ncert.nic.in first; the file stays on your device. Only its text is sent to Claude
+          (figures are not), so check diagrams and formulas against the book.</p>
       </div>
-
-      <div class="step">
-        <h2><span class="n">STEP 4</span>Ask Claude</h2>
-        <ol class="how">
-          <li>Open claude.ai and start a new chat.</li>
-          <li>Attach the chapter PDF(s) from step 3 (the paperclip or + button).</li>
-          <li>Copy the prompt on the right, paste it, and send.</li>
-          <li>Claude makes a printable PDF for you to download and print.</li>
-        </ol>
-        <div class="btns">
-          <button class="btn" id="copy" type="button">Copy prompt</button>
-          <a class="btn ghost" href="https://claude.ai/new" target="_blank" rel="noopener">Open claude.ai</a>
-        </div>
-        <div class="status" id="status" role="status"></div>
-      </div>
-    </section>
-
-    <section class="sheet" aria-label="Prompt">
-      <div class="prompt-head">
-        <h2>Your prompt</h2>
-        <span class="hint" id="meta"></span>
-      </div>
-      <textarea id="prompt" spellcheck="false" aria-label="Prompt to paste into claude.ai"></textarea>
-      <div class="note">If Claude replies with the material as text instead of a PDF, turn on file creation in claude.ai
-        (Settings → Capabilities) and ask again, or say <em>"Put all of this in one document I can print."</em> For long chapters,
-        reply <em>"continue"</em> if Claude stops before the last section.</div>
     </section>
   </div>
+
+  <div class="prep">
+    <button id="go" type="button">Prepare exam material</button>
+    <p class="hint" id="gohint"></p>
+    <div id="status" hidden>
+      <div class="btns" style="justify-content:space-between;align-items:center"><p id="state"></p>
+        <button class="btn stop" id="stop" type="button" hidden>Stop</button></div>
+      <div id="log" role="log" aria-label="What the page is doing"></div>
+      <div class="btns" id="actions" style="margin-top:10px"></div>
+    </div>
+  </div>
+  <div class="doc" id="doc" hidden></div>
+  <p class="foot">Chapters © NCERT, downloaded by you from ncert.nic.in · For personal study · Uses your own Claude usage.</p>
 </div>
 
 <script>
-const CATALOG = {"1":{"English":[["aemr1","Mridang",1,9]],"Mathematics":[["aejm1","Joyful-Mathematics (English)",1,13]]},"2":{"Mathematics":[["bejm1","Joyful-Mathematics (English)",1,11]],"English":[["bemr1","Mridang",1,13]]},"3":{"Environmental Studies":[["ceap1","Looking Around",1,24]],"English":[["ceen1","Marigold",1,10],["cesa1","Santoor",1,12]],"Mathematics":[["cemh1","Mathematics",1,14],["cemm1","Maths Mela",1,14]],"The World Around Us":[["ceev1","Our Wondrous World",1,12]],"Arts":[["cebu1","Bansuri - I",1,20]],"Physical Education and Well Being":[["ceky1","Khel Yoga",1,7]]},"4":{"Mathematics":[["demh1","Math-Mela",1,14],["demm1","Math-Mela",1,14]],"Environmental Studies":[["deap1","Looking Around(EVS)",1,27]],"The World Around Us":[["deev1","Our Wonderous World",1,10]],"English":[["deen1","Santoor",1,9],["desa1","Santoor",1,12]],"Arts":[["debu1","Bansuri",1,18]],"Physical Education and Well Being":[["deky1","Khel Yoga",1,3]]},"5":{"Mathematics":[["eemm1","Math-Mela",1,15],["eemh1","Math-Magic",1,14]],"English":[["eesa1","Santoor",1,10],["eeen1","Marigold",1,10]],"The World Around Us":[["eeev1","Our Wonderous World",1,10]],"Arts":[["eebu1","Bansuri",1,19]],"Physical Education and Well Being":[["eeky1","Khel Yoga",1,3]],"Environmental Studies":[["eeap1","Looking Around",1,22]]},"6":{"Vocational Education":[["fekb1","Kaushal Bodh",1,6]],"Physical Education and Well Being":[["feky1","Khel Yatra",1,5]],"English":[["fepr1","Poorvi",1,5]],"Mathematics":[["fegp1","Ganita Prakash",1,10]],"Social Science":[["fees1","Exploring Society India and Beyond",1,14]],"Science":[["fecu1","Curiosity",1,12]],"Arts":[["fekr1","Kriti-I",1,22]]},"7":{"Mathematics":[["gegp1","Ganita Prakash",1,8],["gegp2","Ganita Prakash-II",1,7]],"Arts":[["gekr1","Kriti",1,20]],"Science":[["gecu1","Curiosity",1,12]],"English":[["gepr1","Poorvi",1,5]],"Social Science":[["gees1","Exploring Society India and Beyond Part-I",1,12],["gees2","Exploring Society India and Beyond Part-II",1,8]],"Physical Education and Well Being":[["geky1","Khel Yatra",1,6]],"Vocational Education":[["gekb1","Kaushal Bodh",1,7]]},"8":{"Mathematics":[["hegp1","Ganita Prakash Part-I",1,7],["hegp2","Ganita Prakash Part-II",1,7],["hemh1","Mathematics",1,13]],"Arts":[["hekr1","Kriti",1,19]],"Science":[["hecu1","Curiosity",1,13],["hesc1","Science",1,13]],"English":[["hepr1","Poorvi",1,5],["hehd1","Honeydew",1,8],["heih1","It So Happend",1,8]],"Social Science":[["hees1","Exploring Society India and Beyond Part-I",1,7],["hees2","Exploring Society India and Beyond Part-II",1,8],["hess4","Resource And Development(Geography)",1,5],["hess3","Social And Political Life",1,8],["hess2","Our-Pasts-III",1,8]],"Physical Education and Well Being":[["heky1","Khel Yatra",1,6]],"Vocational Education":[["hekb1","Kaushal Bodh",1,7]]},"9":{"English":[["iebe1","Kaveri",1,8]],"Mathematics":[["iemh1","Ganita Manjari",1,8],["iemh2","Ganita Manjari PART-II",1,6]],"Science":[["iesc1","Exploration",1,13]],"Social Science":[["iest1","Understanding Society India and Beyond PART-I",1,9],["iest2","Understanding Society India and Beyond PART-II",1,6]],"Physical Education and Well Being":[["iehp1","Khel Praveen",1,6]],"Skill Education":[["iekv1","Kaushal Vikas",1,12]],"Vocational":[["ievc1","Cashier",1,5],["ieva1","Store Operations Assistant",1,4],["ievs1","Solanceous Crop Cultivator",1,5],["ievt1","Assistant Beauty Therapist",1,3],["ievw1","Animal Health Workers (Agriculture)",1,4],["ieve1","Hand Embroiderer (Addawala)",1,5],["ievh1","Hand Embroiderer",1,5],["iepg1","Plumber General",1,5],["ieeo1","IT Domestic Data Entry Operator",1,5],["iees1","Employability Skill",1,5]],"Arts":[["iemr1","Madhurima",1,17]]},"10":{"Mathematics":[["jemh1","Mathematics",1,14]],"Science":[["jesc1","Science",1,13]],"English":[["jeff1","First Flight",1,9],["jefp1","Foot Prints Without feet Supp. Reader",1,9],["jewe2","Words and Expressions  2",1,9]],"Social Science":[["jess1","Contemporary India",1,7],["jess2","Understanding Economic Development",1,5],["jess3","India and the Contemporary World-II",1,5],["jess4","Democratic Politics",1,5]],"Health and Physical Education":[["jehp1","Health and Physical Education",1,13]]},"11":{"Accountancy":[["keac1","Financial Accounting-I",1,7],["keac2","Accountancy-II",1,2]],"Business Studies":[["kebs1","Business Studies",1,11]],"Chemistry":[["kech1","Chemistry Part-I",1,6],["kech2","Chemistry Part II",1,3]],"Mathematics":[["kemh1","Mathematics",1,14]],"Vocational":[["kepc1","Floriculturist- Protected Cultivation",1,5],["kevt1","Vision Technician",1,7],["keoc1","Floriculturist",1,6],["keda1","General Duty Assistant",1,5],["kedf1","Dairy Farmer Enterpreneur",1,4],["kefc1","Floriculturist",1,6]],"Biology":[["kebo1","Biology",1,19]],"Home Science":[["kehe1","Human Ecology and Family Sciences Part I",1,7],["kehe2","Human Ecology and Family Sciences Part II",1,4]],"Psychology":[["kepy1","Introduction to Psychology",1,8]],"Economics":[["keec1","Indian Economic Development",1,8],["kest1","Statistics for Economics",1,8]],"Geography":[["kegy2","Fundamental of Physical Geography",1,14],["kegy3","Pratical Work in Geography",1,6],["kegy1","India Physical Environment",1,6]],"Physics":[["keph1","Physics Part-I",1,7],["keph2","Physics Part-II",1,7]],"Sociology":[["kesy1","Introducing Sociology",1,5],["kesy2","Understanding Society",1,5]],"English":[["keww1","Woven Words",1,27],["kehb1","Hornbill",1,14],["kesp1","Snapshots Suppl.Reader English",1,5]],"Political Science":[["keps1","Political Theory",1,8],["keps2","India Constitution at Work",1,10]],"History":[["kehs1","Themes in World History",1,7]],"Heritage Crafts":[["kehc1","Living Craft Traditions of India",1,10]],"Graphics design":[["kegd1","The story of graphic design",1,8]],"Computers and Communication Technology":[["kect1","CCT Part-I",1,8],["kect2","CCT Part-II",1,6]],"Fine Art":[["kefa1","An Introduction to Indian Art Part-I",1,8]],"Informatics Practices":[["keip1","Informatics Practices",1,8]],"Biotechnology":[["kebt1","Biotechnology",1,12]],"Computer Science":[["kecs1","Computer Science",1,11]],"Health and Physical Education":[["kehp1","Health and Physical Education",1,11]],"Knowledge Traditions Practices of India":[["keks1","Knowledge Traditions Practices of India",1,9]]},"12":{"Accountancy":[["leac1","Accountancy-I",1,4],["leac2","Accountancy Part-II",1,6],["leca1","Computerised Accounting System",1,4]],"Mathematics":[["lemh1","Mathematics Part-I",1,6],["lemh2","Mathematics Part-II",1,7]],"Physics":[["leph1","Physics Part-I",1,8],["leph2","Physics Part-II",1,6]],"English":[["lekl1","Kaliedoscope",1,21],["lefl1","Flamingo",1,13],["levt1","Vistas",1,6]],"Biotechnology":[["lebt1","Biotechnology",1,13]],"Biology":[["lebo1","Biology",1,13]],"History":[["lehs1","Themes in Indian History-I",1,4],["lehs2","Themes in Indian History-II",1,4],["lehs3","Themes in Indian History-III",1,4]],"Geography":[["legy1","Fundamentals of Human Geography",1,8],["legy3","Practical Work in Geography Part II",1,4],["legy2","India -People And Economy",1,9]],"Psychology":[["lepy1","Psychology",1,7]],"Sociology":[["lesy1","Indian Society",1,7],["lesy2","Social Change and Development in India",1,8]],"Chemistry":[["lech1","Chemistry-I",1,5],["lech2","Chemistry-II",1,5]],"Political Science":[["leps1","Contemporary World Politics",1,7],["leps2","Politics in India Since Independence",1,8]],"Home Science":[["lehe1","Human Ecology and Family Sciences Part I",1,7],["lehe2","Human Ecology and Family Sciences Part II",1,7],["lehh1","Manav Paristhitik avam Parivar Vigyan Bhag 1",1,7],["lehh2","Manav Paristhitiki avam Parivar Vigyan Bhag 2",1,7]],"Economics":[["leec2","Introductory Microeconomics",1,5],["leec1","Introductory Macroeconomics",1,6]],"Business Studies":[["lebs1","Business Studies-I",1,8],["lebs2","Business Studies-II",1,3]],"Heritage Crafts":[["lehc1","Craft Tradition of India",1,9]],"New Age Graphics Design":[["legd1","New Age Graphics Design",1,12]],"Fine Art":[["lefa1","An Introduction to Indian Art Part-II",1,8]],"Computer Science":[["lecs1","Computer Science",1,13]],"Informatics Practices":[["leip1","Informatics Practices",1,7]]},"11-12":{"Heritage Crafts":[["mehc1","Exploring Craft Tradition of India",1,10]]}};
-const DEFAULT_SECTIONS = ["summary_basic","summary","key_points","formulas","one_mark","short_answer","long_answer"], DEFAULT_COUNTS = {"m1":10,"m2":4,"m3":4,"m5":3,"case":2};
+const DATA = {"catalog":{"1":{"English":[["aemr1","Mridang",1,9]],"Mathematics":[["aejm1","Joyful-Mathematics (English)",1,13]]},"2":{"Mathematics":[["bejm1","Joyful-Mathematics (English)",1,11]],"English":[["bemr1","Mridang",1,13]]},"3":{"Environmental Studies":[["ceap1","Looking Around",1,24]],"English":[["ceen1","Marigold",1,10],["cesa1","Santoor",1,12]],"Mathematics":[["cemh1","Mathematics",1,14],["cemm1","Maths Mela",1,14]],"The World Around Us":[["ceev1","Our Wondrous World",1,12]],"Arts":[["cebu1","Bansuri - I",1,20]],"Physical Education and Well Being":[["ceky1","Khel Yoga",1,7]]},"4":{"Mathematics":[["demh1","Math-Mela",1,14],["demm1","Math-Mela",1,14]],"Environmental Studies":[["deap1","Looking Around(EVS)",1,27]],"The World Around Us":[["deev1","Our Wonderous World",1,10]],"English":[["deen1","Santoor",1,9],["desa1","Santoor",1,12]],"Arts":[["debu1","Bansuri",1,18]],"Physical Education and Well Being":[["deky1","Khel Yoga",1,3]]},"5":{"Mathematics":[["eemm1","Math-Mela",1,15],["eemh1","Math-Magic",1,14]],"English":[["eesa1","Santoor",1,10],["eeen1","Marigold",1,10]],"The World Around Us":[["eeev1","Our Wonderous World",1,10]],"Arts":[["eebu1","Bansuri",1,19]],"Physical Education and Well Being":[["eeky1","Khel Yoga",1,3]],"Environmental Studies":[["eeap1","Looking Around",1,22]]},"6":{"Vocational Education":[["fekb1","Kaushal Bodh",1,6]],"Physical Education and Well Being":[["feky1","Khel Yatra",1,5]],"English":[["fepr1","Poorvi",1,5]],"Mathematics":[["fegp1","Ganita Prakash",1,10]],"Social Science":[["fees1","Exploring Society India and Beyond",1,14]],"Science":[["fecu1","Curiosity",1,12]],"Arts":[["fekr1","Kriti-I",1,22]]},"7":{"Mathematics":[["gegp1","Ganita Prakash",1,8],["gegp2","Ganita Prakash-II",1,7]],"Arts":[["gekr1","Kriti",1,20]],"Science":[["gecu1","Curiosity",1,12]],"English":[["gepr1","Poorvi",1,5]],"Social Science":[["gees1","Exploring Society India and Beyond Part-I",1,12],["gees2","Exploring Society India and Beyond Part-II",1,8]],"Physical Education and Well Being":[["geky1","Khel Yatra",1,6]],"Vocational Education":[["gekb1","Kaushal Bodh",1,7]]},"8":{"Mathematics":[["hegp1","Ganita Prakash Part-I",1,7],["hegp2","Ganita Prakash Part-II",1,7],["hemh1","Mathematics",1,13]],"Arts":[["hekr1","Kriti",1,19]],"Science":[["hecu1","Curiosity",1,13],["hesc1","Science",1,13]],"English":[["hepr1","Poorvi",1,5],["hehd1","Honeydew",1,8],["heih1","It So Happend",1,8]],"Social Science":[["hees1","Exploring Society India and Beyond Part-I",1,7],["hees2","Exploring Society India and Beyond Part-II",1,8],["hess4","Resource And Development(Geography)",1,5],["hess3","Social And Political Life",1,8],["hess2","Our-Pasts-III",1,8]],"Physical Education and Well Being":[["heky1","Khel Yatra",1,6]],"Vocational Education":[["hekb1","Kaushal Bodh",1,7]]},"9":{"English":[["iebe1","Kaveri",1,8]],"Mathematics":[["iemh1","Ganita Manjari",1,8],["iemh2","Ganita Manjari PART-II",1,6]],"Science":[["iesc1","Exploration",1,13]],"Social Science":[["iest1","Understanding Society India and Beyond PART-I",1,9],["iest2","Understanding Society India and Beyond PART-II",1,6]],"Physical Education and Well Being":[["iehp1","Khel Praveen",1,6]],"Skill Education":[["iekv1","Kaushal Vikas",1,12]],"Vocational":[["ievc1","Cashier",1,5],["ieva1","Store Operations Assistant",1,4],["ievs1","Solanceous Crop Cultivator",1,5],["ievt1","Assistant Beauty Therapist",1,3],["ievw1","Animal Health Workers (Agriculture)",1,4],["ieve1","Hand Embroiderer (Addawala)",1,5],["ievh1","Hand Embroiderer",1,5],["iepg1","Plumber General",1,5],["ieeo1","IT Domestic Data Entry Operator",1,5],["iees1","Employability Skill",1,5]],"Arts":[["iemr1","Madhurima",1,17]]},"10":{"Mathematics":[["jemh1","Mathematics",1,14]],"Science":[["jesc1","Science",1,13]],"English":[["jeff1","First Flight",1,9],["jefp1","Foot Prints Without feet Supp. Reader",1,9],["jewe2","Words and Expressions  2",1,9]],"Social Science":[["jess1","Contemporary India",1,7],["jess2","Understanding Economic Development",1,5],["jess3","India and the Contemporary World-II",1,5],["jess4","Democratic Politics",1,5]],"Health and Physical Education":[["jehp1","Health and Physical Education",1,13]]},"11":{"Accountancy":[["keac1","Financial Accounting-I",1,7],["keac2","Accountancy-II",1,2]],"Business Studies":[["kebs1","Business Studies",1,11]],"Chemistry":[["kech1","Chemistry Part-I",1,6],["kech2","Chemistry Part II",1,3]],"Mathematics":[["kemh1","Mathematics",1,14]],"Vocational":[["kepc1","Floriculturist- Protected Cultivation",1,5],["kevt1","Vision Technician",1,7],["keoc1","Floriculturist",1,6],["keda1","General Duty Assistant",1,5],["kedf1","Dairy Farmer Enterpreneur",1,4],["kefc1","Floriculturist",1,6]],"Biology":[["kebo1","Biology",1,19]],"Home Science":[["kehe1","Human Ecology and Family Sciences Part I",1,7],["kehe2","Human Ecology and Family Sciences Part II",1,4]],"Psychology":[["kepy1","Introduction to Psychology",1,8]],"Economics":[["keec1","Indian Economic Development",1,8],["kest1","Statistics for Economics",1,8]],"Geography":[["kegy2","Fundamental of Physical Geography",1,14],["kegy3","Pratical Work in Geography",1,6],["kegy1","India Physical Environment",1,6]],"Physics":[["keph1","Physics Part-I",1,7],["keph2","Physics Part-II",1,7]],"Sociology":[["kesy1","Introducing Sociology",1,5],["kesy2","Understanding Society",1,5]],"English":[["keww1","Woven Words",1,27],["kehb1","Hornbill",1,14],["kesp1","Snapshots Suppl.Reader English",1,5]],"Political Science":[["keps1","Political Theory",1,8],["keps2","India Constitution at Work",1,10]],"History":[["kehs1","Themes in World History",1,7]],"Heritage Crafts":[["kehc1","Living Craft Traditions of India",1,10]],"Graphics design":[["kegd1","The story of graphic design",1,8]],"Computers and Communication Technology":[["kect1","CCT Part-I",1,8],["kect2","CCT Part-II",1,6]],"Fine Art":[["kefa1","An Introduction to Indian Art Part-I",1,8]],"Informatics Practices":[["keip1","Informatics Practices",1,8]],"Biotechnology":[["kebt1","Biotechnology",1,12]],"Computer Science":[["kecs1","Computer Science",1,11]],"Health and Physical Education":[["kehp1","Health and Physical Education",1,11]],"Knowledge Traditions Practices of India":[["keks1","Knowledge Traditions Practices of India",1,9]]},"12":{"Accountancy":[["leac1","Accountancy-I",1,4],["leac2","Accountancy Part-II",1,6],["leca1","Computerised Accounting System",1,4]],"Mathematics":[["lemh1","Mathematics Part-I",1,6],["lemh2","Mathematics Part-II",1,7]],"Physics":[["leph1","Physics Part-I",1,8],["leph2","Physics Part-II",1,6]],"English":[["lekl1","Kaliedoscope",1,21],["lefl1","Flamingo",1,13],["levt1","Vistas",1,6]],"Biotechnology":[["lebt1","Biotechnology",1,13]],"Biology":[["lebo1","Biology",1,13]],"History":[["lehs1","Themes in Indian History-I",1,4],["lehs2","Themes in Indian History-II",1,4],["lehs3","Themes in Indian History-III",1,4]],"Geography":[["legy1","Fundamentals of Human Geography",1,8],["legy3","Practical Work in Geography Part II",1,4],["legy2","India -People And Economy",1,9]],"Psychology":[["lepy1","Psychology",1,7]],"Sociology":[["lesy1","Indian Society",1,7],["lesy2","Social Change and Development in India",1,8]],"Chemistry":[["lech1","Chemistry-I",1,5],["lech2","Chemistry-II",1,5]],"Political Science":[["leps1","Contemporary World Politics",1,7],["leps2","Politics in India Since Independence",1,8]],"Home Science":[["lehe1","Human Ecology and Family Sciences Part I",1,7],["lehe2","Human Ecology and Family Sciences Part II",1,7],["lehh1","Manav Paristhitik avam Parivar Vigyan Bhag 1",1,7],["lehh2","Manav Paristhitiki avam Parivar Vigyan Bhag 2",1,7]],"Economics":[["leec2","Introductory Microeconomics",1,5],["leec1","Introductory Macroeconomics",1,6]],"Business Studies":[["lebs1","Business Studies-I",1,8],["lebs2","Business Studies-II",1,3]],"Heritage Crafts":[["lehc1","Craft Tradition of India",1,9]],"New Age Graphics Design":[["legd1","New Age Graphics Design",1,12]],"Fine Art":[["lefa1","An Introduction to Indian Art Part-II",1,8]],"Computer Science":[["lecs1","Computer Science",1,13]],"Informatics Practices":[["leip1","Informatics Practices",1,7]]},"11-12":{"Heritage Crafts":[["mehc1","Exploring Craft Tradition of India",1,10]]}},"system":"You are an experienced CBSE teacher and paper-setter who writes printed revision material for students. You work strictly from the NCERT textbook pages you are given: everything you write must be supported by those pages and match NCERT wording, terms, examples and conventions. Write in clear, simple English suitable for the class level: short sentences, everyday words, one idea per point; keep the book's technical terms, and explain a hard word the first time you use it.\n\nFormatting rules (the output is printed, not rendered as Markdown):\n- Plain text only. No Markdown, no LaTeX, no asterisks or hashes.\n- Write formulae and equations with Unicode: H₂O, x², √2, π, ≤, ≥, →, ⇌, Δ, θ, ½, a/b.\n- Inside an answer, put each step or point on its own line, starting the line with \"- \".\n- Never reference figures by number; describe them in words if needed.","intro":"Prepare exam preparation material for CBSE Class {cls}, {subject}, book \"{book}\", Chapter {chapter}{pages_note}. The NCERT pages are attached. If they are only part of the chapter, cover just these pages.\n\nProduce, in this order:\n","outro":"\n\nOnly include questions answerable from these pages. Answers must be correct and complete enough to score full marks in a CBSE board-style evaluation.","sections":{"summary_basic":{"label":"Summary notes (basic)","prompt":"summary_basic - a basic, brief summary of the chapter, written as points in very simple English (short sentences, everyday words): one entry per main topic (not every sub-topic), each with 2 to 5 very short points (one line each) giving only the main ideas. No long explanations or worked examples; it should fit on one or two pages for a quick read. Each entry also has terms: the important terms and defined concepts of that topic, each with a clear one- or two-sentence definition as the book gives it (term: the word or phrase only; meaning: the definition); an empty list if the topic defines none. The app prints all terms together as a Definitions of Terms table after the points.","schema":{"type":"array","description":"Short basic summary of the chapter: one entry per main topic, a few brief points and the terms it defines","items":{"type":"object","additionalProperties":false,"required":["topic","points","terms"],"properties":{"topic":{"type":"string"},"points":{"type":"array","items":{"type":"string"}},"terms":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["term","meaning"],"properties":{"term":{"type":"string"},"meaning":{"type":"string"}}}}}}}},"summary":{"label":"Summary notes (detailed)","prompt":"summary - topic-wise notes that explain every topic and sub-topic in the pages, in book order, as short clear points (definitions, explanations, examples, processes, reasons). A student who reads only these notes should understand the whole chapter.","schema":{"type":"array","description":"Topic-wise notes covering every topic/sub-topic in the selected pages, in book order","items":{"type":"object","additionalProperties":false,"required":["topic","points"],"properties":{"topic":{"type":"string"},"points":{"type":"array","items":{"type":"string"}}}}}},"diagrams":{"label":"Explanation diagrams","prompt":"diagrams - 2 to 6 diagrams that make the chapter easier to understand, which the app draws as labelled boxes and arrows. kind \"flow\": the steps of a process or a sequence of events in order (3-8 nodes). kind \"cycle\": a repeating cycle, nodes in order, the last leading back to the first (3-8 nodes). kind \"concept_map\": the title is the central idea and each node is a branch (2-5 nodes, e.g. types or classes) whose details are its sub-points or examples. Labels at most 6 words; details short (up to 4 per node). caption: one sentence saying what the diagram shows. Only make diagrams the pages support; do not attempt pictures such as apparatus, maps or anatomy.","schema":{"type":"array","description":"Diagrams the app draws: process flows, cycles and concept maps","items":{"type":"object","additionalProperties":false,"required":["title","kind","caption","nodes"],"properties":{"title":{"type":"string"},"kind":{"type":"string","enum":["flow","cycle","concept_map"]},"caption":{"type":"string"},"nodes":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["label","details"],"properties":{"label":{"type":"string"},"details":{"type":"array","items":{"type":"string"}}}}}}}}},"key_points":{"label":"Key points to remember","prompt":"key_points - the must-remember facts: definitions, laws, formulae, chemical equations, dates, names, differences, units.","schema":{"type":"array","items":{"type":"string"},"description":"Must-remember facts, definitions, formulae, equations, dates, laws"}},"formulas":{"label":"Formula summary","prompt":"formulas - a formula sheet: every formula, identity, theorem statement written as an equation, and rule of calculation in the pages, grouped by topic in book order. For each: name (e.g. \"Area of a circle\"), formula (Unicode symbols, e.g. A = πr²), and use (what each symbol means, the unit if any, and when to use it, in one short line). Only formulas that appear in or follow directly from these pages. If the pages contain no formulas, return an empty list.","schema":{"type":"array","description":"Every formula, identity and rule in the pages, grouped by topic; empty if there are none","items":{"type":"object","additionalProperties":false,"required":["topic","formulas"],"properties":{"topic":{"type":"string"},"formulas":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["name","formula","use"],"properties":{"name":{"type":"string"},"formula":{"type":"string","description":"The formula or identity written with Unicode symbols"},"use":{"type":"string","description":"What the symbols mean, units, and when to use it"}}}}}}}},"revision_table":{"label":"Revision table","prompt":"revision_table - a quick revision table with one row per topic in book order: topic, in_short (the idea in one or two sentences), remember (the fact, formula, example or keyword most likely to be asked). Keep each cell brief.","schema":{"type":"array","description":"One row per topic for last-minute revision","items":{"type":"object","additionalProperties":false,"required":["topic","in_short","remember"],"properties":{"topic":{"type":"string"},"in_short":{"type":"string"},"remember":{"type":"string"}}}}},"differences":{"label":"Differences tables","prompt":"differences - \"difference between\" tables for the pairs of terms, processes or things in the pages that students are asked to distinguish (as many as the pages support, usually 2-6). a and b name the two things; each row gives the basis of comparison and how a and b differ on it (3-6 rows).","schema":{"type":"array","description":"'Difference between X and Y' tables","items":{"type":"object","additionalProperties":false,"required":["a","b","rows"],"properties":{"a":{"type":"string"},"b":{"type":"string"},"rows":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["basis","a","b"],"properties":{"basis":{"type":"string"},"a":{"type":"string"},"b":{"type":"string"}}}}}}}},"one_mark":{"label":"One-mark questions","prompt":"one_mark - every 1-mark question that could reasonably be asked: MCQs (4 options, answer gives the correct option letter and text), fill in the blanks, true/false (with the correction when false), very short answers, and assertion-reason (use the standard CBSE four options). Aim for wide coverage: roughly 30-50 for a full chapter, fewer for a short page range.","schema":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["kind","question","options","answer"],"properties":{"kind":{"type":"string","enum":["MCQ","Fill in the blank","True/False","Very short answer","Assertion-Reason"]},"question":{"type":"string"},"options":{"type":"array","items":{"type":"string"},"description":"Four options for MCQ/Assertion-Reason, else empty"},"answer":{"type":"string"}}}}},"short_answer":{"label":"2- and 3-mark questions","prompt":"short_answer - 2-mark and 3-mark questions with model answers at the right length (2 marks ≈ 2-3 points / 30-50 words, 3 marks ≈ 3-4 points / 50-80 words). Include all relevant NCERT in-text and end-of-chapter exercise questions plus other likely questions, including numericals with full working where the subject has them. Roughly 15-30.","schema":{"type":"array","description":"2-mark and 3-mark questions","items":{"type":"object","additionalProperties":false,"required":["marks","question","answer"],"properties":{"marks":{"type":"integer","enum":[2,3]},"question":{"type":"string"},"answer":{"type":"string"}}}}},"long_answer":{"label":"5-mark questions","prompt":"long_answer - 5-mark questions with complete model answers (5+ points / 120-200 words, with derivations, worked steps, diagram descriptions or case-based reasoning as the subject needs). Include the long NCERT exercise questions. Roughly 6-12.","schema":{"type":"array","description":"5-mark questions","items":{"type":"object","additionalProperties":false,"required":["question","answer"],"properties":{"question":{"type":"string"},"answer":{"type":"string"}}}}},"case_based":{"label":"Case-based questions","prompt":"case_based - case-based (source-based) questions in the style of recent CBSE papers for this subject: a short passage, situation, data or experiment description based on the pages (80-150 words), followed by 3-4 sub-questions with marks and full answers, usually totalling 4 marks. Roughly 3-5 cases for a full chapter.","schema":{"type":"array","description":"Case/source-based questions: a passage followed by sub-questions","items":{"type":"object","additionalProperties":false,"required":["passage","questions"],"properties":{"passage":{"type":"string"},"questions":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["marks","question","options","answer"],"properties":{"marks":{"type":"integer","enum":[1,2,3,4]},"question":{"type":"string"},"options":{"type":"array","items":{"type":"string"},"description":"Four options for an MCQ, else empty"},"answer":{"type":"string"}}}}}}}}},"order":["summary_basic","summary","diagrams","key_points","formulas","revision_table","differences","one_mark","short_answer","long_answer","case_based"],"questionSections":["one_mark","short_answer","long_answer","case_based"],"defaultSections":["summary_basic","summary","key_points","formulas","one_mark","short_answer","long_answer"],"countWords":{"summary_basic":"basic summary topics","summary":"topics","diagrams":"diagrams","key_points":"key points","formulas":"formula groups","revision_table":"revision-table rows","differences":"difference tables","one_mark":"one-mark","short_answer":"2/3-mark","long_answer":"five-mark questions","case_based":"case-based sets"},"practiceTest":"practice_test","practiceCounts":{"m1":10,"m2":4,"m3":4,"m5":3,"case":2},"practiceLimits":{"m1":40,"m2":20,"m3":20,"m5":15,"case":6},"countSection":{"m1":"one_mark","m2":"short_answer","m3":"short_answer","m5":"long_answer","case":"case_based"},"about":{"name":"NCERT Exam Prep","version":"0.1.0","author":"Gopu Sugumar","year":"2026","license":"GPL-3.0-or-later","license_name":"GNU General Public License, version 3 or later","license_url":"https://www.gnu.org/licenses/gpl-3.0.html","line":"NCERT Exam Prep v0.1.0 · © 2026 Gopu Sugumar · GPL-3.0-or-later"},"chapterUrl":"https://ncert.nic.in/textbook/pdf/{code}{nn}.pdf"};
+// Turn the AI's material into a printable document (HTML; the browser saves it as PDF).
+// A port of the desktop app's pdf_render.py: same sections, order, diagrams and practice test.
+// Everything the AI wrote is escaped before it goes into the page.
+
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const QUESTION_KEYS = ["one_mark", "short_answer", "long_answer", "case_based"];
+const hl = (text, terms) => {   // escaped text with the given terms in bold (whole words, any case)
+  const words = [...new Set((terms || []).map(t => String(t).trim()).filter(Boolean))].sort((a, b) => b.length - a.length);
+  const out = esc(strip(text));
+  if (!words.length) return out;
+  const re = new RegExp("(?<![\\p{L}\\p{N}_])(" + words.map(w => esc(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")(?![\\p{L}\\p{N}_])", "giu");
+  return out.split(/(&[#\w]+;)/).map(part => /^&[#\w]+;$/.test(part) ? part : part.replace(re, "<strong>$1</strong>")).join("");
+};
+const strip = s => String(s ?? "").replace(/\*\*(.+?)\*\*/g, "$1").replace(/`/g, "");
+
+// Answers: lines starting with "- " become bullets, other lines paragraphs.
+function answer(text) {
+  const lines = String(text ?? "").split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  if (!lines.length) return "";
+  let html = '<div class="ans"><span class="ans-label">Ans.</span> ', inList = false;
+  lines.forEach((line, i) => {
+    const m = line.match(/^[-•–]\s+(.*)$/);
+    if (m) { if (!inList) { html += "<ul>"; inList = true; } html += `<li>${esc(strip(m[1]))}</li>`; }
+    else { if (inList) { html += "</ul>"; inList = false; } html += (i ? "<p>" : "<span>") + esc(strip(line)) + (i ? "</p>" : "</span>"); }
+  });
+  return html + (inList ? "</ul>" : "") + "</div>";
+}
+
+function question(label, text, tag = "", options = [], ans = "") {
+  const opts = (options || []).map((o, i) => {
+    o = String(o).trim();
+    const prefix = /^\(?[a-dA-D][).]/.test(o) ? "" : `(${"abcd"[i] ?? i + 1}) `;
+    return `<div class="opt">${esc(strip(prefix + o))}</div>`;
+  }).join("");
+  return `<div class="q keep"><div class="qtext"><b>${esc(label)}</b> ${esc(strip(text))}${tag ? ` <span class="tag">[${esc(tag)}]</span>` : ""}</div>${opts}${ans ? answer(ans) : ""}</div>`;
+}
+
+// ------------------------------------------------------------------ diagrams
+
+function nodeHtml(n, withNum = "") {
+  const details = (n.details || []).map(d => String(d).trim()).filter(Boolean);
+  return `<b>${esc(withNum + (n.label || ""))}</b>${details.length ? "<br>" + details.map(esc).join("<br>") : ""}`;
+}
+
+function flow(nodes) {
+  return `<div class="flow">${nodes.map((n, i) => `${i ? '<div class="arrow-down" aria-hidden="true"></div>' : ""}<div class="node">${nodeHtml(n)}</div>`).join("")}</div>`;
+}
+
+function cycle(nodes) {
+  const n = nodes.length, W = 640, H = 300, cx = W / 2, cy = H / 2, rx = 230, ry = 105, bw = n <= 5 ? 150 : 124, bh = 46;
+  const pts = nodes.map((_, i) => { const a = Math.PI / 2 - (2 * Math.PI * i) / n; return [cx + rx * Math.cos(a), cy - ry * Math.sin(a)]; });
+  const edge = (a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1]; const t = Math.min(dx ? bw / 2 / Math.abs(dx) : 1e9, dy ? bh / 2 / Math.abs(dy) : 1e9); return [a[0] + dx * t, a[1] + dy * t]; };
+  let arrows = "";
+  for (let i = 0; i < n; i++) {
+    const a = pts[i], b = pts[(i + 1) % n], s = edge(a, b), e = edge(b, a);
+    arrows += `<line x1="${s[0].toFixed(1)}" y1="${s[1].toFixed(1)}" x2="${e[0].toFixed(1)}" y2="${e[1].toFixed(1)}" marker-end="url(#ah)"/>`;
+  }
+  const boxes = nodes.map((nd, i) => `<div class="cnode" style="left:${((pts[i][0] - bw / 2) / W * 100).toFixed(2)}%;top:${((pts[i][1] - bh / 2) / H * 100).toFixed(2)}%;width:${(bw / W * 100).toFixed(2)}%">${esc(`${i + 1}. ${nd.label || ""}`)}</div>`).join("");
+  const legend = nodes.map((nd, i) => (nd.details || []).length ? `<li><b>${i + 1}. ${esc(nd.label || "")}:</b> ${esc(nd.details.join("; "))}</li>` : "").join("");
+  return `<div class="cycle" style="aspect-ratio:${W}/${H}"><svg viewBox="0 0 ${W} ${H}" aria-hidden="true"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker></defs>${arrows}</svg>${boxes}</div>${legend ? `<ul class="legend">${legend}</ul>` : ""}`;
+}
+
+function conceptMap(title, nodes) {
+  let out = "";
+  for (let i = 0; i < nodes.length; i += 5) {
+    const chunk = nodes.slice(i, i + 5);
+    out += `<div class="cmap"><div class="croot">${esc(title)}</div><div class="cbranches" style="grid-template-columns:repeat(${chunk.length},1fr)">${chunk.map(n => `<div class="cbranch"><div class="ctitle">${esc(n.label || "")}</div><ul>${(n.details || []).map(d => `<li>${esc(d)}</li>`).join("")}</ul></div>`).join("")}</div></div>`;
+  }
+  return out;
+}
+
+function diagram(dg) {
+  const nodes = (dg.nodes || []).filter(n => String(n.label || "").trim());
+  if (!nodes.length) return "";
+  const body = dg.kind === "concept_map" ? conceptMap(dg.title || "", nodes)
+    : dg.kind === "cycle" && nodes.length >= 3 && nodes.length <= 8 ? cycle(nodes) : flow(nodes);
+  return `<figure class="diagram keep"><h4>${esc(dg.title || "")}</h4>${body}${dg.caption ? `<figcaption>${esc(dg.caption)}</figcaption>` : ""}</figure>`;
+}
+
+function grid(header, rows, firstBold = true) {
+  return `<table class="grid"><thead><tr>${header.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.map(r => `<tr>${r.map((c, i) => `<td${firstBold && !i ? ' class="b"' : ""}>${esc(strip(c))}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+}
+
+function caseBlock(label, c, answers = true, totalTag = false) {
+  const qs = c.questions || [];
+  const total = qs.reduce((s, q) => s + (+q.marks || 0), 0);
+  let html = `<div class="keep"><div class="qtext"><b>${esc(label)}</b> Read the passage and answer the questions that follow.${totalTag && total ? ` <span class="tag">[${total} marks]</span>` : ""}</div><div class="passage">${esc(c.passage || "")}</div></div>`;
+  qs.forEach((q, j) => {
+    const m = +q.marks || 0;
+    html += question(`(${"abcdefgh"[j] ?? j + 1})`, q.question || "", m ? `${m} mark${m === 1 ? "" : "s"}` : "", q.options, answers ? q.answer : "");
+  });
+  return html;
+}
+
+// ------------------------------------------------------------------ chapter
+
+function chapterHtml(ch, sections) {
+  let n = 0;
+  const bar = (t, key) => `<h3 class="bar${n++ && QUESTION_KEYS.includes(key) ? " pg" : ""}">${n}. ${esc(t)}</h3>`;   // question sections start a new page
+  let html = `<section class="chapter"><h2>Chapter ${esc(ch.number)}: ${esc(ch.chapter_title || "")}</h2>`;
+  if (ch.page_note) html += `<p class="muted">${esc(ch.page_note)}</p>`;
+  html += `<p class="src">Source: ${esc(ch.url)}</p>`;
+  for (const key of sections) {
+    const items = ch[key] || [];
+    if (key === "summary_basic" && !(key in ch)) continue;   // a saved result that predates it
+    if (key === "summary") {
+      html += bar("Summary Notes (Detailed)", key) + items.map(b => `<div class="topic"><h4>${esc(b.topic)}</h4><ul>${(b.points || []).map(p => `<li>${esc(strip(p))}</li>`).join("")}</ul></div>`).join("");
+    } else if (key === "summary_basic") {
+      html += bar("Summary Notes (Basic)", key) + items.map(b => `<div class="topic"><h4>${esc(b.topic)}</h4><ul>${(b.points || []).map(p => `<li>${hl(p, (b.terms || []).map(d => d.term))}</li>`).join("")}</ul></div>`).join("");
+      const seen = new Set(), terms = [];   // older saved results have no terms
+      for (const b of items) for (const d of b.terms || []) { const k = String(d.term).trim().toLowerCase(); if (!seen.has(k)) { seen.add(k); terms.push([d.term, d.meaning]); } }
+      if (terms.length) html += `<div class="keep"><h4>Definitions of Terms</h4>${grid(["Term", "Meaning"], terms)}</div>`;
+    } else if (key === "diagrams") {
+      html += bar("Diagrams to Understand the Chapter", key) + items.map(diagram).join("");
+    } else if (key === "key_points") {
+      html += bar("Key Points to Remember", key) + (items.length ? `<ul class="keypoints">${items.map(k => `<li>${esc(strip(k))}</li>`).join("")}</ul>` : "");
+    } else if (key === "formulas") {
+      html += bar("Formula Summary", key);
+      const groups = items.filter(g => (g.formulas || []).length);
+      html += groups.map(g => `<div class="keep"><h4>${esc(g.topic)}</h4>${grid(["Name", "Formula", "Meaning and use"], g.formulas.map(f => [f.name, f.formula, f.use]))}</div>`).join("")
+        || `<p>This chapter has no formulas to summarise.</p>`;
+    } else if (key === "revision_table") {
+      html += bar("Quick Revision Table", key) + (items.length ? grid(["Topic", "In short", "Remember"], items.map(r => [r.topic, r.in_short, r.remember])) : "");
+    } else if (key === "differences") {
+      html += bar("Differences", key) + items.map(d => `<div class="keep"><h4>Difference between ${esc(d.a)} and ${esc(d.b)}</h4>${grid(["Basis", d.a, d.b], (d.rows || []).map(r => [r.basis, r.a, r.b]))}</div>`).join("");
+    } else if (key === "one_mark") {
+      html += bar("One Mark Questions (1 mark each)", key) + items.map((q, i) => question(`${i + 1}.`, q.question, q.kind, q.options, q.answer)).join("");
+    } else if (key === "short_answer") {
+      html += bar("Short Answer Questions (2 / 3 marks)", key) + [...items].sort((a, b) => a.marks - b.marks).map((q, i) => question(`${i + 1}.`, q.question, `${q.marks} marks`, [], q.answer)).join("");
+    } else if (key === "long_answer") {
+      html += bar("Long Answer Questions (5 marks)", key) + items.map((q, i) => question(`${i + 1}.`, q.question, "5 marks", [], q.answer)).join("");
+    } else if (key === "case_based") {
+      html += bar("Case-Based Questions", key) + items.map((c, i) => caseBlock(`${i + 1}.`, c, true, true)).join("");
+    }
+  }
+  return html + "</section>";
+}
+
+// ------------------------------------------------------------------ practice test
+
+const spread = (items, k) => items.length <= k ? [...items] : Array.from({ length: k }, (_, i) => items[Math.floor(i * items.length / k)]);
+
+function practicePaper(chapters, counts = DATA.practiceCounts) {
+  const c = { ...DATA.practiceCounts, ...counts };
+  const pool = {};
+  for (const k of DATA.questionSections) pool[k] = chapters.flatMap(ch => ch[k] || []);
+  const paper = [];
+  if (c.m1 && pool.one_mark.length) paper.push(["1 mark each", 1, spread(pool.one_mark, c.m1).map(q => ["one", q])]);
+  const two = spread(pool.short_answer.filter(q => q.marks === 2), c.m2), three = spread(pool.short_answer.filter(q => q.marks === 3), c.m3);
+  if (two.length) paper.push(["2 marks each", 2, two.map(q => ["plain", q])]);
+  if (three.length) paper.push(["3 marks each", 3, three.map(q => ["plain", q])]);
+  if (c.m5 && pool.long_answer.length) paper.push(["5 marks each", 5, spread(pool.long_answer, c.m5).map(q => ["plain", q])]);
+  if (c.case && pool.case_based.length) paper.push(["Case-based questions", 0, spread(pool.case_based, c.case).map(q => ["case", q])]);
+  return paper.map(([h, m, qs], i) => [`Section ${"ABCDE"[i]}: ${h}`, m, qs]);
+}
+
+function practiceHtml(chapters, counts) {
+  const paper = practicePaper(chapters, counts);
+  if (!paper.length) return "";
+  const total = paper.reduce((s, [, m, qs]) => s + (m ? m * qs.length : qs.reduce((t, [, c]) => t + (c.questions || []).reduce((u, x) => u + (+x.marks || 0), 0), 0)), 0);
+  let test = `<section class="chapter pagebreak"><h3 class="bar">Practice Test</h3><p>Chapter${chapters.length > 1 ? "s" : ""} ${esc(chapters.map(c => c.number).join(", "))} · Maximum marks: ${total} · Answer all questions. The answer key is on the pages after the test.</p>`;
+  let key = `<section class="chapter pagebreak"><h3 class="bar">Practice Test: Answer Key</h3>`, num = 0;
+  for (const [heading, , qs] of paper) {
+    test += `<h4>${esc(heading)}</h4>`;
+    for (const [kind, q] of qs) {
+      num++;
+      if (kind === "case") { test += caseBlock(`${num}.`, q, false, true); key += caseBlock(`${num}.`, q, true); continue; }
+      test += question(`${num}.`, q.question, kind === "one" ? q.kind : "", q.options, "");
+      key += question(`${num}.`, q.question, "", [], q.answer);
+    }
+  }
+  return test + "</section>" + key + "</section>";
+}
+
+// ------------------------------------------------------------------ document
+
+function documentHtml(meta, chapters, options, testCounts) {
+  const practice = options.includes(DATA.practiceTest);
+  const sections = DATA.order.filter(k => options.includes(k));
+  const contents = sections.map(k => DATA.sections[k].label).concat(practice ? ["Practice test with answer key"] : []);
+  const names = { one_mark: "one-mark", short_answer: "short-answer", long_answer: "long-answer", case_based: "case-based" };
+  const counts = DATA.questionSections.filter(k => sections.includes(k)).map(k => `${chapters.reduce((s, c) => s + (c[k] || []).length, 0)} ${names[k]}`);
+  const qline = counts.length > 1 ? counts.slice(0, -1).join(", ") + " and " + counts.at(-1) : counts.join("");
+  const bookPart = meta.book.trim().toLowerCase() === meta.subject.trim().toLowerCase() ? "" : ` · ${meta.book}`;
+  const today = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+  let html = `<section class="cover"><div class="cover-in"><p class="kick">CBSE Exam Preparation</p><h1>Class ${esc(meta.cls)} ${esc(meta.subject)}${esc(bookPart)}</h1>
+    <p class="chs">${esc(chapters.map(c => `Ch ${c.number}: ${c.chapter_title || ""}`).join(", "))}</p>
+    <p class="muted">Contents: ${esc(contents.map((c, i) => `${i + 1}. ${c}`).join("  ·  "))}</p>
+    ${qline ? `<p class="muted">${esc(qline)} questions with answers</p>` : ""}
+    <p class="muted small">Based on the official NCERT textbook (ncert.nic.in). Prepared ${esc(today)} with ${esc(meta.ai)}.</p></div></section>`;
+  if (sections.length) for (const ch of chapters) html += chapterHtml(ch, sections);
+  if (practice) html += practiceHtml(chapters, testCounts);
+  return html;
+}
+
+
 const $ = id => document.getElementById(id);
 const fill = (sel, items) => { sel.innerHTML = ""; items.forEach(([v, t]) => sel.add(new Option(t, v))); };
 const clsLabel = c => c === "11-12" ? "Class 11–12 (combined)" : `Class ${c}`;
 const pad = n => String(n).padStart(2, "0");
+const CATALOG = DATA.catalog;
+// pdf.js 4.10.38: the copy published beside this page first (pro/vendor), then two public CDNs
+const PDFJS = ["./vendor/", "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/", "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/"];
+const FILES = new Map();           // chapter code (jesc101) -> File
+const DONE = new Map();            // finished sections in this tab, so a retry does not ask again
+let running = null;
 
+// ---------------------------------------------------------------- choosing
 function book() { return CATALOG[$("cls").value][$("subject").value].find(b => b[0] === $("book").value); }
+function chapters() { const a = +$("chf").value, b = +$("cht").value, out = []; for (let i = a; i <= b; i++) out.push(i); return out; }
+const code = n => `${book()[0]}${pad(n)}`;
 function fillSubjects() {
   const subs = Object.keys(CATALOG[$("cls").value]).sort();
   fill($("subject"), subs.map(s => [s, s]));
@@ -195,90 +459,222 @@ function fillChapters() {
   for (let i = first; i <= last; i++) chs.push([i, `Chapter ${i}`]);
   fill($("chf"), chs); fill($("cht"), chs); update();
 }
+const SEC = () => [...document.querySelectorAll("input[name=sec]")];
+const TC = () => [...document.querySelectorAll("[data-tc]")];
+const testCounts = () => Object.fromEntries(TC().map(i => [i.dataset.tc, Math.max(0, Math.min(DATA.practiceLimits[i.dataset.tc] ?? 40, Math.floor(+i.value || 0)))]));
+const testKinds = c => DATA.questionSections.filter(k => Object.entries(c).some(([x, n]) => n > 0 && DATA.countSection[x] === k));
+const chosen = () => SEC().filter(x => x.checked).map(x => x.value);
 
 function update() {
   if (+$("cht").value < +$("chf").value) $("cht").value = $("chf").value;
-  const [code, title] = book();
-  const cls = $("cls").value, subject = $("subject").value;
-  const a = +$("chf").value, b = +$("cht").value;
-  const chapters = []; for (let i = a; i <= b; i++) chapters.push(i);
-
-  $("files").innerHTML = chapters.map(n => {
-    const url = `https://ncert.nic.in/textbook/pdf/${code}${pad(n)}.pdf`;
-    return `<li><a href="${url}" target="_blank" rel="noopener"><span>Chapter ${n}<br><span class="code">${code}${pad(n)}.pdf</span></span><span class="go">Download PDF</span></a></li>`;
+  const ns = chapters();
+  $("files").innerHTML = ns.map(n => {
+    const c = code(n), have = FILES.has(c);
+    return `<li><a href="${DATA.chapterUrl.replace("{code}", book()[0]).replace("{nn}", pad(n))}" target="_blank" rel="noopener"><span>Chapter ${n}<br><span class="code">${c}.pdf</span></span>` +
+      `<span class="go${have ? " have" : ""}">${have ? "✓ Chosen" : "Download PDF"}</span></a></li>`;
   }).join("");
-
-  const pf = $("pf").value.trim(), pt = $("pt").value.trim();
-  const pages = pf || pt ? ` (only textbook pages ${pf || "start"} to ${pt || "end"})` : "";
-  const chText = a === b ? `Chapter ${a}` : `Chapters ${a} to ${b}`;
-  const bookText = title.toLowerCase() === subject.toLowerCase() ? "" : `, book "${title}"`;
-  const classText = cls === "11-12" ? "Class 11–12" : `Class ${cls}`;
-  $("meta").textContent = `${classText} · ${subject} · ${chText}`;
-
-  const chosen = SEC().filter(x => x.checked).map(x => x.value), counts = testCounts();
-  const noq = chosen.includes("practice_test") && !Object.values(counts).some(n => n > 0);
-  $("testbox").hidden = !chosen.includes("practice_test");
-  $("secmsg").className = "hint" + (!chosen.length || noq ? " error" : "");
-  $("secmsg").textContent = !chosen.length ? "Tick at least one section."
+  const missing = ns.filter(n => !FILES.has(code(n)));
+  $("picktext").textContent = !missing.length ? `✓ ${ns.length === 1 ? "File chosen" : "All files chosen"} (press to change)`
+    : ns.length === 1 ? "Choose the downloaded PDF" : `Choose the downloaded PDFs (${missing.length} of ${ns.length} still needed)`;
+  const list = chosen(), counts = testCounts(), test = list.includes(DATA.practiceTest);
+  const noq = test && !testKinds(counts).length;
+  $("testbox").hidden = !test;
+  $("secmsg").className = "hint" + (!list.length || noq ? " error" : "");
+  $("secmsg").textContent = !list.length ? "Tick at least one section."
     : noq ? "The practice test needs at least one question: set a count above 0."
-    : "Each extra section makes Claude's answer longer. Explanation diagrams and the book's own figures are in the desktop app (diagrams also in the browser version).";
-  $("copy").disabled = !chosen.length || noq;
-  if (!chosen.length || noq) { $("prompt").value = $("secmsg").textContent; return; }
-  const notes = chosen.filter(k => k !== "practice_test"), hasQ = notes.some(k => QUESTION_KEYS.includes(k)), test = chosen.includes("practice_test");
-  const items = notes.map(k => `${SECTION_TEXT[k][0]} - ${SECTION_TEXT[k][1]}`);
-  if (test) {
-    const kinds = [[counts.m1, "one-mark (Section A)"], [counts.m2, "two-mark"], [counts.m3, "three-mark"], [counts.m5, "five-mark"], [counts.case, "case-based (a passage with 3-4 sub-questions, about 4 marks each)"]]
-      .filter(([n]) => n > 0).map(([n, t]) => `${n} ${t}`).join(", ");
-    items.push(`PRACTICE TEST WITH ANSWER KEY - a practice question paper with: ${kinds}. Letter the sections A, B, C ... in that order for the kinds present, with the marks of each question and the maximum marks at the top. ` +
-      (hasQ ? "Pick the questions from your question sections above, spread across the topics" : "Write fresh questions that cover the whole chapter evenly") +
-      (a === b ? "" : " and across all the chapters (one combined paper)") + ". The paper itself has NO answers; put the complete answer key on separate pages after the paper.");
-  }
-  const numbered = items.map((t, i) => `${i + 1}. ${t}`).join("\n\n");
-  const only = test && !notes.length
-    ? "\n\nIMPORTANT: include ONLY the practice test paper and its answer key in the document. Do not print notes or question banks."
-    : "";
-  const answers = hasQ || test ? ` Put each answer directly below its question, starting with "Ans.", except in the practice test paper, whose answers go only in the answer key.` : "";
-  $("prompt").value =
-`You are an experienced CBSE teacher and board paper-setter. I have attached the official NCERT textbook PDF for ${classText}, ${subject}${bookText}, ${chText}${pages}.
-
-Using ONLY these NCERT pages, prepare complete exam preparation material${a === b ? "" : " for each chapter in turn"}, in this order:
-
-${numbered}${only}
-
-Rules: everything must be correct, match NCERT wording and (for questions) be complete enough for full marks in a CBSE board exam. Write formulae with proper symbols (H₂O, x², √, π, →).${answers}
-
-When the content is ready, create a printable A4 PDF file of all of it, with a cover title "${classText} ${subject}${bookText.replace(', book "', ' - ').replace('"', '')} - ${chText} - Exam Preparation", a heading for each section, numbered questions and clear page breaks. Give me the PDF to download.`;
+    : "Each extra section takes longer and uses more of your Claude usage. The book's own figures are only in the desktop app.";
 }
 
-const SEC = () => [...document.querySelectorAll("input[name=sec]")];
-const TC = () => [...document.querySelectorAll("[data-tc]")];
-const LIMITS = { m1: 40, m2: 20, m3: 20, m5: 15, case: 6 };
-const testCounts = () => Object.fromEntries(TC().map(i => [i.dataset.tc, Math.max(0, Math.min(LIMITS[i.dataset.tc], Math.floor(+i.value || 0)))]));
-const QUESTION_KEYS = ["one_mark", "short_answer", "long_answer", "case_based"];
-const SECTION_TEXT = {"summary_basic":["BASIC SUMMARY NOTES","a brief summary in very simple English (short sentences, everyday words): one heading per main topic, each with 2 to 5 very short points giving only the main ideas. No long explanations or worked examples. After the points, add a table headed DEFINITIONS OF TERMS with two columns, term and its definition in one or two sentences as the book gives it, for the important terms of those topics."],"summary":["SUMMARY NOTES (DETAILED)","explain every topic and sub-topic in book order as short, clear points: definitions, explanations, examples, processes, reasons. A student who reads only these notes should understand the whole chapter."],"key_points":["KEY POINTS TO REMEMBER","must-remember facts: definitions, laws, formulae, equations, dates, names, differences, units."],"formulas":["FORMULA SUMMARY","every formula, identity and rule of calculation in the pages, grouped by topic in book order, as a table with three columns: name, formula (written with proper symbols), and meaning and use (what each symbol means, the unit, and when to use it). Only formulae that appear in or follow directly from these pages. If there are none, say so in one line."],"revision_table":["QUICK REVISION TABLE","a table with one row per topic in book order and three columns: topic, in short (the idea in one or two sentences), remember (the fact, formula, example or keyword most likely to be asked). Keep each cell brief."],"differences":["DIFFERENCES TABLES","\"difference between X and Y\" tables for the pairs of terms, processes or things in the pages that students are asked to distinguish (as many as the pages support, usually 2-6), each with 3-6 rows of basis of comparison."],"one_mark":["ONE MARK QUESTIONS WITH ANSWERS","every 1-mark question that could reasonably be asked: MCQs (4 options, give the correct option), fill in the blanks, true/false (with the correction when false), very short answer, and assertion-reason (standard CBSE four options). Aim for 30-50 for a full chapter."],"short_answer":["2 AND 3 MARK QUESTIONS WITH ANSWERS","include all NCERT in-text and end-of-chapter exercise questions of this length plus other likely questions, and numericals with full working where relevant. Label each [2 marks] or [3 marks]. Answers the right length to score full marks (2 marks: 2-3 points; 3 marks: 3-4 points). Aim for 15-30."],"long_answer":["5 MARK QUESTIONS WITH ANSWERS","complete model answers (5+ points, with derivations, steps, diagram descriptions or case-based reasoning as the subject needs), including the long NCERT exercise questions. Aim for 6-12."],"case_based":["CASE-BASED QUESTIONS WITH ANSWERS","case-based (source-based) questions in the style of recent CBSE papers for this subject: a short passage, situation, data or experiment description based on the pages (80-150 words), followed by 3-4 sub-questions with marks and full answers, usually totalling 4 marks. Roughly 3-5 cases for a full chapter."]};
+// The chosen files are matched to chapters by their NCERT file name (jesc101.pdf); one file for one chapter is taken as it is.
+$("pdfs").onchange = () => {
+  const ns = chapters(), list = [...$("pdfs").files];
+  for (const f of list) {
+    const m = f.name.toLowerCase().match(/([a-z]{4}\d)(\d{2})/);
+    const hit = m && ns.find(n => code(n) === m[1] + m[2]);
+    if (hit) FILES.set(code(hit), f);
+  }
+  if (ns.length === 1 && list.length === 1 && !FILES.has(code(ns[0]))) FILES.set(code(ns[0]), list[0]);
+  $("pdfs").value = "";
+  update();
+};
+
 const SAVED = "ncert-pro-choices";
 (function restore() {
   let c = {};
   try { c = JSON.parse(localStorage.getItem(SAVED) || "{}"); } catch { /* none saved */ }
-  SEC().forEach(x => x.checked = (c.sections || DEFAULT_SECTIONS).includes(x.value));
-  TC().forEach(i => i.value = (c.counts || DEFAULT_COUNTS)[i.dataset.tc] ?? DEFAULT_COUNTS[i.dataset.tc]);
+  SEC().forEach(x => x.checked = (c.sections || DATA.defaultSections).includes(x.value));
+  TC().forEach(i => i.value = (c.counts || DATA.practiceCounts)[i.dataset.tc] ?? DATA.practiceCounts[i.dataset.tc]);
 })();
-const choicesChanged = () => { try { localStorage.setItem(SAVED, JSON.stringify({ sections: SEC().filter(x => x.checked).map(x => x.value), counts: testCounts() })); } catch { /* private mode */ } update(); };
+const choicesChanged = () => { try { localStorage.setItem(SAVED, JSON.stringify({ sections: chosen(), counts: testCounts() })); } catch { /* private mode */ } update(); };
 SEC().forEach(x => x.onchange = choicesChanged); TC().forEach(i => i.oninput = choicesChanged);
 const clsKeys = Object.keys(CATALOG);
 fill($("cls"), clsKeys.map(c => [c, clsLabel(c)]));
 $("cls").value = clsKeys.includes("10") ? "10" : clsKeys[0];
 $("cls").onchange = fillSubjects; $("subject").onchange = fillBooks; $("book").onchange = fillChapters;
-["chf", "cht", "pf", "pt"].forEach(id => $(id).addEventListener("input", update));
-$("chf").addEventListener("change", update); $("cht").addEventListener("change", () => {
-  if (+$("cht").value < +$("chf").value) $("chf").value = $("cht").value; update(); });
+["chf", "cht"].forEach(id => $(id).addEventListener("change", update));
+$("cht").addEventListener("change", () => { if (+$("cht").value < +$("chf").value) { $("chf").value = $("cht").value; update(); } });
 fillSubjects();
 
-$("copy").onclick = () => {
-  const ta = $("prompt");
-  const done = () => { $("status").textContent = "Prompt copied. Paste it into claude.ai with the PDF attached."; };
+// ---------------------------------------------------------------- Claude, through the page's "sample" capability
+let SAMPLE = null;
+(async () => {
+  SAMPLE = window.claude?.use ? await window.claude.use("sample").catch(() => null) : null;
+  if (!SAMPLE) $("gohint").textContent = "Open this page on claude.ai, signed in, to prepare the material with your Claude account.";
+})();
+
+async function pdfText(file, from, to) {      // the text of pages from..to (1-based), page by page
+  let lib = null; const tried = [];
+  for (const base of PDFJS) {
+    try {
+      const at = f => new URL(base + f, document.baseURI).href;
+      const mod = await import(at("pdf.min.mjs"));
+      // Run pdf.js's worker code in the page itself: with globalThis.pdfjsWorker set, pdf.js starts no separate
+      // Worker (one that a framed page may not be allowed to start, and that would then wait for ever).
+      globalThis.pdfjsWorker = await import(at("pdf.worker.min.mjs"));
+      mod.GlobalWorkerOptions.workerSrc = at("pdf.worker.min.mjs");
+      lib = mod; break;
+    }
+    catch (e) { tried.push(`${base}: ${e?.message || e}`); }
+  }
+  if (!lib) throw new Error("Could not load the PDF reader (pdf.js). Tried " + tried.join(" | "));
+  if (tried.length) log("PDF reader loaded after: " + tried.join(" | "));
+  const pdf = await lib.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+  const total = pdf.numPages, a = Math.max(1, from || 1), z = Math.min(total, to || total);
+  if (a > z) throw new Error(`The pages must be between 1 and ${total}.`);
+  const pages = [];
+  for (let p = a; p <= z; p++) {
+    const tc = await (await pdf.getPage(p)).getTextContent();
+    pages.push(`--- Page ${p} ---\n` + tc.items.map(it => it.str + (it.hasEOL ? "\n" : "")).join("").replace(/[ \t]+\n/g, "\n").trim());
+  }
+  return { text: pages.join("\n\n"), total, from: a, to: z };
+}
+
+const fmt = (s, v) => s.replace(/\{(\w+)\}/g, (m, k) => k in v ? v[k] : m);
+function promptFor(key, text, v, shorter) {
+  const schema = { type: "object", required: ["chapter_title", key],
+                   properties: { chapter_title: { type: "string", description: "Official chapter title as printed in the book" }, [key]: DATA.sections[key].schema } };
+  const outro = DATA.questionSections.includes(key) ? DATA.outro : "";
+  return `${DATA.system}\n\n${fmt(DATA.intro, v).replace("The NCERT pages are attached.", "The NCERT pages are given below as text.")}1. ${DATA.sections[key].prompt}${outro}` +
+    (shorter ? "\n\nYour last answer was too long and was cut off: this time write about half as many items, each shorter." : "") +
+    `\n\nReply with ONLY one JSON object (no Markdown, no other text) that matches this JSON Schema:\n${JSON.stringify(schema)}` +
+    `\n\nThe pages were extracted from the PDF as text ("--- Page n ---" starts each page). Figures and pictures are missing, and some formulas, tables or symbols may be garbled: use the book's meaning, and never add content that is not in these pages.\n\n<ncert_pages>\n${text}\n</ncert_pages>`;
+}
+
+async function ask(key, text, v, signal, onLive) {
+  const call = shorter => SAMPLE.json(promptFor(key, text, v, shorter), { signal, onText: ({ text: t }) => onLive(t.length) });
+  try { return await call(false); }
+  catch (e) {
+    if (e?.code === "invalid_json") return await call(true);   // cut off by the length limit: ask once for less
+    throw e;
+  }
+}
+
+// ---------------------------------------------------------------- Prepare
+const LOG = [];
+function log(line, cls = "") { LOG.push([new Date().toTimeString().slice(0, 8) + "  " + line, cls]); showLog(); }
+let LIVE = "";
+function showLog() {
+  $("log").innerHTML = LOG.map(([l, c]) => `<div class="${c}">${esc(l)}</div>`).join("") + (LIVE ? `<div class="live">… ${esc(LIVE)}</div>` : "");
+  $("log").scrollTop = $("log").scrollHeight;
+}
+function why(e) {
+  const c = e?.code;
+  return c === "not_granted" ? "Claude was not allowed for this page. Reload the page and press Allow when claude.ai asks."
+    : c === "rate_limited" ? "Your Claude usage limit was reached, or too many requests at once. Wait a while and press Prepare again (finished sections are kept)."
+    : c === "cancelled" || e?.name === "AbortError" ? "Stopped."
+    : c === "invalid_json" ? "Claude's answer could not be read (it may have been too long). Try fewer pages or fewer sections."
+    : (e?.message || String(e));
+}
+
+$("stop").onclick = () => { if (running) { running.byUser = true; running.abort(); } $("stop").disabled = true; };
+$("go").onclick = async () => {
+  const fail = m => { $("status").hidden = false; $("state").innerHTML = `<span class="error">${esc(m)}</span>`; };
+  if (!SAMPLE) return fail("Open this page on claude.ai, signed in, to prepare the material with your Claude account.");
+  const ns = chapters(), options = chosen(), counts = testCounts();
+  const missing = ns.filter(n => !FILES.has(code(n)));
+  if (missing.length) return fail(`First download ${missing.map(n => code(n) + ".pdf").join(", ")} from NCERT (step 3), then choose ${missing.length > 1 ? "them" : "it"}.`);
+  if (!options.length || (options.includes(DATA.practiceTest) && !testKinds(counts).length)) return fail($("secmsg").textContent);
+  const keys = DATA.order.filter(k => options.includes(k) || (options.includes(DATA.practiceTest) && testKinds(counts).includes(k)));
+  const b = book(), cls = $("cls").value, subject = $("subject").value;
+
+  LOG.length = 0; LIVE = ""; $("status").hidden = false; $("actions").innerHTML = ""; $("doc").hidden = true;
+  $("go").disabled = true; $("stop").hidden = false; $("stop").disabled = false;
+  const t0 = Date.now(), tick = () => { const s = Math.floor((Date.now() - t0) / 1000); $("state").innerHTML = `<span class="spinner"></span>Working… ${Math.floor(s / 60)}:${pad(s % 60)}`; };
+  tick(); const ticker = setInterval(tick, 1000);
+  const ctl = running = new AbortController(), signal = ctl.signal;
+  log("AI: Claude, with your claude.ai account (each section is one request).");
+  log(`Claude writes: ${keys.map(k => DATA.sections[k].label.toLowerCase()).join(", ")}.`);
   try {
-    navigator.clipboard.writeText(ta.value).then(done, () => { ta.select(); $("status").textContent = "Prompt selected. Press Ctrl+C (or Cmd+C) to copy."; });
-  } catch (e) { ta.select(); $("status").textContent = "Prompt selected. Press Ctrl+C (or Cmd+C) to copy."; }
+    const limits = await SAMPLE.limits().catch(() => null);
+    const datas = [];
+    for (const [ci, n] of ns.entries()) {
+      const single = ns.length === 1, f = FILES.get(code(n));
+      const which = single ? `chapter ${n}` : `chapter ${n} (${ci + 1} of ${ns.length})`;
+      log(`Reading the text of ${which} (${f.name}) …`);
+      const pg = await pdfText(f, single ? +$("pf").value || 1 : 1, single ? +$("pt").value || 0 : 0);
+      const part = pg.from !== 1 || pg.to !== pg.total;
+      const v = { cls, subject, book: b[1], chapter: n, pages_note: part ? `, pages ${pg.from}–${pg.to} of ${pg.total}` : "" };
+      if (pg.text.replace(/--- Page \d+ ---/g, "").trim().length < 200)
+        throw new Error(`${f.name} has almost no text that can be read (it may be a scanned book). This page cannot use it; try the desktop app.`);
+      if (limits?.maxPromptBytes && new TextEncoder().encode(promptFor(keys[0], pg.text, v)).length > limits.maxPromptBytes)
+        throw new Error(`${which[0].toUpperCase() + which.slice(1)} is too long to send at once. Choose fewer pages (for example 1–8, then 9–16).`);
+      const data = { number: n, url: DATA.chapterUrl.replace("{code}", b[0]).replace("{nn}", pad(n)), page_note: part ? `Pages ${pg.from}–${pg.to} of the chapter PDF` : "" };
+      // two sections at a time: claude.ai runs a couple of requests at once for a viewer and queues the rest
+      const queue = [...keys], live = {};
+      const worker = async () => {
+        while (queue.length) {
+          if (signal.aborted) throw Object.assign(new Error("Stopped."), { code: "cancelled" });
+          const k = queue.shift(), cacheKey = [code(n), f.size, pg.from, pg.to, k].join("|");
+          let res = DONE.get(cacheKey);
+          if (res) log(`${DATA.sections[k].label}: already written in this tab.`);
+          else {
+            log(`Writing ${DATA.sections[k].label.toLowerCase()} for ${which} …`);
+            live[k] = 0;
+            res = await ask(k, pg.text, v, signal, chars => { live[k] = chars; LIVE = Object.entries(live).map(([x, c]) => `${DATA.sections[x].label}: ${c ? c + " characters" : "thinking"}`).join(" · "); showLog(); });
+            delete live[k]; LIVE = Object.entries(live).map(([x, c]) => `${DATA.sections[x].label}: ${c ? c + " characters" : "thinking"}`).join(" · ");
+            if (!res || !Array.isArray(res[k])) throw new Error(`Claude's answer for ${DATA.sections[k].label.toLowerCase()} was not in the expected form. Press Prepare again.`);
+            DONE.set(cacheKey, res);
+          }
+          data[k] = res[k];
+          if (!data.chapter_title && res.chapter_title) data.chapter_title = String(res.chapter_title);
+          log(`${DATA.sections[k].label}: ${res[k].length} ${DATA.countWords[k]}.`, "ok");
+        }
+      };
+      await Promise.all([worker(), worker()]).catch(e => { ctl.abort(); throw e; });   // stop the other request too
+      data.chapter_title ||= `Chapter ${n}`;
+      datas.push(data);
+    }
+    LIVE = "";
+    log("Laying out the document …");
+    $("doc").innerHTML = documentHtml({ cls: clsLabel(cls).replace(/^Class /, ""), subject, book: b[1], ai: "Claude (claude.ai)" }, datas, options, counts);
+    $("doc").hidden = false;
+    clearInterval(ticker);
+    log("Done. Press “Save as PDF” (choose “Save as PDF” in the print window), or “Download” to keep a copy to print later.", "ok");
+    $("state").textContent = `Ready in ${Math.max(1, Math.round((Date.now() - t0) / 60000))} min.`;
+    const name = `NCERT Class ${clsLabel(cls).replace(/^Class /, "")} ${subject} ${datas.map(d => `Ch ${d.number}`).join(", ")}`.replace(/[\\/:*?"<>|]+/g, " ");
+    $("actions").innerHTML = '<button class="btn" type="button" id="print">Save as PDF</button><button class="btn ghost" type="button" id="download">Download</button><button class="btn ghost" type="button" id="view">View the document</button>';
+    $("print").onclick = () => { const old = document.title; document.title = name; window.addEventListener("afterprint", () => { document.title = old; }, { once: true }); window.print(); };
+    $("view").onclick = () => $("doc").scrollIntoView({ behavior: "smooth" });
+    $("download").onclick = async () => {
+      const css = [...document.querySelectorAll("style")].map(s => s.textContent).join("\n");
+      const tag = t => "<" + t + ">";   // written in pieces so this page's own source holds no closing body or script tag
+      const html = "<!doctype html>" + tag("html lang=\"en\"") + tag("head") + tag("meta charset=\"utf-8\"") + tag("title") + esc(name) + tag("/title") +
+        tag("style") + css + tag("/style") + tag("/head") + tag("body") + "<div class=\"doc\">" + $("doc").innerHTML + "</div>" +
+        tag("script") + "addEventListener('load', () => print())" + tag("/script") + tag("/body") + tag("/html");
+      const dl = window.claude?.use ? await window.claude.use("downloads").catch(() => null) : null;
+      try {
+        if (dl) await dl.save({ filename: name + ".html", data: html });
+        else { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([html], { type: "text/html" })); a.download = name + ".html"; a.click(); }
+        log("The download is an HTML file: open it in your browser and its print window opens (choose “Save as PDF”).");
+      } catch (e) { if (e?.code !== "not_granted" && e?.code !== "cancelled") log("Download failed: " + (e?.message || e), "err"); }
+    };
+  } catch (e) {
+    clearInterval(ticker); LIVE = "";
+    const msg = ctl.byUser ? "Stopped." : why(e);
+    log(msg === "Stopped." ? "Stopped. Finished sections are kept in this tab; press Prepare to continue." : "Error: " + msg, msg === "Stopped." ? "" : "err");
+    $("state").innerHTML = `<span class="error">${esc(msg)}</span>`;
+  } finally {
+    running = null; $("go").disabled = false; $("stop").hidden = true;
+  }
 };
 </script>

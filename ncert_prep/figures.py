@@ -14,6 +14,7 @@ find_figures(pdf_bytes) -> [{"number": "7.1", "caption": "...", "page": 4, "png"
 """
 from __future__ import annotations
 
+import ctypes
 import io
 import re
 from collections import deque
@@ -43,6 +44,30 @@ def _page_objects(page, form=None, depth=0):
             yield obj
 
 
+def _bounds(obj):
+    """Page-space box of a drawing. pdfium reports some small shapes (arrowheads in a nested form)
+    as 230-290 pt tall; for a short path far bigger than its own points, use the points."""
+    l, b, r, t = obj.get_bounds()
+    if obj.type != raw.FPDF_PAGEOBJ_PATH or (r - l < 60 and t - b < 60):
+        return l, b, r, t
+    n = raw.FPDFPath_CountSegments(obj.raw)
+    m = obj.get_matrix()
+    if n > 40 or m.b or m.c:
+        return l, b, r, t
+    xs, ys = [], []
+    x, y = ctypes.c_float(), ctypes.c_float()
+    for i in range(n):
+        raw.FPDFPathSegment_GetPoint(raw.FPDFPath_GetPathSegment(obj.raw, i), x, y)
+        xs.append(m.a * x.value + m.e)
+        ys.append(m.d * y.value + m.f)
+    if not xs:
+        return l, b, r, t
+    gl, gr, gb, gt = min(xs), max(xs), min(ys), max(ys)
+    if (gr - gl) * (gt - gb) * 4 + 50 < (r - l) * (t - b) and (gr - gl) < 60 and (gt - gb) < 60:
+        return gl - 1, gb - 1, gr + 1, gt + 1
+    return l, b, r, t
+
+
 _XH = set("acemnorsuvwxz")   # lowercase letters without ascenders/descenders: their height is the x-height
 
 
@@ -52,22 +77,37 @@ def _lines(textpage) -> list[dict]:
     n = textpage.count_chars()
     text = textpage.get_text_range(0, n) if n else ""
     out, start, all_xh = [], 0, []
+    def emit(a, z):
+        boxes, xh = [], []
+        for j in range(a, z):
+            if text[j].isspace():
+                continue
+            bx = textpage.get_charbox(j)
+            boxes.append(bx)
+            if text[j] in _XH:
+                xh.append(round(bx[3] - bx[1], 1))
+        if boxes:
+            all_xh.extend(xh)
+            out.append({"text": text[a:z].strip(), "xh": sorted(xh)[len(xh) // 2] if xh else 0.0,
+                        "box": (min(b[0] for b in boxes), min(b[1] for b in boxes),
+                                max(b[2] for b in boxes), max(b[3] for b in boxes))})
+
     for i in range(len(text) + 1):
         if i == len(text) or text[i] in "\r\n":
             if i > start:
-                boxes, xh = [], []
+                # rotated side text (e.g. a vertical "EXAMPLE 1.8" tab) can share a line with a caption:
+                # cut the line where the characters jump vertically by more than a line height
+                a, prev = start, None
                 for j in range(start, i):
                     if text[j].isspace():
                         continue
                     bx = textpage.get_charbox(j)
-                    boxes.append(bx)
-                    if text[j] in _XH:
-                        xh.append(round(bx[3] - bx[1], 1))
-                if boxes:
-                    all_xh += xh
-                    out.append({"text": text[start:i].strip(), "xh": sorted(xh)[len(xh) // 2] if xh else 0.0,
-                                "box": (min(b[0] for b in boxes), min(b[1] for b in boxes),
-                                        max(b[2] for b in boxes), max(b[3] for b in boxes))})
+                    cy, h = (bx[1] + bx[3]) / 2, bx[3] - bx[1]
+                    if prev and abs(cy - prev[0]) > max(h, prev[1]) * 0.9:
+                        emit(a, j)
+                        a = j
+                    prev = (cy, h)
+                emit(a, i)
             start = i + 1
     body = max(set(all_xh), key=all_xh.count) if all_xh else 0.0
     for ln in out:
@@ -87,6 +127,10 @@ def _captions(lines: list[dict]) -> list[dict]:
         # "Fig. 1.1. Burn the ribbon…" or "Fig. 7.2)." continue a sentence: not a caption
         if re.match(r"^[.)\],;]", rest) and not re.match(r"^[.:]\s*[A-Z][^.]{0,80}$", rest):
             continue
+        if line.get("body") and re.match(r"^[.)\],;]", rest):
+            continue                 # running text that cites the figure ("Fig. 1.17(b). Clearly, …")
+        if line.get("body") and rest[:1].islower():
+            continue                 # running text that starts with the figure ("Figure 1.14 shows the field lines ...")
         if len(rest) > 90:
             continue
         number = m.group(1) + (m.group(2) or "")
@@ -151,12 +195,14 @@ def _page_figures(page, textpage) -> list[tuple[dict, list[float]]]:
                  for ln in lines if len(ln["text"].split()) >= 2 and not ln["small"]]
     boxes = []
     for obj in _page_objects(page):
-        l, b, r, t = obj.get_bounds()
+        l, b, r, t = _bounds(obj)
         w, h = r - l, t - b
         if w < 0.5 and h < 0.5:
             continue
         if w > 0.85 * W and h > 0.85 * H:                      # full-page background picture
             continue
+        if obj.type == raw.FPDF_PAGEOBJ_IMAGE and l - l0 < 3 and b - b0 < 3 and w > 300 and h > 300:
+            continue                                           # a big picture anchored in the page corner: page art, not a figure
         cy = (b + t) / 2 - b0
         if cy < 0.15 * H or cy > 0.90 * H:                     # page-number art, running heads
             continue
@@ -187,7 +233,28 @@ def _page_figures(page, textpage) -> list[tuple[dict, list[float]]]:
                 continue
             if score is None or s < score:
                 best, score = i, s
-        if best is not None:
+        pair = None
+        if best is None:                  # a caption centred under two panels side by side (hesc111 Fig. 11.1)
+            cands = [i for i, (l, b, r, t) in enumerate(regions)
+                     if i not in used and (r - l) >= 60 and (t - b) >= 40 and b <= ct and abs(b - cb) <= 20 and t > ct + 20]
+            for i in cands:
+                for j in cands:
+                    A, B = regions[i], regions[j]
+                    if A[2] <= cx <= B[0] + 40 and 0 <= B[0] - A[2] < 60 and abs(A[1] - B[1]) < 12 and A[0] < cl and B[2] > cr:
+                        pair = (i, j)
+                        break
+                if pair:
+                    break
+        if pair:
+            used.update(pair)
+            A, B = regions[pair[0]], regions[pair[1]]
+            region = [min(A[0], B[0]), min(A[1], B[1]), max(A[2], B[2]), max(A[3], B[3])]
+            if region[1] < ct:
+                region[1] = ct + 1
+            fitted = _fit(region, lines, caps, cap)
+            if fitted:
+                out.append((cap, fitted))
+        elif best is not None:
             used.add(best)
             region = list(regions[best])
             if region[1] < ct:
@@ -209,7 +276,7 @@ def _fit(region: list[float], lines: list[dict], caps: list[dict], cap: dict) ->
         if ln["box"] in cap_boxes or CAPTION.match(s) or len(s) > 40 or len(s.split()) > 6:
             return False
         tokens = s.split()
-        return ln["small"] or (len(s) <= 4 and not ln["body"]) or all(len(x) <= 4 for x in tokens)   # "A", "B 50° 70° C"
+        return ln["small"] or (len(s) <= 4 and not ln["body"]) or (all(len(x) <= 4 for x in tokens) and not ln["body"])   # "A", "B 50° 70° C"; not a line of short words from the text
 
     for _ in range(3):                      # labels can chain (a label beside a label)
         grew = False
@@ -218,7 +285,14 @@ def _fit(region: list[float], lines: list[dict], caps: list[dict], cap: dict) ->
             near = x0 <= r + 14 and x1 >= l - 14 and y0 <= t + 8 and y1 >= b - 8
             inside = x0 >= l and x1 <= r and y0 >= b and y1 <= t
             if near and not inside and is_label(ln):
-                l, b, r, t = min(l, x0), min(b, y0), max(r, x1), max(t, y1)
+                nl, nb, nr, nt = min(l, x0), min(b, y0), max(r, x1), max(t, y1)
+                # labels sit close to the drawing: a chain of text-size "labels" that runs far out is the text beside it
+                if not ln["small"] and not re.fullmatch(r"(\(\w\)\s*)+", ln["text"]) and (nr - nl > start_w + max(30, 0.25 * start_w) or nt - nb > start_h + max(30, 0.25 * start_h)):
+                    continue
+                straddles = (x0 < r - 5 and x1 > r + 40) or (x1 > l + 5 and x0 < l - 40)
+                if ln["small"] and straddles and not re.fullmatch(r"(\(\w\)\s*)+", ln["text"]) and (nr - nl > start_w + max(60, 0.5 * start_w) or nt - nb > start_h + max(60, 0.5 * start_h)):
+                    continue                 # a small line that starts inside but runs far outside (e.g. "(Limestone) (Quick lime)" under an equation)
+                l, b, r, t = nl, nb, nr, nt
                 grew = True
         if not grew:
             break
@@ -250,13 +324,39 @@ def _fit(region: list[float], lines: list[dict], caps: list[dict], cap: dict) ->
                  and x["box"][0] >= l - 1 and x["box"][2] <= r + 1 and x["box"][1] >= b - 1 and x["box"][3] <= t + 1)
     if inside >= 3:
         return None
+    cut_through = sum(1 for x in lines if is_text(x) and len(x["text"].split()) >= 3
+                      and x["box"][0] < r - 2 and x["box"][2] > l + 2 and x["box"][1] < t - 1 and x["box"][3] > b + 1)
+    if cut_through >= 3:                     # the cut slices through several lines of the text beside the figure
+        return None
     wordy = sum(1 for x in lines if len(x["text"].split()) >= 3 and not CAPTION.match(x["text"])
                 and x["box"][0] >= l - 1 and x["box"][2] <= r + 1 and x["box"][1] >= b - 1 and x["box"][3] <= t + 1)
     if wordy >= 5:                           # many lines of (small) prose, e.g. margin notes
         return None
-    if (t - b) < 0.4 * start_h or (r - l) < 0.4 * start_w or (t - b) < 20:
+    if (t - b) < 0.4 * start_h or (r - l) < 0.4 * start_w or ((t - b) < 20 and not ((t - b) >= 8 and (r - l) >= 80)):
         return None                          # trimming took most of it away: not a clean figure
     return [l, b, r, t]
+
+
+def _pad(l, b, r, t, low, lines, page_box, clamp_bottom=True):
+    """Add the PAD margin around a cut-out, but never so far that it takes in the first letters of the
+    text printed just outside it."""
+    l0, b0, r0, t0 = page_box
+    nl, nb, nr, nt = max(l0, l - PAD), max(b0, low), min(r0, r + PAD), min(t0, t + PAD)
+    for ln in lines:
+        if ln["small"] or len(ln["text"].split()) < 2 or len(ln["text"]) < 6:
+            continue
+        x0, y0, x1, y1 = ln["box"]
+        beside = y1 > b and y0 < t
+        above = x1 > l and x0 < r
+        if beside and x0 >= r - 0.5:
+            nr = min(nr, max(r, x0 - 1))
+        if beside and x1 <= l + 0.5:
+            nl = max(nl, min(l, x1 + 1))
+        if above and y0 >= t - 0.5:
+            nt = min(nt, max(t, y0 - 1))
+        if clamp_bottom and above and y1 <= b + 0.5:
+            nb = max(nb, min(b, y1 + 1))
+    return nl, nb, nr, nt
 
 
 def find_figures(pdf_bytes: bytes, dpi: int = DPI, log=None) -> list[dict]:
@@ -268,10 +368,13 @@ def find_figures(pdf_bytes: bytes, dpi: int = DPI, log=None) -> list[dict]:
             page = doc[pno]
             textpage = page.get_textpage()
             l0, b0, r0, t0 = page.get_cropbox()
+            lines = _lines(textpage)
             for cap, (l, b, r, t) in _page_figures(page, textpage):
+                if any(f["number"] == cap["number"] for f in out):
+                    continue                           # a later sentence that cites the figure, not a second figure
                 ct = cap["box"][3]
                 low = ct + 0.5 if ct <= b + 1 else b - PAD     # caption below: stop above it (the PDF prints its own)
-                l, b, r, t = max(l0, l - PAD), max(b0, low), min(r0, r + PAD), min(t0, t + PAD)
+                l, b, r, t = _pad(l, b, r, t, low, lines, (l0, b0, r0, t0), clamp_bottom=ct > b + 1)
                 if (t - b) > 0.8 * (t0 - b0):          # most of a page: not one figure
                     continue
                 img = page.render(scale=dpi / 72, crop=(l - l0, b - b0, r0 - r, t0 - t)).to_pil()

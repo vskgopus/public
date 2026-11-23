@@ -1,10 +1,11 @@
-<title>NCERT Prep with Claude</title>
+<title>NCERT Exam Prep</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-  /* Layout: answer-sheet page. A red margin rule runs down the left of the work area;
-     left column = choices + NCERT downloads, right column = the prompt to paste. */
+  /* Answer-sheet page: a red margin rule runs down the left of the work area. Built by pro/build_page.py:
+     the prompts, schemas and catalogue come from ncert_prep/generator.py (via web/data.js), the printable
+     document from web/render.js and web/style.css, so this page writes the same material as the apps. */
   :root {
     --paper: #fbfcfe; --sheet: #ffffff; --ink: #172036; --muted: #5a6478; --rule: #dde3ee;
     --accent: #1f4fa3; --accent-ink: #ffffff; --accent-soft: #e8eefb; --margin: #d4483b; --ok: #13795b;
@@ -26,15 +27,14 @@
   }
   * { box-sizing: border-box; }
   body { background: var(--paper); color: var(--ink); font: 15px/1.55 var(--body); }
-  .wrap { max-width: 1120px; margin: 0 auto; padding-block: 28px 56px;
+  .wrap { max-width: 760px; margin: 0 auto; padding-block: 28px 56px;
           padding-left: max(16px, env(safe-area-inset-left, 0px));
           padding-right: max(16px, env(safe-area-inset-right, 0px)); }
   header h1 { font: 700 clamp(1.6rem, 3.2vw, 2.2rem)/1.15 var(--display); margin: 0 0 6px; text-wrap: balance; }
   header p { margin: 0; color: var(--muted); max-width: 68ch; }
   .marks { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
   .chip { font: 500 12px/1 var(--mono); padding: 6px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
-  .grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 20px; margin-top: 24px; align-items: start; }
-  @media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+  .cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; margin-top: 24px; }
   .sheet { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 20px 20px 22px 30px; position: relative; min-width: 0; }
   .sheet::before { content: ""; position: absolute; left: 16px; top: 0; bottom: 0; width: 2px; background: var(--margin); opacity: .55; }
   .step { display: grid; gap: 10px; }
@@ -54,15 +54,19 @@
   .files a:hover { border-color: var(--accent); }
   .files .code { font: 12px/1 var(--mono); color: var(--muted); }
   .files .go { color: var(--accent); font-weight: 600; font-size: 13px; white-space: nowrap; }
+  .files .have { color: var(--ok); }
   .btns { display: flex; flex-wrap: wrap; gap: 10px; }
   .btn { font: 600 14px/1 var(--body); padding: 11px 16px; border-radius: 8px; cursor: pointer; text-decoration: none;
          border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); }
   .btn.ghost { background: transparent; color: var(--accent); }
-  .status { font-size: 13px; color: var(--ok); min-height: 1.2em; }
-  .prompt-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
-  .prompt-head h2 { font: 600 1rem/1.3 var(--display); margin: 0; }
-  textarea { width: 100%; min-height: 520px; resize: vertical; font: 13px/1.55 var(--mono); color: var(--ink);
-             background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 12px; }
+  .btn.stop { background: transparent; color: var(--margin); border-color: var(--margin); }
+  .btn:disabled { opacity: .55; cursor: progress; }
+  .pick { position: relative; display: block; text-align: center; border: 1.5px dashed var(--accent); border-radius: 8px; padding: 14px;
+          color: var(--accent); font-weight: 600; background: var(--accent-soft); cursor: pointer; }
+  .pick input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  #go { width: 100%; padding: 17px 18px; font: 700 1.05rem/1 var(--body); border: 0; border-radius: 12px; cursor: pointer; color: #fff;
+        background: linear-gradient(150deg, #2f4fa8, #1b3275); box-shadow: 0 12px 26px -12px rgba(27, 50, 117, .7); }
+  #go:disabled { opacity: .6; cursor: progress; }
   fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 6px; }
   legend { font: 600 12px/1 var(--mono); color: var(--muted); letter-spacing: .04em; text-transform: uppercase; padding: 0 0 4px; }
   .opt { display: flex; gap: 10px; align-items: flex-start; font-weight: 500; border: 1px solid var(--rule); border-radius: 8px;
@@ -74,24 +78,36 @@
   .counts[hidden] { display: none; }
   @media (max-width: 420px) { .counts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   .error { color: var(--margin); }
-  ol.how { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
-  .note { margin-top: 14px; font-size: 13px; color: var(--muted); background: var(--accent-soft); border-radius: 8px; padding: 10px 12px; }
+  .prep { margin-top: 20px; display: grid; gap: 10px; }
+  #state { margin: 0; font-weight: 600; }
+  #log { margin: 0; background: #121726; color: #d8dfee; border-radius: 8px; padding: 10px 12px; max-height: 220px; overflow-y: auto;
+         font: 12px/1.6 var(--mono); white-space: pre-wrap; word-break: break-word; }
+  #log .err { color: #ff9b8f; } #log .ok { color: #7ee2a8; } #log .live { color: #f5c97a; }
+  .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid var(--rule); border-top-color: var(--accent);
+             border-radius: 50%; animation: spin 1s linear infinite; vertical-align: -2px; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
   @media (prefers-reduced-motion: no-preference) { .btn, .files a { transition: border-color .15s, background .15s; } }
+  .foot { margin-top: 18px; font-size: 12px; color: var(--muted); }
+
+  /*DOCCSS*/
+  .doc { margin-top: 20px; }
+  @media print { .wrap > header, .cols, .prep, .foot { display: none !important; } .wrap { max-width: none; padding: 0; } }
 </style>
 
 <div class="wrap">
   <header>
-    <h1>NCERT Prep with Claude</h1>
-    <p>Make printable CBSE exam notes and question banks from the official NCERT textbook, using your own Claude Pro
-      account. No API key needed: pick the chapter, download it from ncert.nic.in, and paste the ready-made prompt into claude.ai.</p>
+    <h1>NCERT Exam Prep</h1>
+    <p>Printable CBSE exam notes and question banks from the official NCERT textbook, written by Claude with your own
+      claude.ai account. No API key and no install: choose the chapter, download it from ncert.nic.in, choose the file, and press Prepare.</p>
     <div class="marks" aria-label="What you get">
-      <span class="chip">Summary notes</span><span class="chip">Formula summary</span><span class="chip">Key points</span>
+      <span class="chip">Summary notes</span><span class="chip">Formula summary</span><span class="chip">Diagrams</span>
       <span class="chip">Revision table</span><span class="chip">Questions with answers</span><span class="chip">Practice test</span>
     </div>
   </header>
 
-  <div class="grid">
-    <section class="sheet" aria-label="Choose and download">
+  <div class="cols">
+    <section class="sheet" aria-label="Choose the chapter and what to include">
       <div class="step">
         <h2><span class="n">STEP 1</span>Choose the chapter</h2>
         <div class="row">
@@ -104,11 +120,10 @@
           <label for="cht">Chapter to<select id="cht"></select></label>
         </div>
         <div class="row">
-          <label for="pf">Pages from (optional)<input id="pf" type="number" min="1" inputmode="numeric" placeholder="first"></label>
-          <label for="pt">Pages to (optional)<input id="pt" type="number" min="1" inputmode="numeric" placeholder="last"></label>
+          <label for="pf">Pages from (optional)<input id="pf" type="number" min="1" inputmode="numeric" placeholder="1"></label>
+          <label for="pt">Pages to (optional)<input id="pt" type="number" min="1" inputmode="numeric" placeholder="end"></label>
         </div>
-        <p class="hint">Page numbers are the ones printed on the textbook pages. Leave them empty for whole chapters.
-          One chapter per chat gives the most complete question bank.</p>
+        <p class="hint">Pages count from page 1 of the chapter's PDF (one chapter only). Leave them empty for whole chapters.</p>
       </div>
 
       <div class="step">
@@ -117,6 +132,7 @@
           <legend>Notes</legend>
           <label class="opt"><input type="checkbox" name="sec" value="summary_basic"><span>Summary notes (basic)<small>short points on the main topics, with definitions of terms</small></span></label>
           <label class="opt"><input type="checkbox" name="sec" value="summary"><span>Summary notes (detailed)<small>every topic explained, topic by topic</small></span></label>
+          <label class="opt"><input type="checkbox" name="sec" value="diagrams"><span>Explanation diagrams<small>flowcharts, cycles and concept maps</small></span></label>
           <label class="opt"><input type="checkbox" name="sec" value="key_points"><span>Key points to remember<small>definitions, laws, dates, units</small></span></label>
           <label class="opt"><input type="checkbox" name="sec" value="formulas"><span>Formula summary<small>every formula with its meaning and use (maths, science)</small></span></label>
           <label class="opt"><input type="checkbox" name="sec" value="revision_table"><span>Quick revision table<small>one row per topic</small></span></label>
@@ -139,50 +155,51 @@
         </div>
         <p class="hint" id="secmsg"></p>
       </div>
+
       <div class="step">
-        <h2><span class="n">STEP 3</span>Download from NCERT</h2>
+        <h2><span class="n">STEP 3</span>Download from NCERT, then choose the file</h2>
         <ul class="files" id="files"></ul>
-        <p class="hint">Official chapter PDFs from ncert.nic.in. Save them, then attach them in claude.ai.</p>
+        <label class="pick" for="pdfs"><span id="picktext">Choose the downloaded PDF</span>
+          <input id="pdfs" type="file" accept="application/pdf,.pdf" multiple></label>
+        <p class="hint">Save the chapter from ncert.nic.in first; the file stays on your device. Only its text is sent to Claude
+          (figures are not), so check diagrams and formulas against the book.</p>
       </div>
-
-      <div class="step">
-        <h2><span class="n">STEP 4</span>Ask Claude</h2>
-        <ol class="how">
-          <li>Open claude.ai and start a new chat.</li>
-          <li>Attach the chapter PDF(s) from step 3 (the paperclip or + button).</li>
-          <li>Copy the prompt on the right, paste it, and send.</li>
-          <li>Claude makes a printable PDF for you to download and print.</li>
-        </ol>
-        <div class="btns">
-          <button class="btn" id="copy" type="button">Copy prompt</button>
-          <a class="btn ghost" href="https://claude.ai/new" target="_blank" rel="noopener">Open claude.ai</a>
-        </div>
-        <div class="status" id="status" role="status"></div>
-      </div>
-    </section>
-
-    <section class="sheet" aria-label="Prompt">
-      <div class="prompt-head">
-        <h2>Your prompt</h2>
-        <span class="hint" id="meta"></span>
-      </div>
-      <textarea id="prompt" spellcheck="false" aria-label="Prompt to paste into claude.ai"></textarea>
-      <div class="note">If Claude replies with the material as text instead of a PDF, turn on file creation in claude.ai
-        (Settings → Capabilities) and ask again, or say <em>"Put all of this in one document I can print."</em> For long chapters,
-        reply <em>"continue"</em> if Claude stops before the last section.</div>
     </section>
   </div>
+
+  <div class="prep">
+    <button id="go" type="button">Prepare exam material</button>
+    <p class="hint" id="gohint"></p>
+    <div id="status" hidden>
+      <div class="btns" style="justify-content:space-between;align-items:center"><p id="state"></p>
+        <button class="btn stop" id="stop" type="button" hidden>Stop</button></div>
+      <div id="log" role="log" aria-label="What the page is doing"></div>
+      <div class="btns" id="actions" style="margin-top:10px"></div>
+    </div>
+  </div>
+  <div class="doc" id="doc" hidden></div>
+  <p class="foot">Chapters © NCERT, downloaded by you from ncert.nic.in · For personal study · Uses your own Claude usage.</p>
 </div>
 
 <script>
-const CATALOG = /*CATALOG*/{};
-const DEFAULT_SECTIONS = /*DEFAULTS*/[], DEFAULT_COUNTS = /*COUNTS*/{};
+const DATA = /*DATA*/{};
+/*RENDER*/
+
 const $ = id => document.getElementById(id);
 const fill = (sel, items) => { sel.innerHTML = ""; items.forEach(([v, t]) => sel.add(new Option(t, v))); };
 const clsLabel = c => c === "11-12" ? "Class 11–12 (combined)" : `Class ${c}`;
 const pad = n => String(n).padStart(2, "0");
+const CATALOG = DATA.catalog;
+// pdf.js 4.10.38: the copy published beside this page first (pro/vendor), then two public CDNs
+const PDFJS = ["./vendor/", "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/", "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/"];
+const FILES = new Map();           // chapter code (jesc101) -> File
+const DONE = new Map();            // finished sections in this tab, so a retry does not ask again
+let running = null;
 
+// ---------------------------------------------------------------- choosing
 function book() { return CATALOG[$("cls").value][$("subject").value].find(b => b[0] === $("book").value); }
+function chapters() { const a = +$("chf").value, b = +$("cht").value, out = []; for (let i = a; i <= b; i++) out.push(i); return out; }
+const code = n => `${book()[0]}${pad(n)}`;
 function fillSubjects() {
   const subs = Object.keys(CATALOG[$("cls").value]).sort();
   fill($("subject"), subs.map(s => [s, s]));
@@ -195,90 +212,222 @@ function fillChapters() {
   for (let i = first; i <= last; i++) chs.push([i, `Chapter ${i}`]);
   fill($("chf"), chs); fill($("cht"), chs); update();
 }
+const SEC = () => [...document.querySelectorAll("input[name=sec]")];
+const TC = () => [...document.querySelectorAll("[data-tc]")];
+const testCounts = () => Object.fromEntries(TC().map(i => [i.dataset.tc, Math.max(0, Math.min(DATA.practiceLimits[i.dataset.tc] ?? 40, Math.floor(+i.value || 0)))]));
+const testKinds = c => DATA.questionSections.filter(k => Object.entries(c).some(([x, n]) => n > 0 && DATA.countSection[x] === k));
+const chosen = () => SEC().filter(x => x.checked).map(x => x.value);
 
 function update() {
   if (+$("cht").value < +$("chf").value) $("cht").value = $("chf").value;
-  const [code, title] = book();
-  const cls = $("cls").value, subject = $("subject").value;
-  const a = +$("chf").value, b = +$("cht").value;
-  const chapters = []; for (let i = a; i <= b; i++) chapters.push(i);
-
-  $("files").innerHTML = chapters.map(n => {
-    const url = `https://ncert.nic.in/textbook/pdf/${code}${pad(n)}.pdf`;
-    return `<li><a href="${url}" target="_blank" rel="noopener"><span>Chapter ${n}<br><span class="code">${code}${pad(n)}.pdf</span></span><span class="go">Download PDF</span></a></li>`;
+  const ns = chapters();
+  $("files").innerHTML = ns.map(n => {
+    const c = code(n), have = FILES.has(c);
+    return `<li><a href="${DATA.chapterUrl.replace("{code}", book()[0]).replace("{nn}", pad(n))}" target="_blank" rel="noopener"><span>Chapter ${n}<br><span class="code">${c}.pdf</span></span>` +
+      `<span class="go${have ? " have" : ""}">${have ? "✓ Chosen" : "Download PDF"}</span></a></li>`;
   }).join("");
-
-  const pf = $("pf").value.trim(), pt = $("pt").value.trim();
-  const pages = pf || pt ? ` (only textbook pages ${pf || "start"} to ${pt || "end"})` : "";
-  const chText = a === b ? `Chapter ${a}` : `Chapters ${a} to ${b}`;
-  const bookText = title.toLowerCase() === subject.toLowerCase() ? "" : `, book "${title}"`;
-  const classText = cls === "11-12" ? "Class 11–12" : `Class ${cls}`;
-  $("meta").textContent = `${classText} · ${subject} · ${chText}`;
-
-  const chosen = SEC().filter(x => x.checked).map(x => x.value), counts = testCounts();
-  const noq = chosen.includes("practice_test") && !Object.values(counts).some(n => n > 0);
-  $("testbox").hidden = !chosen.includes("practice_test");
-  $("secmsg").className = "hint" + (!chosen.length || noq ? " error" : "");
-  $("secmsg").textContent = !chosen.length ? "Tick at least one section."
+  const missing = ns.filter(n => !FILES.has(code(n)));
+  $("picktext").textContent = !missing.length ? `✓ ${ns.length === 1 ? "File chosen" : "All files chosen"} (press to change)`
+    : ns.length === 1 ? "Choose the downloaded PDF" : `Choose the downloaded PDFs (${missing.length} of ${ns.length} still needed)`;
+  const list = chosen(), counts = testCounts(), test = list.includes(DATA.practiceTest);
+  const noq = test && !testKinds(counts).length;
+  $("testbox").hidden = !test;
+  $("secmsg").className = "hint" + (!list.length || noq ? " error" : "");
+  $("secmsg").textContent = !list.length ? "Tick at least one section."
     : noq ? "The practice test needs at least one question: set a count above 0."
-    : "Each extra section makes Claude's answer longer. Explanation diagrams and the book's own figures are in the desktop app (diagrams also in the browser version).";
-  $("copy").disabled = !chosen.length || noq;
-  if (!chosen.length || noq) { $("prompt").value = $("secmsg").textContent; return; }
-  const notes = chosen.filter(k => k !== "practice_test"), hasQ = notes.some(k => QUESTION_KEYS.includes(k)), test = chosen.includes("practice_test");
-  const items = notes.map(k => `${SECTION_TEXT[k][0]} - ${SECTION_TEXT[k][1]}`);
-  if (test) {
-    const kinds = [[counts.m1, "one-mark (Section A)"], [counts.m2, "two-mark"], [counts.m3, "three-mark"], [counts.m5, "five-mark"], [counts.case, "case-based (a passage with 3-4 sub-questions, about 4 marks each)"]]
-      .filter(([n]) => n > 0).map(([n, t]) => `${n} ${t}`).join(", ");
-    items.push(`PRACTICE TEST WITH ANSWER KEY - a practice question paper with: ${kinds}. Letter the sections A, B, C ... in that order for the kinds present, with the marks of each question and the maximum marks at the top. ` +
-      (hasQ ? "Pick the questions from your question sections above, spread across the topics" : "Write fresh questions that cover the whole chapter evenly") +
-      (a === b ? "" : " and across all the chapters (one combined paper)") + ". The paper itself has NO answers; put the complete answer key on separate pages after the paper.");
-  }
-  const numbered = items.map((t, i) => `${i + 1}. ${t}`).join("\n\n");
-  const only = test && !notes.length
-    ? "\n\nIMPORTANT: include ONLY the practice test paper and its answer key in the document. Do not print notes or question banks."
-    : "";
-  const answers = hasQ || test ? ` Put each answer directly below its question, starting with "Ans.", except in the practice test paper, whose answers go only in the answer key.` : "";
-  $("prompt").value =
-`You are an experienced CBSE teacher and board paper-setter. I have attached the official NCERT textbook PDF for ${classText}, ${subject}${bookText}, ${chText}${pages}.
-
-Using ONLY these NCERT pages, prepare complete exam preparation material${a === b ? "" : " for each chapter in turn"}, in this order:
-
-${numbered}${only}
-
-Rules: everything must be correct, match NCERT wording and (for questions) be complete enough for full marks in a CBSE board exam. Write formulae with proper symbols (H₂O, x², √, π, →).${answers}
-
-When the content is ready, create a printable A4 PDF file of all of it, with a cover title "${classText} ${subject}${bookText.replace(', book "', ' - ').replace('"', '')} - ${chText} - Exam Preparation", a heading for each section, numbered questions and clear page breaks. Give me the PDF to download.`;
+    : "Each extra section takes longer and uses more of your Claude usage. The book's own figures are only in the desktop app.";
 }
 
-const SEC = () => [...document.querySelectorAll("input[name=sec]")];
-const TC = () => [...document.querySelectorAll("[data-tc]")];
-const LIMITS = { m1: 40, m2: 20, m3: 20, m5: 15, case: 6 };
-const testCounts = () => Object.fromEntries(TC().map(i => [i.dataset.tc, Math.max(0, Math.min(LIMITS[i.dataset.tc], Math.floor(+i.value || 0)))]));
-const QUESTION_KEYS = ["one_mark", "short_answer", "long_answer", "case_based"];
-const SECTION_TEXT = /*SECTIONS*/{};
+// The chosen files are matched to chapters by their NCERT file name (jesc101.pdf); one file for one chapter is taken as it is.
+$("pdfs").onchange = () => {
+  const ns = chapters(), list = [...$("pdfs").files];
+  for (const f of list) {
+    const m = f.name.toLowerCase().match(/([a-z]{4}\d)(\d{2})/);
+    const hit = m && ns.find(n => code(n) === m[1] + m[2]);
+    if (hit) FILES.set(code(hit), f);
+  }
+  if (ns.length === 1 && list.length === 1 && !FILES.has(code(ns[0]))) FILES.set(code(ns[0]), list[0]);
+  $("pdfs").value = "";
+  update();
+};
+
 const SAVED = "ncert-pro-choices";
 (function restore() {
   let c = {};
   try { c = JSON.parse(localStorage.getItem(SAVED) || "{}"); } catch { /* none saved */ }
-  SEC().forEach(x => x.checked = (c.sections || DEFAULT_SECTIONS).includes(x.value));
-  TC().forEach(i => i.value = (c.counts || DEFAULT_COUNTS)[i.dataset.tc] ?? DEFAULT_COUNTS[i.dataset.tc]);
+  SEC().forEach(x => x.checked = (c.sections || DATA.defaultSections).includes(x.value));
+  TC().forEach(i => i.value = (c.counts || DATA.practiceCounts)[i.dataset.tc] ?? DATA.practiceCounts[i.dataset.tc]);
 })();
-const choicesChanged = () => { try { localStorage.setItem(SAVED, JSON.stringify({ sections: SEC().filter(x => x.checked).map(x => x.value), counts: testCounts() })); } catch { /* private mode */ } update(); };
+const choicesChanged = () => { try { localStorage.setItem(SAVED, JSON.stringify({ sections: chosen(), counts: testCounts() })); } catch { /* private mode */ } update(); };
 SEC().forEach(x => x.onchange = choicesChanged); TC().forEach(i => i.oninput = choicesChanged);
 const clsKeys = Object.keys(CATALOG);
 fill($("cls"), clsKeys.map(c => [c, clsLabel(c)]));
 $("cls").value = clsKeys.includes("10") ? "10" : clsKeys[0];
 $("cls").onchange = fillSubjects; $("subject").onchange = fillBooks; $("book").onchange = fillChapters;
-["chf", "cht", "pf", "pt"].forEach(id => $(id).addEventListener("input", update));
-$("chf").addEventListener("change", update); $("cht").addEventListener("change", () => {
-  if (+$("cht").value < +$("chf").value) $("chf").value = $("cht").value; update(); });
+["chf", "cht"].forEach(id => $(id).addEventListener("change", update));
+$("cht").addEventListener("change", () => { if (+$("cht").value < +$("chf").value) { $("chf").value = $("cht").value; update(); } });
 fillSubjects();
 
-$("copy").onclick = () => {
-  const ta = $("prompt");
-  const done = () => { $("status").textContent = "Prompt copied. Paste it into claude.ai with the PDF attached."; };
+// ---------------------------------------------------------------- Claude, through the page's "sample" capability
+let SAMPLE = null;
+(async () => {
+  SAMPLE = window.claude?.use ? await window.claude.use("sample").catch(() => null) : null;
+  if (!SAMPLE) $("gohint").textContent = "Open this page on claude.ai, signed in, to prepare the material with your Claude account.";
+})();
+
+async function pdfText(file, from, to) {      // the text of pages from..to (1-based), page by page
+  let lib = null; const tried = [];
+  for (const base of PDFJS) {
+    try {
+      const at = f => new URL(base + f, document.baseURI).href;
+      const mod = await import(at("pdf.min.mjs"));
+      // Run pdf.js's worker code in the page itself: with globalThis.pdfjsWorker set, pdf.js starts no separate
+      // Worker (one that a framed page may not be allowed to start, and that would then wait for ever).
+      globalThis.pdfjsWorker = await import(at("pdf.worker.min.mjs"));
+      mod.GlobalWorkerOptions.workerSrc = at("pdf.worker.min.mjs");
+      lib = mod; break;
+    }
+    catch (e) { tried.push(`${base}: ${e?.message || e}`); }
+  }
+  if (!lib) throw new Error("Could not load the PDF reader (pdf.js). Tried " + tried.join(" | "));
+  if (tried.length) log("PDF reader loaded after: " + tried.join(" | "));
+  const pdf = await lib.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+  const total = pdf.numPages, a = Math.max(1, from || 1), z = Math.min(total, to || total);
+  if (a > z) throw new Error(`The pages must be between 1 and ${total}.`);
+  const pages = [];
+  for (let p = a; p <= z; p++) {
+    const tc = await (await pdf.getPage(p)).getTextContent();
+    pages.push(`--- Page ${p} ---\n` + tc.items.map(it => it.str + (it.hasEOL ? "\n" : "")).join("").replace(/[ \t]+\n/g, "\n").trim());
+  }
+  return { text: pages.join("\n\n"), total, from: a, to: z };
+}
+
+const fmt = (s, v) => s.replace(/\{(\w+)\}/g, (m, k) => k in v ? v[k] : m);
+function promptFor(key, text, v, shorter) {
+  const schema = { type: "object", required: ["chapter_title", key],
+                   properties: { chapter_title: { type: "string", description: "Official chapter title as printed in the book" }, [key]: DATA.sections[key].schema } };
+  const outro = DATA.questionSections.includes(key) ? DATA.outro : "";
+  return `${DATA.system}\n\n${fmt(DATA.intro, v).replace("The NCERT pages are attached.", "The NCERT pages are given below as text.")}1. ${DATA.sections[key].prompt}${outro}` +
+    (shorter ? "\n\nYour last answer was too long and was cut off: this time write about half as many items, each shorter." : "") +
+    `\n\nReply with ONLY one JSON object (no Markdown, no other text) that matches this JSON Schema:\n${JSON.stringify(schema)}` +
+    `\n\nThe pages were extracted from the PDF as text ("--- Page n ---" starts each page). Figures and pictures are missing, and some formulas, tables or symbols may be garbled: use the book's meaning, and never add content that is not in these pages.\n\n<ncert_pages>\n${text}\n</ncert_pages>`;
+}
+
+async function ask(key, text, v, signal, onLive) {
+  const call = shorter => SAMPLE.json(promptFor(key, text, v, shorter), { signal, onText: ({ text: t }) => onLive(t.length) });
+  try { return await call(false); }
+  catch (e) {
+    if (e?.code === "invalid_json") return await call(true);   // cut off by the length limit: ask once for less
+    throw e;
+  }
+}
+
+// ---------------------------------------------------------------- Prepare
+const LOG = [];
+function log(line, cls = "") { LOG.push([new Date().toTimeString().slice(0, 8) + "  " + line, cls]); showLog(); }
+let LIVE = "";
+function showLog() {
+  $("log").innerHTML = LOG.map(([l, c]) => `<div class="${c}">${esc(l)}</div>`).join("") + (LIVE ? `<div class="live">… ${esc(LIVE)}</div>` : "");
+  $("log").scrollTop = $("log").scrollHeight;
+}
+function why(e) {
+  const c = e?.code;
+  return c === "not_granted" ? "Claude was not allowed for this page. Reload the page and press Allow when claude.ai asks."
+    : c === "rate_limited" ? "Your Claude usage limit was reached, or too many requests at once. Wait a while and press Prepare again (finished sections are kept)."
+    : c === "cancelled" || e?.name === "AbortError" ? "Stopped."
+    : c === "invalid_json" ? "Claude's answer could not be read (it may have been too long). Try fewer pages or fewer sections."
+    : (e?.message || String(e));
+}
+
+$("stop").onclick = () => { if (running) { running.byUser = true; running.abort(); } $("stop").disabled = true; };
+$("go").onclick = async () => {
+  const fail = m => { $("status").hidden = false; $("state").innerHTML = `<span class="error">${esc(m)}</span>`; };
+  if (!SAMPLE) return fail("Open this page on claude.ai, signed in, to prepare the material with your Claude account.");
+  const ns = chapters(), options = chosen(), counts = testCounts();
+  const missing = ns.filter(n => !FILES.has(code(n)));
+  if (missing.length) return fail(`First download ${missing.map(n => code(n) + ".pdf").join(", ")} from NCERT (step 3), then choose ${missing.length > 1 ? "them" : "it"}.`);
+  if (!options.length || (options.includes(DATA.practiceTest) && !testKinds(counts).length)) return fail($("secmsg").textContent);
+  const keys = DATA.order.filter(k => options.includes(k) || (options.includes(DATA.practiceTest) && testKinds(counts).includes(k)));
+  const b = book(), cls = $("cls").value, subject = $("subject").value;
+
+  LOG.length = 0; LIVE = ""; $("status").hidden = false; $("actions").innerHTML = ""; $("doc").hidden = true;
+  $("go").disabled = true; $("stop").hidden = false; $("stop").disabled = false;
+  const t0 = Date.now(), tick = () => { const s = Math.floor((Date.now() - t0) / 1000); $("state").innerHTML = `<span class="spinner"></span>Working… ${Math.floor(s / 60)}:${pad(s % 60)}`; };
+  tick(); const ticker = setInterval(tick, 1000);
+  const ctl = running = new AbortController(), signal = ctl.signal;
+  log("AI: Claude, with your claude.ai account (each section is one request).");
+  log(`Claude writes: ${keys.map(k => DATA.sections[k].label.toLowerCase()).join(", ")}.`);
   try {
-    navigator.clipboard.writeText(ta.value).then(done, () => { ta.select(); $("status").textContent = "Prompt selected. Press Ctrl+C (or Cmd+C) to copy."; });
-  } catch (e) { ta.select(); $("status").textContent = "Prompt selected. Press Ctrl+C (or Cmd+C) to copy."; }
+    const limits = await SAMPLE.limits().catch(() => null);
+    const datas = [];
+    for (const [ci, n] of ns.entries()) {
+      const single = ns.length === 1, f = FILES.get(code(n));
+      const which = single ? `chapter ${n}` : `chapter ${n} (${ci + 1} of ${ns.length})`;
+      log(`Reading the text of ${which} (${f.name}) …`);
+      const pg = await pdfText(f, single ? +$("pf").value || 1 : 1, single ? +$("pt").value || 0 : 0);
+      const part = pg.from !== 1 || pg.to !== pg.total;
+      const v = { cls, subject, book: b[1], chapter: n, pages_note: part ? `, pages ${pg.from}–${pg.to} of ${pg.total}` : "" };
+      if (pg.text.replace(/--- Page \d+ ---/g, "").trim().length < 200)
+        throw new Error(`${f.name} has almost no text that can be read (it may be a scanned book). This page cannot use it; try the desktop app.`);
+      if (limits?.maxPromptBytes && new TextEncoder().encode(promptFor(keys[0], pg.text, v)).length > limits.maxPromptBytes)
+        throw new Error(`${which[0].toUpperCase() + which.slice(1)} is too long to send at once. Choose fewer pages (for example 1–8, then 9–16).`);
+      const data = { number: n, url: DATA.chapterUrl.replace("{code}", b[0]).replace("{nn}", pad(n)), page_note: part ? `Pages ${pg.from}–${pg.to} of the chapter PDF` : "" };
+      // two sections at a time: claude.ai runs a couple of requests at once for a viewer and queues the rest
+      const queue = [...keys], live = {};
+      const worker = async () => {
+        while (queue.length) {
+          if (signal.aborted) throw Object.assign(new Error("Stopped."), { code: "cancelled" });
+          const k = queue.shift(), cacheKey = [code(n), f.size, pg.from, pg.to, k].join("|");
+          let res = DONE.get(cacheKey);
+          if (res) log(`${DATA.sections[k].label}: already written in this tab.`);
+          else {
+            log(`Writing ${DATA.sections[k].label.toLowerCase()} for ${which} …`);
+            live[k] = 0;
+            res = await ask(k, pg.text, v, signal, chars => { live[k] = chars; LIVE = Object.entries(live).map(([x, c]) => `${DATA.sections[x].label}: ${c ? c + " characters" : "thinking"}`).join(" · "); showLog(); });
+            delete live[k]; LIVE = Object.entries(live).map(([x, c]) => `${DATA.sections[x].label}: ${c ? c + " characters" : "thinking"}`).join(" · ");
+            if (!res || !Array.isArray(res[k])) throw new Error(`Claude's answer for ${DATA.sections[k].label.toLowerCase()} was not in the expected form. Press Prepare again.`);
+            DONE.set(cacheKey, res);
+          }
+          data[k] = res[k];
+          if (!data.chapter_title && res.chapter_title) data.chapter_title = String(res.chapter_title);
+          log(`${DATA.sections[k].label}: ${res[k].length} ${DATA.countWords[k]}.`, "ok");
+        }
+      };
+      await Promise.all([worker(), worker()]).catch(e => { ctl.abort(); throw e; });   // stop the other request too
+      data.chapter_title ||= `Chapter ${n}`;
+      datas.push(data);
+    }
+    LIVE = "";
+    log("Laying out the document …");
+    $("doc").innerHTML = documentHtml({ cls: clsLabel(cls).replace(/^Class /, ""), subject, book: b[1], ai: "Claude (claude.ai)" }, datas, options, counts);
+    $("doc").hidden = false;
+    clearInterval(ticker);
+    log("Done. Press “Save as PDF” (choose “Save as PDF” in the print window), or “Download” to keep a copy to print later.", "ok");
+    $("state").textContent = `Ready in ${Math.max(1, Math.round((Date.now() - t0) / 60000))} min.`;
+    const name = `NCERT Class ${clsLabel(cls).replace(/^Class /, "")} ${subject} ${datas.map(d => `Ch ${d.number}`).join(", ")}`.replace(/[\\/:*?"<>|]+/g, " ");
+    $("actions").innerHTML = '<button class="btn" type="button" id="print">Save as PDF</button><button class="btn ghost" type="button" id="download">Download</button><button class="btn ghost" type="button" id="view">View the document</button>';
+    $("print").onclick = () => { const old = document.title; document.title = name; window.addEventListener("afterprint", () => { document.title = old; }, { once: true }); window.print(); };
+    $("view").onclick = () => $("doc").scrollIntoView({ behavior: "smooth" });
+    $("download").onclick = async () => {
+      const css = [...document.querySelectorAll("style")].map(s => s.textContent).join("\n");
+      const tag = t => "<" + t + ">";   // written in pieces so this page's own source holds no closing body or script tag
+      const html = "<!doctype html>" + tag("html lang=\"en\"") + tag("head") + tag("meta charset=\"utf-8\"") + tag("title") + esc(name) + tag("/title") +
+        tag("style") + css + tag("/style") + tag("/head") + tag("body") + "<div class=\"doc\">" + $("doc").innerHTML + "</div>" +
+        tag("script") + "addEventListener('load', () => print())" + tag("/script") + tag("/body") + tag("/html");
+      const dl = window.claude?.use ? await window.claude.use("downloads").catch(() => null) : null;
+      try {
+        if (dl) await dl.save({ filename: name + ".html", data: html });
+        else { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([html], { type: "text/html" })); a.download = name + ".html"; a.click(); }
+        log("The download is an HTML file: open it in your browser and its print window opens (choose “Save as PDF”).");
+      } catch (e) { if (e?.code !== "not_granted" && e?.code !== "cancelled") log("Download failed: " + (e?.message || e), "err"); }
+    };
+  } catch (e) {
+    clearInterval(ticker); LIVE = "";
+    const msg = ctl.byUser ? "Stopped." : why(e);
+    log(msg === "Stopped." ? "Stopped. Finished sections are kept in this tab; press Prepare to continue." : "Error: " + msg, msg === "Stopped." ? "" : "err");
+    $("state").innerHTML = `<span class="error">${esc(msg)}</span>`;
+  } finally {
+    running = null; $("go").disabled = false; $("stop").hidden = true;
+  }
 };
 </script>

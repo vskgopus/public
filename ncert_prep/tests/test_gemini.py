@@ -380,7 +380,8 @@ assert "notes on the book's figures, key points to remember, one-mark questions"
 assert "The app does without AI:" in said and "cutting the figures out of the book pages" in said \
     and "building the practice test" in said, said
 page = client.get("/", base_url=BASE).data
-for element in (b'id="btnsettings"', b'id="btnquit"', b'id="ailogin"', b'id="aidetail"'):
+for element in (b'id="btnsettings"', b'id="btnquit"', b'id="ailogin"', b'id="aidetail"',
+                b'id="plan"', b'class="side"', b'data-count'):  # 2026-11-23 layout: "Your PDF" summary, side panel, ticked counts
     assert element in page, element
 status = client.get("/api/status", base_url=BASE).get_json()
 assert status["ai"].startswith("AI: Google Gemini"), status["ai"]
