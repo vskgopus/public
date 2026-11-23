@@ -6043,7 +6043,9 @@ function findFile(name,from){if(HDR_ALIAS.test(name.split("/").pop()))name="vxWo
  const norm=q=>{const o=[];for(const x of q.split("/")){if(x===".."){if(o.length)o.pop()}else if(x!=="."&&x!=="")o.push(x)}return o.join("/")};   // "a/b/../c" -> "a/c"
  const c=[norm(dirOf(from)+name),name];for(const x of c){const j=files.findIndex(f=>f.n===x);if(j>=0)return j}
  if(/(^|\/)\.\.?\//.test(name))return -1;   // a relative path that names no file: no guessing by the file name
- const j=files.findIndex(f=>f.n.split("/").pop()===name.split("/").pop());return j}
+ const bn=name.split("/").pop(),m=files.map((f,i)=>i).filter(i=>files[i].n.split("/").pop()===bn);   // same name in another folder: prefer the including file's folder, then the project root, then, for assembly files, not the VxWorks kernel's own (a sample must not pick up vxworks/startup.s)
+ const vx=/^vx(works|demos)\//.test(from||"")||!/\.s$/i.test(bn);
+ return m.find(i=>dirOf(files[i].n)===dirOf(from||""))??m.find(i=>!files[i].n.includes("/"))??m.find(i=>vx||!/^vxworks\//.test(files[i].n))??-1}
 /* Headers a bare-metal project can include without having the file (VxWorks projects get these names from vxWorks.h).
    The types (uint8_t, size_t, bool, ...) are built into the compiler; these give the macros. */
 const BUILTIN_H={
