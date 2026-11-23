@@ -420,7 +420,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
 #boardP .ph small{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style></head><body><div id="app">
 <header id="tb">
- <button class="brand" id="bAbout" title="About Virtual ARM Lab (version 0.22.0)" aria-label="About Virtual ARM Lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ac)"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg><b>Virtual ARM Lab</b><span>Cortex-M3 debugger</span></button>
+ <button class="brand" id="bAbout" title="About Virtual ARM Lab (version 0.23.0)" aria-label="About Virtual ARM Lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ac)"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg><b>Virtual ARM Lab</b><span>Cortex-M3 debugger</span></button>
  <div class="grp"><button class="tbtn bld" id="bAsm" title="Build the active file (Ctrl+B)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg><span>Build</span></button></div>
  <div class="grp">
   <button class="tbtn pri" id="bRun" title="Run / Continue (F5 or F8)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg><span>Run</span></button>
@@ -521,17 +521,17 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
 </div>
 <div id="about" hidden role="dialog" aria-modal="true" aria-labelledby="abT"><div class="abcard">
  <div class="abhd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg>
-  <div><h2 id="abT">Virtual ARM Lab</h2><div class="abv"><span>Version <b id="abVer">0.22.0</b></span> &middot; <span>released 2026-11-21</span></div></div>
+  <div><h2 id="abT">Virtual ARM Lab</h2><div class="abv"><span>Version <b id="abVer">0.23.0</b></span> &middot; <span>released 2026-11-23</span></div></div>
   <button class="tbtn" id="abX" title="Close (Esc)">Close</button></div>
  <div class="abbody">
-  <p>A virtual ARM microcontroller board in the browser: a Cortex-M3, M33 or M7 style CPU with an IDE, a debugger, a C compiler and a VxWorks 7 style real-time kernel, for learning embedded programming.</p>
+  <p>A virtual ARM microcontroller board in the browser: a Cortex-M3, M33, M7 or A55 style CPU with an IDE, a debugger, a C compiler and a VxWorks 7 style real-time kernel, for learning embedded programming.</p>
   <h3>Author</h3>
   <p>Gopu Sugumar<br>Copyright &copy; 2026 Gopu Sugumar</p>
   <h3>Licence</h3>
   <p>Free software under the <b>GNU General Public License, version 3 or (at your option) any later version</b> (GPL-3.0-or-later). You may use, study, change and share it. If you share it or a changed version, you must share it under the same licence, with its source. It comes with <b>no warranty</b>. Full text: <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener">gnu.org/licenses/gpl-3.0.html</a>.</p>
   <h3>In this version</h3>
   <table>
-   <tr><td>CPU</td><td>Cortex-M3, Cortex-M33 or Cortex-M7 style core (one, or two on one board), a subset of the Thumb-2 instructions, Cortex-M exception handling (MSP/PSP, PendSV, SysTick), 64 KB RAM, 1 MHz virtual clock</td></tr>
+   <tr><td>CPU</td><td>Cortex-M3, Cortex-M33 or Cortex-M7 style core (one, or two on one board) with a subset of the Thumb-2 instructions and Cortex-M exception handling (MSP/PSP, PendSV, SysTick), or one or more Cortex-A55 style cores (A64, EL0/EL1, MMU, GIC), 64 KB RAM, 1 MHz virtual clock</td></tr>
    <tr><td>Board</td><td>4 LEDs, 2 buttons, buzzer, potentiometer on a 12-bit ADC, hardware watchdog, UART terminal, I&sup2;C temperature sensor and EEPROM, SPI shift register</td></tr>
    <tr><td>Tools</td><td>Editor, assembler, C compiler (a subset of C), debugger with breakpoints, watchpoints, registers, memory, disassembly, call stack and tasks</td></tr>
    <tr><td>Bare metal</td><td>Programs use the register names at fixed addresses</td></tr>
@@ -539,6 +539,14 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
    <tr><td>Documents</td><td>User Manual, Datasheet and VxWorks API Reference (press <b>Manual</b> or F1)</td></tr>
   </table>
   <h3>What's new</h3>
+  <p><b>0.23.0</b> (2026-11-23):</p>
+  <ul>
+   <li>A fourth core in the Board panel: the <b>Cortex-A55</b> (64-bit Armv8-A), with an A64 assembler and interpreter, exception levels EL0 and EL1 with an exception vector table, the Generic Timer and a GIC interrupt controller; example <code>a55/timer.s</code></li>
+   <li>C on the Cortex-A55: the compiler builds C programs for it (<code>a55/vectors.s</code> and <code>a55.h</code>); example <code>a55/ctimer.c</code>; <code>float</code> and <code>double</code> use the soft-float library</li>
+   <li>The A55 MMU: stage 1 translation with 4 KB pages, memory types, access permissions, the access flag, a TLB with <code>TLBI</code>, and <code>AT</code> address translation; example <code>a55/mmu.s</code></li>
+   <li>Several A55 cores (<code>#pragma smp</code>): PSCI to start cores, exclusive loads and stores across cores, <code>SEV</code>/<code>WFE</code>, software-generated interrupts between cores; example <code>a55/smp.s</code></li>
+   <li>An i.MX 93 style board: two Cortex-A55 cores and a Cortex-M33 (example <code>imx93/</code>); the debug pane shows "(off)" for a core not started yet; Datasheet chapter 14</li>
+  </ul>
   <p><b>0.22.0</b> (2026-11-21):</p>
   <ul>
    <li>Three cores to choose from in the Board panel (or with <code>#pragma core</code>): the Cortex-M3, the <b>Cortex-M33</b> (DSP instructions, a single-precision FPU the compiler uses for <code>float</code>, stack limit registers, the ARMv8-M MPU, TrustZone with Secure and Non-secure programs: example <code>trustzone/</code>) and the <b>Cortex-M7</b> (DSP, a double-precision FPU the compiler uses for <code>double</code>, cache control registers, an ITCM); samples <code>m33.c</code> and <code>m7.c</code>; Datasheet chapters 11 and 12</li>
@@ -552,93 +560,6 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
    <li>Memory protection unit: 8 regions with access permissions, sub-regions and execute-never, MemManage faults (<code>SCB_MMFAR</code>), and unprivileged thread mode (<code>CONTROL.nPRIV</code>, SVC to return); the Peripherals window shows the regions</li>
    <li>VxWorks target shell: include <code>&lt;shellLib.h&gt;</code> and call <code>shellInit()</code>; at the <code>-&gt;</code> prompt call any function by name (<code>add 2, 3</code>), set variables, and use <code>i</code>, <code>ts</code>, <code>td</code>, <code>sp</code>, <code>lkup</code>, <code>d</code> and more; the compiler adds a symbol table for it</li>
    <li>New samples <code>mpu.c</code> and <code>vx_shell.c</code></li>
-  </ul>
-  <p><b>0.20.0</b> (2026-11-19):</p>
-  <ul>
-   <li>Floating point: <code>float</code> and <code>double</code> with all the usual operators, literals such as <code>1.5</code> and <code>0.25f</code>, conversions with integers, parameters, results, arrays and structs. The Cortex-M3 has no floating-point unit, so each operation calls a small soft-float library written in C that is added to a program only when it uses floating point (you can step into it)</li>
-   <li><code>&lt;math.h&gt;</code> with <code>sqrt</code>, <code>fabs</code>, <code>floor</code>, <code>ceil</code>, <code>trunc</code>, <code>round</code> and <code>fmod</code> (also with an <code>f</code> for float), and <code>&lt;float.h&gt;</code></li>
-   <li>The VxWorks <code>printf</code> understands <code>%f</code>, <code>%e</code> and <code>%g</code> with width, precision and the flags <code>- 0 + space #</code>; the Watch and Locals windows show and edit floating-point values</li>
-   <li>New sample <code>float.c</code>: the temperature sensor as volts and degrees with a moving average</li>
-  </ul>
-  <p><b>0.19.0</b> (2026-11-19):</p>
-  <ul>
-   <li>64-bit integers: <code>long long</code>, <code>unsigned long long</code>, <code>int64_t</code> and <code>uint64_t</code> with all operators (also division and shifts), literals such as <code>5000000000</code> and <code>1LL</code>, 64-bit parameters, results and <code>va_arg</code>; <code>%lld</code>, <code>%llu</code> and <code>%llx</code> in the VxWorks <code>printf</code>; the Watch and Locals windows show and edit them</li>
-   <li>Structs can be compared with <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code> and <code>&gt;=</code> (field by field) and chosen with <code>?:</code>; compound literals also work at file scope (<code>int *p = (int[]){1, 2, 3};</code>)</li>
-   <li>Watch window: a struct, union, array or pointer to a struct has a <b>+</b> button that shows its members, also nested and editable</li>
-   <li>Faults: a bus fault, a bad branch or running into data starts <code>HardFault_Handler</code> with the registers stacked and <code>SCB_CFSR</code>, <code>SCB_HFSR</code> and <code>SCB_BFAR</code> set; <code>SCB_AIRCR</code> can reset the CPU; separate <code>BusFault_Handler</code> and <code>UsageFault_Handler</code> can be switched on in <code>SCB_SHCSR</code>, and <code>SCB_CCR</code> turns division by zero and unaligned accesses into UsageFaults</li>
-   <li>Priority grouping (<code>PRIGROUP</code> in <code>SCB_AIRCR</code>): group priority decides pre-emption, sub-priority orders exceptions that are pending together</li>
-   <li>VxWorks: <code>SEM_DELETE_SAFE</code> now works (the owner of such a mutex cannot be deleted while it holds it); the self-test <code>vx_apitest.c</code> has 379 checks</li>
-   <li>New samples <code>hardfault.c</code> and <code>faults.c</code></li>
-  </ul>
-  <p><b>0.18.0</b> (2026-11-19):</p>
-  <ul>
-   <li>C compiler: structs can be passed to functions and returned by value, bit-fields (also in the Watch and Locals windows), compound literals such as <code>(struct point){1, 2}</code>, anonymous struct and union members, <code>goto</code>, <code>_Bool</code>, <code>offsetof</code>, <code>_Static_assert</code>, <code>__attribute__((packed))</code>, a simple <code>__asm("nop")</code>, <code>0b</code> and octal numbers, and <code>&lt;stdint.h&gt;</code> and friends in bare-metal programs</li>
-   <li><code>short</code> and <code>signed char</code> are now sign-extended when read, and <code>/ % &lt; &gt;</code> and <code>&gt;&gt;</code> follow signed and unsigned types, as in C (this changes the code the compiler makes); <code>long long</code> was an error instead of silently 32 bits (64-bit integers came in 0.19.0)</li>
-   <li>Assembler: <code>.byte</code>, <code>.hword</code>, <code>.ascii</code>, <code>.asciz</code> and <code>.space</code></li>
-  </ul>
-  <p><b>0.17.0</b> (2026-11-19):</p>
-  <ul>
-   <li>Many more VxWorks kernel calls, in three steps: events for semaphores and message queues (<code>semEvStart</code>, <code>msgQEvStart</code>), task information and safety (<code>taskInfoGet</code>, <code>taskSafe</code>), and <code>semShow</code>, <code>msgQShow</code> and <code>wdShow</code></li>
-   <li>Memory partitions (<code>memPartCreate</code>, <code>memPartAlloc</code>, ...), <code>memalign</code> and <code>valloc</code>; partitions show in the Map tab</li>
-   <li>Task hooks (create, delete, switch), task variables (<code>taskVarAdd</code>), <code>kernelVersion</code>, POSIX clocks and timers (<code>clock_gettime</code>, <code>nanosleep</code>, <code>timer_create</code>), <code>sleep</code> and <code>usleep</code></li>
-   <li>New demos <code>vx_partition.c</code> and <code>vx_hooks.c</code>; the self-test <code>vx_apitest.c</code> now has 368 checks</li>
-  </ul>
-  <p><b>0.16.0</b> (2026-11-13):</p>
-  <ul>
-   <li>A Map tab: flash and RAM drawn as bars (vector table, code, data, heap, task stacks, device tree, stack) with live MSP and PSP markers</li>
-   <li>Out of loop (Ctrl+Shift+F10): runs until the loop around the current line ends, in C and in assembly</li>
-   <li>Share links: send a program as a link; whoever opens it is asked before its files are added</li>
-  </ul>
-  <p><b>0.15.0</b> (2026-11-13):</p>
-  <ul>
-   <li>VxWorks events: <code>eventSend</code> (also from interrupts), <code>eventReceive</code> (any or all, with a timeout), <code>eventClear</code></li>
-   <li>A heap with <code>malloc</code>, <code>calloc</code>, <code>realloc</code>, <code>free</code>, <code>memFindMax</code> and <code>memShow</code>; deleted tasks and message queues give their memory back</li>
-   <li><code>taskRestart</code>: a task starts again with its original arguments and priority</li>
-   <li>New demos <code>vx_events.c</code> and <code>vx_malloc.c</code>; the Tasks window shows event waits and heap use</li>
-  </ul>
-  <p><b>0.14.0</b> (2026-11-13):</p>
-  <ul>
-   <li>Interrupt priorities: <code>NVIC_PRI0</code>/<code>NVIC_PRI1</code> for the device interrupts, <code>SCB_SHPR2</code>/<code>SCB_SHPR3</code> for SVC, PendSV and SysTick (0x00 most urgent &hellip; 0xF0 least)</li>
-   <li>Nesting: a more urgent interrupt interrupts a running handler (EXC_RETURN 0xFFFFFFF1); the Call stack shows the interrupted handlers</li>
-   <li>BASEPRI (<code>__set_BASEPRI()</code>, <code>MSR BASEPRI</code>) and <code>NVIC_ACTIVE</code>; the Registers window shows the nesting depth</li>
-   <li>New example <code>samples/priority.c</code></li>
-  </ul>
-  <p><b>0.13.0</b> (2026-11-13):</p>
-  <ul>
-   <li>A real vector table at 0x08000000: at reset the CPU loads SP and the start address from it, and every exception starts the handler its entry names</li>
-   <li>One vector per device interrupt: <code>TIM_IRQHandler</code>, <code>UART_IRQHandler</code>, <code>SW4_IRQHandler</code>, <code>SW5_IRQHandler</code>, <code>ADC_IRQHandler</code>, <code>WDT_IRQHandler</code>; handlers you do not write fall back to <code>Default_Handler</code></li>
-   <li>Assembly: <code>.word</code>, <code>.section .isr_vector</code>, <code>.weak</code> and <code>.thumb_set</code>; linker files place <code>.isr_vector</code> first in flash</li>
-   <li>Clear faults for an empty vector entry and for running into data</li>
-  </ul>
-  <p><b>0.12.0</b> (2026-11-13):</p>
-  <ul>
-   <li>C structs and unions (<code>.</code> and <code>-&gt;</code>, nested, arrays of structs, copying with <code>=</code>), enums and arrays of any dimension</li>
-   <li>C initialisers with nested braces, named fields <code>{.x = 1}</code> and elements <code>{[2] = 5}</code>; anything left out is 0</li>
-   <li><code>++</code>, <code>--</code> and assignment inside expressions (<code>a[i++] = c</code>), calls through any function pointer (<code>ops[i](x)</code>), indexing a string literal</li>
-   <li>Preprocessor: macros with arguments, <code>#if #ifdef #ifndef #elif #else #endif</code>, <code>#undef</code>, <code>#error</code></li>
-   <li>Watch paths such as <code>p-&gt;next-&gt;val</code>, struct fields in Locals, and the new example <code>samples/structs.c</code> (registers as structs)</li>
-   <li>Stepping fixes: the step buttons no longer move under the mouse, and stepping through the VxWorks startup code stops at each line</li>
-  </ul>
-  <p><b>0.11.0</b> (2026-11-12):</p>
-  <ul>
-   <li>Linker files (GNU ld style): <code>.text</code>, <code>.rodata</code>, <code>.data</code> loaded from flash, <code>.bss</code>, the stack and symbols such as <code>_sdata</code> and <code>_ebss</code>; Build shows the memory map</li>
-   <li>Startup code you can read and step through: <code>startup.s</code> sets the stack, copies <code>.data</code> and zeroes <code>.bss</code>, then calls <code>main()</code> (RAM starts as <code>0xA5</code>, as on real hardware)</li>
-   <li>Every example and every VxWorks program now uses a linker file and its own startup code; new example project <code>linker/</code></li>
-   <li>The About window's Online link opens the app directly</li>
-  </ul>
-  <p><b>0.10.0</b> (2026-11-12):</p>
-  <ul>
-   <li>A 12-bit ADC with three channels: a potentiometer on the board, an internal temperature sensor and a 1.2 V reference</li>
-   <li>A hardware watchdog that resets the CPU when a program stops kicking it, with an early-warning interrupt, a lock, and a register that says why the CPU last reset</li>
-   <li>A 256-byte EEPROM on the I&sup2;C bus that keeps its contents across resets and page reloads (Clear EEPROM on the board erases it)</li>
-   <li>New samples (<code>adc.c</code>, <code>watchdog.c</code>, <code>eeprom.c</code>), VxWorks drivers and device tree nodes, and the demo <code>vx_hardware.c</code></li>
-  </ul>
-  <p><b>0.9.0</b> (2026-11-12) - the first numbered version:</p>
-  <ul>
-   <li>Built-in documentation: User Manual, Datasheet, VxWorks API Reference, with search and examples you can add to your project</li>
-   <li>Bare-metal and VxWorks programs: VxWorks builds take the hardware from a device tree (<code>board.dts</code>) and use drivers</li>
-   <li>Core registers in their own tab; panels you can resize by dragging; a bigger board</li>
-   <li>Restore the original of an edited example file</li>
   </ul>
   <h3>Notices</h3>
   <p>The VxWorks part is an independent teaching implementation of part of the public VxWorks API. It is not Wind River code and is not affiliated with Wind River. The CPU is modelled on the ARM Cortex-M3 but is not an exact or cycle-accurate model. Arm, Cortex and VxWorks are trademarks of their respective owners.</p>
