@@ -193,7 +193,9 @@ def _page_figures(page, textpage) -> list[tuple[dict, list[float]]]:
         return []
     textlines = [((ln["box"][0] + ln["box"][2]) / 2, (ln["box"][1] + ln["box"][3]) / 2)
                  for ln in lines if len(ln["text"].split()) >= 2 and not ln["small"]]
-    boxes = []
+    prose = [((ln["box"][0] + ln["box"][2]) / 2, (ln["box"][1] + ln["box"][3]) / 2)
+             for ln in lines if not ln["small"] and len(ln["text"].split()) >= 5]
+    boxes, panels = [], []
     for obj in _page_objects(page):
         l, b, r, t = _bounds(obj)
         w, h = r - l, t - b
@@ -210,9 +212,14 @@ def _page_figures(page, textpage) -> list[tuple[dict, list[float]]]:
             inside = sum(1 for x, y in textlines if l <= x <= r and b <= y <= t)
             if inside >= 3:                                     # shaded box behind text (e.g. Activity)
                 continue
+            if sum(1 for x, y in prose if l <= x <= r and b <= y <= t) >= 2:
+                panels.append((l, b, r, t))             # a box of running sentences ("Pause and Ponder"); its heading may sit on the edge
+                continue
         if w > 0.9 * W and h < 3:                              # full-width rules
             continue
         boxes.append((l, b, r, t))
+    # the shadow, icon and edge strips of such a panel are decoration too (they chained a figure to the panel above it)
+    boxes = [bx for bx in boxes if not any(pl - 3 <= bx[0] and bx[2] <= pr + 3 and pb - 3 <= bx[1] and bx[3] <= pt + 3 for pl, pb, pr, pt in panels)]
     regions = _regions(boxes, r0 + 10, t0 + 10)
     # a region that is mostly text lines (e.g. a table of words) is not a figure drawing
     out, used = [], set()
@@ -251,7 +258,7 @@ def _page_figures(page, textpage) -> list[tuple[dict, list[float]]]:
             region = [min(A[0], B[0]), min(A[1], B[1]), max(A[2], B[2]), max(A[3], B[3])]
             if region[1] < ct:
                 region[1] = ct + 1
-            fitted = _fit(region, lines, caps, cap)
+            fitted = _fit(region, lines, caps, cap, _drawn(boxes, region))
             if fitted:
                 out.append((cap, fitted))
         elif best is not None:
@@ -259,13 +266,48 @@ def _page_figures(page, textpage) -> list[tuple[dict, list[float]]]:
             region = list(regions[best])
             if region[1] < ct:
                 region[1] = ct + 1
-            fitted = _fit(region, lines, caps, cap)
+            fitted = _fit(region, lines, caps, cap, _drawn(boxes, region))
+            if not fitted:                # the region swallowed text (a figure inside a panel or beside a paragraph): try the drawing alone
+                sub = _apart_from_text(region, boxes, lines, r0 + 10, t0 + 10)
+                if sub:
+                    fitted = _fit(sub, lines, caps, cap, _drawn(boxes, sub))
+                    if fitted and any(not ln["small"] and len(ln["text"].split()) >= 4 and ln["box"][0] < fitted[2] and ln["box"][2] > fitted[0]
+                                      and ln["box"][1] < fitted[3] and ln["box"][3] > fitted[1] for ln in lines):
+                        fitted = None         # a sentence still runs through it: leave the figure out
+                    if fitted and sum(1 for ln in lines if len(ln["text"]) <= 3 and ln["box"][2] - ln["box"][0] < 12 and ln["box"][0] < fitted[2]
+                                      and ln["box"][2] > fitted[0] and ln["box"][1] < fitted[3] and ln["box"][3] > fitted[1]) >= 8:
+                        fitted = None         # a column of single letters: sideways text (the book's spine title), not a clean figure
             if fitted:
                 out.append((cap, fitted))
     return out
 
 
-def _fit(region: list[float], lines: list[dict], caps: list[dict], cap: dict) -> list[float]:
+def _apart_from_text(region, boxes, lines, W, H):
+    """The biggest cluster of drawn shapes inside a region once the shapes that sit on sentences are set aside."""
+    l, b, r, t = region
+    sentences = [ln["box"] for ln in lines if not ln["small"] and len(ln["text"].split()) >= 4]
+    keep = []
+    for x0, y0, x1, y1 in boxes:
+        if not (l - 2 <= (x0 + x1) / 2 <= r + 2 and b - 2 <= (y0 + y1) / 2 <= t + 2):
+            continue
+        area = max((x1 - x0) * (y1 - y0), 1)
+        covered = sum(max(0, min(x1, sx1) - max(x0, sx0)) * max(0, min(y1, sy1) - max(y0, sy0)) for sx0, sy0, sx1, sy1 in sentences)
+        if covered < 0.2 * area:
+            keep.append((x0, y0, x1, y1))
+    subs = [q for q in _regions(keep, W, H) if (q[2] - q[0]) >= 40 and (q[3] - q[1]) >= 30]
+    if not subs:
+        return None
+    sub = max(subs, key=lambda q: (q[2] - q[0]) * (q[3] - q[1]))
+    return sub if (sub[2] - sub[0]) * (sub[3] - sub[1]) < 0.9 * (r - l) * (t - b) else None
+
+
+def _drawn(boxes, region) -> int:
+    """How many drawn objects (pictures, shapes) are centred inside a region."""
+    l, b, r, t = region
+    return sum(1 for x0, y0, x1, y1 in boxes if l <= (x0 + x1) / 2 <= r and b <= (y0 + y1) / 2 <= t)
+
+
+def _fit(region: list[float], lines: list[dict], caps: list[dict], cap: dict, drawn: int = 0) -> list[float]:
     """Take in nearby labels (small text, single letters), keep out body text and captions."""
     l, b, r, t = region
     start_h, start_w = t - b, r - l
@@ -330,7 +372,7 @@ def _fit(region: list[float], lines: list[dict], caps: list[dict], cap: dict) ->
         return None
     wordy = sum(1 for x in lines if len(x["text"].split()) >= 3 and not CAPTION.match(x["text"])
                 and x["box"][0] >= l - 1 and x["box"][2] <= r + 1 and x["box"][1] >= b - 1 and x["box"][3] <= t + 1)
-    if wordy >= 5:                           # many lines of (small) prose, e.g. margin notes
+    if wordy >= 5 and drawn < 6:                         # many lines of (small) prose, e.g. margin notes
         return None
     if (t - b) < 0.4 * start_h or (r - l) < 0.4 * start_w or ((t - b) < 20 and not ((t - b) >= 8 and (r - l) >= 80)):
         return None                          # trimming took most of it away: not a clean figure

@@ -264,3 +264,53 @@ c.save()
 f5 = figures.find_figures(buf5.getvalue())
 assert [f["number"] for f in f5] == ["8.1"] and f5[0]["caption"].startswith("Field lines"), [(f["number"], f["caption"]) for f in f5]
 print("OK - a sentence that starts with the figure number does not hide the real caption")
+
+# ---- fifth page set: cases found in the 2026 NCERT Exploration / Curiosity books (2026-11-23) -------------
+# (12) a figure whose labels are short phrases of 3+ words (an icon chart: iesc107 Fig. 7.10) has many "wordy" lines
+#      inside it; with six or more drawn shapes in it, it is a figure, not a column of margin notes
+# (13) a box of running sentences ("Pause and Ponder") above a figure is not part of it, and the strips and icons
+#      around that box must not chain the figure to the box (iesc107 Fig. 7.10 page)
+# (14) `_apart_from_text`: when a region swallowed a paragraph, the drawing alone is the biggest cluster of shapes
+#      that do not sit on sentences
+buf6 = io.BytesIO()
+c = canvas.Canvas(buf6, pagesize=A4)
+body(60, H - 80, ["Energy comes in many forms and the next chart shows six of them in the book.",
+                  "Each form has a small picture and a short description under its name here."])
+c.setFillColor(colors.HexColor("#fbeaea"))                  # the chart's pale background, like the book's
+c.rect(110, 500, 300, 240, fill=1, stroke=0)
+for i in range(6):                                          # 6 coloured squares in 2 columns x 3 rows, each with 3 small label lines
+    x, y = 150 + (i % 2) * 150, 660 - (i // 2) * 70
+    c.setFillColor(colors.HexColor("#3a7d44"))
+    c.rect(x, y, 30, 30, fill=1, stroke=0)
+    c.setFillColor(colors.black)
+    c.setFont("Helvetica", 6)
+    for k, s in enumerate(["Energy due to motion", "or position of objects", "in the form of heat"]):
+        c.drawString(x - 20, y - 8 - k * 7, s)
+c.setFont("Helvetica-Oblique", 9)
+c.drawString(150, 482, "Fig. 9.1: Different forms of energy")
+body(60, 450, ["This ordinary line of the book text is set in the usual body size for the page."] * 12)   # sets the page's body size
+c.showPage()
+c.setFillColor(colors.HexColor("#f4e3d7"))                  # page 2: a two-sentence box with a heading on its edge, close above a figure
+c.rect(60, 690, 440, 40, fill=1, stroke=0)
+c.setFillColor(colors.black)
+c.setFont("Helvetica-Bold", 11)
+c.drawString(70, 734, "Pause and Ponder")
+body(70, 718, ["3. When you pedal a bicycle on a flat road, your muscles supply energy, in what form?",
+               "Does the kinetic energy of an object that moves with constant velocity change with its position?"])
+c.setLineWidth(1.5)
+c.line(200, 684, 360, 684)
+c.line(200, 684, 280, 584)
+c.line(360, 684, 280, 584)
+c.setFont("Helvetica-Oblique", 9)
+c.drawString(210, 560, "Fig. 9.2: A triangle under a box")
+c.showPage()
+c.save()
+f6 = {f["page"]: f for f in figures.find_figures(buf6.getvalue())}
+assert sorted(f6) == [1, 2], sorted(f6)
+assert f6[1]["width"] > 250 and f6[1]["height"] > 200, (f6[1]["width"], f6[1]["height"])              # (12) the whole chart, not one square
+assert 90 <= f6[2]["height"] <= 135 and f6[2]["width"] < 200, (f6[2]["width"], f6[2]["height"])      # (13) the box is not in it
+assert figures._drawn([(0, 0, 10, 10), (50, 50, 60, 60), (5, 5, 8, 8)], [0, 0, 20, 20]) == 2
+sent = [{"box": (150, y, 540, y + 10), "text": "this is a full sentence of the book text", "small": False} for y in (500, 515, 530)]
+sub = figures._apart_from_text([70, 495, 540, 560], [(70, 500, 130, 560), (150, 497, 540, 545)], sent, 700, 900)    # (14)
+assert sub and sub[2] < 140, sub
+print("OK - icon chart with wordy labels kept, prose box not chained to the figure, drawing split from a paragraph")
