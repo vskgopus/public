@@ -19,3 +19,5 @@ build):
   pdfjs-dist (PDF.js)                  Apache-2.0
   tesseract.js, tesseract.js-core      Apache-2.0
   @tesseract.js-data/eng               MIT (English recognition data)
+  @mediapipe/face_detection            Apache-2.0 (Passport Photo: face detection model and runtime)
+  @mediapipe/selfie_segmentation       Apache-2.0 (Passport Photo: background removal model and runtime)
