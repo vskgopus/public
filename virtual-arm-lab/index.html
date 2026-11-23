@@ -6128,6 +6128,8 @@ function srcText(){if(!ccNS&&!ccC1){bNS=null;bC1=null;bSmp=null;nsInfo=null;flas
  const asmParts=[];
  for(let k=0;k<bLink.length;k++){let j=bLink[k];
   if(cpuCore.feat.a64&&!isC(files[j].n)){const j2=findFile(files[j].n.split("/").pop().replace(/(\.[^.]*)$/,"_a55$1"),files[j].n);if(j2>=0){j=j2;bFiles.add(j)}}   /* on a Cortex-A55 a linked assembly file x.s is replaced by x_a55.s when the project has it (startup.s, context.s of the VxWorks kernel) */
+  if(cpuCore.feat.a64&&!isC(files[j].n)&&/^\s*\.(thumb|thumb_func|section\s+\.isr_vector)\b/m.test(files[j].t))   /* a Cortex-M startup file: the A64 assembler would stop on its first Thumb line with a message about LDR */
+   throw Error(files[j].n+" is Cortex-M assembly (.thumb / .isr_vector), but the core is "+cpuCore.name+". Choose a Cortex-M core in the Board panel, or link an A55 version of it (the file's name with _a55 before the ending, e.g. startup_a55.s, as in vxworks/ and a55/)");
   if(isC(files[j].n)){if(!bIncl.has(j)){bIncl.add(j);expand(j,0,out)}}
   else{const o={lines:[],map:[]};expand(j,0,o);asmParts.push(o)}}
  pickCore(dtr);smpCheck();
