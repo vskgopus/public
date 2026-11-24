@@ -1,0 +1,26 @@
+MI-GAN inpainting model (ONNX pipeline export migan_pipeline_v2.onnx), from
+https://github.com/Picsart-AI-Research/MI-GAN (code and weights released under the MIT License).
+Repackaged on npm as migan-onnx (whose package.json says ISC, which covers only the packaging).
+SHA-256 of the file used: 6f1f3530a1a2324b19752018ce756088b07973cda8d7d890034ace5c8a48c40b
+
+MIT License
+
+Copyright (c) 2024 Picsart AI Research (PAIR)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
