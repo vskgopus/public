@@ -1,0 +1,39 @@
+{
+  "appearance.onnx": {
+    "parts": [
+      "appearance.onnx"
+    ],
+    "bytes": 1691060,
+    "sha256": "6f819852f2810d7862cc55a17c0814896592288d0461d26026ceae9b14520bfb"
+  },
+  "motion.onnx": {
+    "parts": [
+      "motion.onnx"
+    ],
+    "bytes": 56507654,
+    "sha256": "49f44aae724e73eec299d44e84204a2a3ac6165f6cca677f3ab9b7172dbec703"
+  },
+  "warp.onnx": {
+    "parts": [
+      "warp.onnx.part1",
+      "warp.onnx.part2",
+      "warp.onnx.part3"
+    ],
+    "bytes": 210773892,
+    "sha256": "acf04e4e95a8410626ce4d3dc811985c28984c05eb672b6b6a700005a7f89a43"
+  },
+  "stitching.onnx": {
+    "parts": [
+      "stitching.onnx"
+    ],
+    "bytes": 182363,
+    "sha256": "8e33658425e3f1014dc35b28f60ca7459189e8f78f20540262a2fe5ac1dc6ec7"
+  },
+  "stitching_lip.onnx": {
+    "parts": [
+      "stitching_lip.onnx"
+    ],
+    "bytes": 150609,
+    "sha256": "101d7025cafdc199b6108c4841c7cdee88451787b01d319a1374b3c78344bf72"
+  }
+}
