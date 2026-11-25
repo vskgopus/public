@@ -420,7 +420,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
 #boardP .ph small{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style></head><body><div id="app">
 <header id="tb">
- <button class="brand" id="bAbout" title="About Virtual ARM Lab (version 0.26.0)" aria-label="About Virtual ARM Lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ac)"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg><b>Virtual ARM Lab</b><span>Cortex-M3 debugger</span></button>
+ <button class="brand" id="bAbout" title="About Virtual ARM Lab (version 0.27.0)" aria-label="About Virtual ARM Lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ac)"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg><b>Virtual ARM Lab</b><span>Cortex-M3 debugger</span></button>
  <div class="grp"><button class="tbtn bld" id="bAsm" title="Build the active file (Ctrl+B)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg><span>Build</span></button></div>
  <div class="grp">
   <button class="tbtn pri" id="bRun" title="Run / Continue (F5 or F8)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg><span>Run</span></button>
@@ -521,7 +521,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
 </div>
 <div id="about" hidden role="dialog" aria-modal="true" aria-labelledby="abT"><div class="abcard">
  <div class="abhd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg>
-  <div><h2 id="abT">Virtual ARM Lab</h2><div class="abv"><span>Version <b id="abVer">0.26.0</b></span> &middot; <span>released 2026-11-25</span></div></div>
+  <div><h2 id="abT">Virtual ARM Lab</h2><div class="abv"><span>Version <b id="abVer">0.27.0</b></span> &middot; <span>released 2026-11-25</span></div></div>
   <button class="tbtn" id="abX" title="Close (Esc)">Close</button></div>
  <div class="abbody">
   <p>A virtual ARM microcontroller board in the browser: a Cortex-M3, M33, M7 or A55 style CPU with an IDE, a debugger, a C compiler and a VxWorks 7 style real-time kernel, for learning embedded programming.</p>
@@ -539,6 +539,13 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
    <tr><td>Documents</td><td>User Manual, Datasheet and VxWorks API Reference (press <b>Manual</b> or F1)</td></tr>
   </table>
   <h3>What's new</h3>
+  <p><b>0.27.0</b> (2026-11-25):</p>
+  <ul>
+   <li><b>C on the x86-simple board</b>: C programs build and run on it (the compiler's output is translated to IA-32; the calling convention is this emulator's own), including 64-bit integers, <code>float</code> and <code>double</code>; examples <code>x86/hello.c</code>, <code>x86/gpio.c</code>, <code>x86/adc.c</code>; Datasheet 15.6</li>
+   <li>The x86 board has the Cortex board's peripherals (LEDs, buttons, ADC, UART, watchdog and more) at 0x40010000, with RAM at 0x20000000; <code>x86/led.s</code> drives them from assembly. There are no interrupts on x86 yet, so <code>timer.c</code> and <code>systick.c</code> do not work there</li>
+   <li>New x86 instructions: IMUL, MUL, DIV, IDIV, BSR, BSWAP, CDQ, rotates, carry flag instructions and POP to memory; the debugger shows the C variables and call stack</li>
+   <li>Fixed: an x86 memory operand at an address of 2 GB or above was read as a register</li>
+  </ul>
   <p><b>0.26.0</b> (2026-11-25):</p>
   <ul>
    <li>A fifth board in the Board panel: a simple <b>32-bit x86</b> core (<code>x86-simple</code>) with an Intel-syntax assembler that writes real IA-32 machine code, a serial port (the Terminal tab) and ACPI power management with an S5 power-off; examples <code>x86/hello.s</code> and <code>x86/acpi.s</code>; Datasheet chapter 15</li>
@@ -549,13 +556,6 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
   <ul>
    <li>Linking: a file name written without a folder (for example a linker file naming <code>startup.s</code>) no longer picks up the VxWorks kernel's assembly file from another folder; the including file's folder and the project root come first</li>
    <li>A Cortex-M assembly file linked into a Cortex-A55 build (for example <code>samples/startup.s</code>) now gives a clear message naming the file and the core, with what to do</li>
-  </ul>
-  <p><b>0.24.0</b> (2026-11-23):</p>
-  <ul>
-   <li><b>VxWorks on the Cortex-A55</b>: the same kernel and demos run on one A55 core (cpu node <code>arm,cortex-a55</code> in <code>board.dts</code>) with the GIC and the Generic Timer; signals, reader/writer semaphores, task faults, call stacks; stack guards use debug watchpoints. <code>#pragma smp 2</code> schedules tasks on two A55 cores (demo <code>vx_smp.c</code>)</li>
-   <li>A55 floating point: scalar single and double precision (exact IEEE arithmetic, all rounding modes, FPCR/FPSR, the CPACR trap); the compiler uses it for <code>float</code> and <code>double</code>; example <code>a55/fp.s</code></li>
-   <li>A55 smaller items: interrupt routing (<code>GICD_IROUTER</code>), PSCI <code>CPU_SUSPEND</code>, ASIDs and <code>TLBI</code> by ASID, the contiguous bit, hardware watchpoints, and a TLB list in the Peripherals window; Datasheet chapter 14</li>
-   <li>Fixed: a signal handler that used floating point could change the interrupted task's FPU registers (M33 and M7)</li>
   </ul>
   <h3>Notices</h3>
   <p>The VxWorks part is an independent teaching implementation of part of the public VxWorks API. It is not Wind River code and is not affiliated with Wind River. The CPU is modelled on the ARM Cortex-M3 but is not an exact or cycle-accurate model. Arm, Cortex and VxWorks are trademarks of their respective owners.</p>
