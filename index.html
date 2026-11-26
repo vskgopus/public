@@ -4,39 +4,83 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Gopu Sugumar - public projects</title>
+<meta name="description" content="Free in-browser labs, courses, books and tools by Gopu Sugumar.">
 <style>
-:root{color-scheme:light dark;--bg:#0a0e13;--card:#141b24;--ln:#243040;--tx:#d5dce7;--mu:#8592a5;--ac:#3ddc97;--link:#58a6ff}
-@media (prefers-color-scheme:light){:root{--bg:#f3f6f9;--card:#fff;--ln:#d5dde6;--tx:#18222f;--mu:#5b6a7c;--ac:#0b8a5e;--link:#1565c0}}
-body{margin:0;padding:32px 16px;background:var(--bg);color:var(--tx);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-main{max-width:720px;margin:0 auto}
-h1{font-size:22px;margin:0 0 4px}p.sub{color:var(--mu);margin:0 0 24px}
-ul{list-style:none;padding:0;margin:0;display:grid;gap:12px}
-li{background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:14px 16px}
-li a{color:var(--link);font-weight:600;font-size:16px;text-decoration:none}li a:hover{text-decoration:underline}
-li p{margin:4px 0 0;color:var(--mu)}
-footer{margin-top:28px;color:var(--mu);font-size:13px}
+:root{color-scheme:light dark;--bg:#0a0e13;--card:#121a24;--ln:#243040;--tx:#e3e9f2;--mu:#93a1b5;--ac:#3ddc97;--glow:rgba(61,220,151,.14);--shadow:0 1px 0 rgba(255,255,255,.03) inset,0 8px 24px rgba(0,0,0,.35);
+--a1:#58a6ff;--a2:#f2b84b;--a3:#ff7a90;--a4:#b392f0;--a5:#ff9a5a}
+@media (prefers-color-scheme:light){:root{--bg:#f3f6f9;--card:#fff;--ln:#d5dde6;--tx:#18222f;--mu:#566579;--ac:#0b8a5e;--glow:rgba(11,138,94,.12);--shadow:0 1px 2px rgba(20,40,70,.06),0 8px 24px rgba(20,40,70,.07);
+--a1:#1565c0;--a2:#a86a00;--a3:#c62848;--a4:#6f42c1;--a5:#c24e0a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+background-image:radial-gradient(60rem 28rem at 15% -8%,var(--glow),transparent 60%),radial-gradient(44rem 24rem at 100% 0,rgba(88,166,255,.08),transparent 60%);background-repeat:no-repeat}
+main{max-width:1040px;margin:0 auto;padding:64px 20px 40px}
+header{margin-bottom:40px}
+.eyebrow{display:inline-block;font:600 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ac);border:1px solid var(--ln);border-radius:99px;padding:7px 12px;background:var(--card)}
+h1{font-size:clamp(34px,6vw,56px);line-height:1.08;letter-spacing:-.02em;margin:18px 0 12px;font-weight:800}
+h1 span{background:linear-gradient(90deg,var(--ac),var(--a1));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{max-width:42rem;color:var(--mu);font-size:18px;margin:0}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.pills b{font-weight:600;font-size:13px;color:var(--mu);border:1px solid var(--ln);border-radius:99px;padding:5px 12px}
+ul{list-style:none;padding:0;margin:0;display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(min(100%,310px),1fr))}
+li{display:flex}
+.card{position:relative;display:flex;flex-direction:column;width:100%;padding:22px 22px 24px;color:inherit;text-decoration:none;background:var(--card);border:1px solid var(--ln);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;
+transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:var(--c)}
+li.a1{--c:var(--a1)}li.a2{--c:var(--a2)}li.a3{--c:var(--a3)}li.a4{--c:var(--a4)}li.a5{--c:var(--a5)}
+.card:hover,.card:focus-visible{transform:translateY(-4px);border-color:var(--c)}
+.card:focus-visible{outline:2px solid var(--c);outline-offset:3px}
+.mono{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font:700 15px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--c);border:1px solid var(--c);background:color-mix(in srgb,var(--c) 12%,transparent)}
+.tag{position:absolute;top:22px;right:22px;font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--c)}
+h2{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:20px;line-height:1.25;margin:18px 0 8px}
+.arr{color:var(--c);transition:transform .18s ease}
+.card:hover .arr{transform:translateX(5px)}
+.card p{margin:0;color:var(--mu);font-size:14.5px;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--ln);color:var(--mu);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+@media (prefers-reduced-motion:reduce){.card,.arr{transition:none}.card:hover{transform:none}}
 </style>
 </head>
 <body>
 <main>
-<h1>Public projects</h1>
-<p class="sub">Free to use in the browser. Each project has its own folder and licence.</p>
+<header>
+<span class="eyebrow">Free &middot; in your browser</span>
+<h1>Learn, build and <span>tinker</span>, no install</h1>
+<p class="sub">Virtual boards, courses, a Rust book and everyday tools by Gopu Sugumar. Everything runs on your device. Each project has its own folder and licence.</p>
+<div class="pills"><b>Embedded</b><b>Systems</b><b>Rust</b><b>Exam prep</b><b>Utilities</b></div>
+</header>
 <ul>
-<!-- One <li> per project; each project lives in its own folder on the main branch. -->
- <li><a href="virtual-arm-lab/">Virtual ARM Lab</a>
-  <p>A virtual ARM Cortex-M3 style microcontroller board in the browser, with an IDE, a debugger, a C compiler and a VxWorks 7 style kernel, for learning embedded programming.</p></li>
- <li><a href="virtual-x86-lab/">Virtual x86 Lab</a>
-  <p>A small 32-bit x86 board in the browser, with an assembler, a C compiler, a debugger and ACPI tables, for learning how a PC-class system starts.</p></li>
- <li><a href="embedded-system-training/">Embedded System Training</a>
-  <p>An embedded software course from fundamentals to expert level (3+ years), covering embedded C, MCU peripherals, UART/SPI/I2C/CAN and avionics buses, RTOS, DO-178C certification and MC/DC, with diagrams, a 516-question expert quiz (25 random questions per module per attempt) and a downloadable result report.</p></li>
- <li><a href="ncert-prep/">NCERT Exam Prep</a>
-  <p>Printable CBSE exam-preparation material from NCERT textbook chapters: summary notes, diagrams, formula summaries, revision tables, practice tests and 1/2/3/5-mark and case-based questions with answers, for one chapter or several at once, written by your own Claude or Gemini key. Works on phones; no install.</p></li>
- <li><a href="sandboxed/">Sandboxed Tools</a>
-  <p>Free in-browser tools that run on your device, with nothing uploaded. PDF Studio cleans scanned pages to a white background with crisp text, merges, splits, reorders and rotates pages, makes several-pages-per-sheet collages, makes scans searchable with OCR, lets you zoom in to check the result, and downloads or prints it. Passport Photo crops to the passport size of your country, replaces the background, evens out the lighting, removes stickers or marks you paint over, and prints a sheet of copies. Document Scanner turns a phone photo of a page into a flat, clean scan (PDF or image), several pages at a time, and puts both sides of an ID card at true size on one sheet.</p></li>
- <li><a href="rust-for-c/">Rust for C Programmers</a>
-  <p>A free online book that teaches Rust to experienced C developers by mapping each Rust concept onto the C pattern and memory model you already know: ownership, borrowing, lifetimes, traits, unsafe, FFI, concurrency and no_std. 25 chapters with runnable snippets, exercises with solutions, appendices and a downloadable PDF.</p></li>
+<!-- One <li> per project (class a1-a5 sets the accent colour); each project lives in its own folder on the main branch. -->
+ <li class="a1"><a class="card" href="virtual-arm-lab/">
+  <span class="mono" aria-hidden="true">ARM</span>
+  <span class="tag">Embedded</span>
+  <h2>Virtual ARM Lab<span class="arr" aria-hidden="true">&rarr;</span></h2>
+  <p>A virtual ARM Cortex-M3 style microcontroller board in the browser, with an IDE, a debugger, a C compiler and a VxWorks 7 style kernel, for learning embedded programming.</p></a></li>
+ <li class="a1"><a class="card" href="virtual-x86-lab/">
+  <span class="mono" aria-hidden="true">x86</span>
+  <span class="tag">Embedded</span>
+  <h2>Virtual x86 Lab<span class="arr" aria-hidden="true">&rarr;</span></h2>
+  <p>A small 32-bit x86 board in the browser, with an assembler, a C compiler, a debugger and ACPI tables, for learning how a PC-class system starts.</p></a></li>
+ <li class="a2"><a class="card" href="embedded-system-training/">
+  <span class="mono" aria-hidden="true">EST</span>
+  <span class="tag">Course</span>
+  <h2>Embedded System Training<span class="arr" aria-hidden="true">&rarr;</span></h2>
+  <p>An embedded software course from fundamentals to expert level (3+ years), covering embedded C, MCU peripherals, UART/SPI/I2C/CAN and avionics buses, RTOS, DO-178C certification and MC/DC, with diagrams, a 516-question expert quiz (25 random questions per module per attempt) and a downloadable result report.</p></a></li>
+ <li class="a3"><a class="card" href="ncert-prep/">
+  <span class="mono" aria-hidden="true">NC</span>
+  <span class="tag">Education</span>
+  <h2>NCERT Exam Prep<span class="arr" aria-hidden="true">&rarr;</span></h2>
+  <p>Printable CBSE exam-preparation material from NCERT textbook chapters: summary notes, diagrams, formula summaries, revision tables, practice tests and 1/2/3/5-mark and case-based questions with answers, for one chapter or several at once, written by your own Claude or Gemini key. Works on phones; no install.</p></a></li>
+ <li class="a4"><a class="card" href="sandboxed/">
+  <span class="mono" aria-hidden="true">SB</span>
+  <span class="tag">Tools</span>
+  <h2>Sandboxed Tools<span class="arr" aria-hidden="true">&rarr;</span></h2>
+  <p>Free in-browser tools that run on your device, with nothing uploaded. PDF Studio cleans scanned pages to a white background with crisp text, merges, splits, reorders and rotates pages, makes several-pages-per-sheet collages, makes scans searchable with OCR, lets you zoom in to check the result, and downloads or prints it. Passport Photo crops to the passport size of your country, replaces the background, evens out the lighting, removes stickers or marks you paint over, and prints a sheet of copies. Document Scanner turns a phone photo of a page into a flat, clean scan (PDF or image), several pages at a time, and puts both sides of an ID card at true size on one sheet.</p></a></li>
+ <li class="a5"><a class="card" href="rust-for-c/">
+  <span class="mono" aria-hidden="true">Rs</span>
+  <span class="tag">Book</span>
+  <h2>Rust for C Programmers<span class="arr" aria-hidden="true">&rarr;</span></h2>
+  <p>A free online book that teaches Rust to experienced C developers by mapping each Rust concept onto the C pattern and memory model you already know: ownership, borrowing, lifetimes, traits, unsafe, FFI, concurrency and no_std. 25 chapters with runnable snippets, exercises with solutions, appendices and a downloadable PDF.</p></a></li>
 </ul>
-<footer>Copyright &copy; 2026 Gopu Sugumar</footer>
+<footer><span>Copyright &copy; 2026 Gopu Sugumar</span><span>Licensed under GPL-3.0-or-later</span></footer>
 </main>
 </body>
 </html>
