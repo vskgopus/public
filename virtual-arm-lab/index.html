@@ -482,6 +482,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
    <button class="pt" data-w="ds2">Disassembly</button>
    <button class="pt" data-w="cs">Call stack</button>
    <button class="pt" data-w="tk">Tasks</button>
+   
    <button class="pt" data-w="pr">Peripherals</button>
    <button class="pt" data-w="help">Help</button>
   </div>
@@ -501,6 +502,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
    <div class="win" id="w-cs" hidden><div id="csv"></div></div>
    <div class="win" id="w-tk" hidden><div id="tkv"></div></div>
    <div class="win" id="w-pr" hidden><div id="prv"></div></div>
+   
    <div class="win help" id="w-help" hidden><div class="hk"><h3>Documentation</h3>
 <p class="doclinks"><button data-doc="manual">User Manual</button> <button data-doc="datasheet">Datasheet</button> <button data-doc="vxworks">VxWorks API Reference</button> <small>or press <kbd>F1</kbd> or <b>Manual</b> in the toolbar</small></p>
 <p>The <b>User Manual</b> explains the IDE: projects and files, creating a program in C, assembly or with VxWorks, building, running, debugging and testing. The <b>Datasheet</b> describes the CPU, the memory map, every register, the exception and interrupt system, the instruction set and the C compiler. The <b>VxWorks API Reference</b> describes every kernel function, with error codes and the differences from a real VxWorks system.</p>
@@ -6627,6 +6629,7 @@ function fpuView(){if(!hasF("fpu")||hasF("a64"))return"";const fv=b=>{const x=b2
 function rPr(){const pr={};$("prv").innerHTML=`<table class="t"><tr><th>Peripheral</th><th>Register</th><th>Address</th><th>Value (edit, hex)</th><th>Binary (low 8 bits)</th><th>Meaning</th></tr>${prRows().map(([p,r,a,d])=>{const v=peek(a,4)>>>0;pr[a]=v;return`<tr><td>${p}</td><td class="mono">${r}</td><td class="mono">0x${h(a,8)}</td><td><input class="m${prPrev[a]!==undefined&&prPrev[a]!==v?" chg":""}" data-a="${a}" value="0x${h(v,8)}" aria-label="${p} ${r}"></td><td class="mono">${(v&255).toString(2).padStart(8,"0")}</td><td><small>${d}</small></td></tr>`}).join("")}</table><div id="mpuv">${mpuTable()}</div><div id="sauv">${sauTable()}</div><div id="tlbv">${tlbTable()}</div>`;prPrev=pr}
 function updPr(){const mv=$("mpuv");if(mv)mv.innerHTML=mpuTable();const sv=$("sauv");if(sv)sv.innerHTML=sauTable();const tv=$("tlbv");if(tv)tv.innerHTML=tlbTable();const ins=$("prv").querySelectorAll("input");if(!ins.length||[...ins].some(i=>i===document.activeElement))return;ins.forEach(i=>{const a=+i.dataset.a,v=peek(a,4)>>>0;i.value="0x"+h(v,8);i.classList.toggle("chg",prPrev[a]!==undefined&&prPrev[a]!==v);prPrev[a]=v});
  [...$("prv").querySelectorAll("table")[0].querySelectorAll("tr")].slice(1).forEach((r,k)=>{r.cells[4].textContent=(peek(prRows()[k][2],4)&255).toString(2).padStart(8,"0")})}
+
 $("prv").addEventListener("change",e=>{const a=+e.target.dataset.a,v=parseNum(e.target.value.trim());if(!isNaN(v)){setVal({k:"m",a,sz:4},v);prPrev={};updPr()}e.target.blur()});
 
 /* ---------- VxWorks Tasks window (reads the kernel tables in vxworks/kernel.c) ---------- */
@@ -6876,7 +6879,7 @@ $("dm").value="mix";
 (function init(){let p=null;try{p=JSON.parse(localStorage.getItem(PK))}catch(e){}
  if(p&&Array.isArray(p.files)&&p.files.length){files=p.files.map(f=>({n:String(f.n),t:String(f.t),bp:f.bp||[],off:f.off||[],cond:f.cond||{}}));act=Math.min(p.act|0,files.length-1);wl=p.wl||[];curTab=p.curTab||"term";bh=p.bh||300;if(p.theme)document.documentElement.dataset.theme=p.theme;
   opn=Array.isArray(p.opn)?p.opn:[];spiText=p.spiText||"";if(coreById(p.core)&&coreById(p.core).ready)coreSel=p.core;fold=new Set(p.fold||[]);known=p.known||[];if(p.docTab)docCur=p.docTab;sw=p.sw|0;rw=p.rw|0;
-  {const GONE=[792783109, 870499918, 928642938, 963899528, 2409430510, 2966851986, 3243584760],n0=files.length;files=files.filter(f=>!(/^x\d6\//.test(f.n)&&GONE.includes(fnv(f.t))));if(!files.length)files=DEFAULTS();act=Math.min(act,files.length-1)}   /* example files of another page, saved here earlier and never edited, go; edited ones stay */
+  {const GONE=[792783109, 870499918, 928642938, 963899528, 1576480721, 2409430510, 2966851986, 3243584760],n0=files.length;files=files.filter(f=>!(/^x\d6\//.test(f.n)&&GONE.includes(fnv(f.t))));if(!files.length)files=DEFAULTS();act=Math.min(act,files.length-1)}   /* example files of another page, saved here earlier and never edited, go; edited ones stay */
   const upd=[];DEMO.forEach(d=>{const f=files.find(x=>x.n===d.n);if(f&&staleEx(f,d)){f.t=d.t;f.bp=[];f.off=[];f.cond={};upd.push(baseN(d.n))}});
   if(upd.length)setTimeout(()=>{setSt("Updated "+upd.length+" example file(s) you had not edited to the latest version: "+upd.join(", "));addOut("ok","Example files updated to the latest version: "+upd.join(", "));rOut()},50);
   DEFAULTS().forEach(d=>{if(!known.includes(d.n)&&!files.some(f=>f.n===d.n))files.push({n:d.n,t:d.t,bp:[],off:[],cond:{}})})}
