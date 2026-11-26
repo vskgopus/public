@@ -1,6 +1,6 @@
 // Appends a copyright footer to the end of every page's content.
 (function () {
-  var main = document.querySelector("#content main");
+  var main = document.querySelector(".content main");
   if (!main || main.querySelector(".rc-copyright")) return;
   var f = document.createElement("footer");
   f.className = "rc-copyright";
