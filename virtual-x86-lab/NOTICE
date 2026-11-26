@@ -1,0 +1,7 @@
+Virtual x86 Lab
+Copyright (C) 2026 Gopu Sugumar
+Licensed under the GNU General Public License, version 3 or (at your option) any later
+version (GPL-3.0-or-later). See LICENSE.
+
+The x86 core and its board are an independent teaching model of a small part of IA-32
+and ACPI. They are not affiliated with Intel or the UEFI Forum.
