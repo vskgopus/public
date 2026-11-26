@@ -420,7 +420,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
 #boardP .ph small{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style></head><body><div id="app">
 <header id="tb">
- <button class="brand" id="bAbout" title="About Virtual x86 Lab (version 0.2.0)" aria-label="About Virtual x86 Lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ac)"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg><b>Virtual x86 Lab</b><span>x86 debugger</span></button>
+ <button class="brand" id="bAbout" title="About Virtual x86 Lab (version 0.3.0)" aria-label="About Virtual x86 Lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ac)"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg><b>Virtual x86 Lab</b><span>x86 debugger</span></button>
  <div class="grp"><button class="tbtn bld" id="bAsm" title="Build the active file (Ctrl+B)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg><span>Build</span></button></div>
  <div class="grp">
   <button class="tbtn pri" id="bRun" title="Run / Continue (F5 or F8)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg><span>Run</span></button>
@@ -522,7 +522,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
 </div>
 <div id="about" hidden role="dialog" aria-modal="true" aria-labelledby="abT"><div class="abcard">
  <div class="abhd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/><path d="M10 10l4 2-4 2z" fill="currentColor"/></svg>
-  <div><h2 id="abT">Virtual x86 Lab</h2><div class="abv"><span>Version <b id="abVer">0.2.0</b></span> &middot; <span>released 2026-11-26</span></div></div>
+  <div><h2 id="abT">Virtual x86 Lab</h2><div class="abv"><span>Version <b id="abVer">0.3.0</b></span> &middot; <span>released 2026-11-26</span></div></div>
   <button class="tbtn" id="abX" title="Close (Esc)">Close</button></div>
  <div class="abbody">
   <p>A virtual 32-bit x86 board in the browser: an Intel-syntax assembler that writes real IA-32 machine code, a C compiler, a debugger with a serial terminal, and a small PC-style BIOS with ACPI tables, for learning how a PC-class system starts and finds its hardware. It shares its source with Virtual ARM Lab.</p>
@@ -538,11 +538,14 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
    <tr><td>Documents</td><td>User Manual and Datasheet (press <b>Manual</b> or F1)</td></tr>
   </table>
   <h3>What's new</h3>
+  <p><b>0.3.0</b> (2026-11-26):</p>
+  <ul>
+   <li>The Cortex board's peripherals (GPIO, UART, timer, I&sup2;C, SPI, ADC, watchdog) can be switched in <code>acpi.cfg</code> and in the ACPI tab: <code>on</code> also describes the peripheral in the DSDT (a <code>Device()</code> with a memory range), <code>off</code> removes it from the board (reads float high, writes are lost). Not named: as before</li>
+  </ul>
   <p><b>0.2.0</b> (2026-11-26):</p>
   <ul>
-   <li>New <b>ACPI</b> tab (next to Terminal): CPUs, S5 value, OEM id, the COM1 serial port (present, I/O base, IRQ) and the PM block base as a form. <b>Apply and rebuild</b> writes <code>x86/acpi.cfg</code>, so the ACPI tables and the board change together</li>
-   <li><code>acpi.cfg</code> has two new lines, <code>com1</code> and <code>pm io</code>; the DSDT now lists <code>Device(COM1)</code> with a <code>_CRS</code> (I/O range and IRQ). The IRQ is only described: the board has no interrupts</li>
-   <li>A selected debug tab now scrolls into view</li>
+   <li>New <b>ACPI</b> tab (next to Terminal): CPUs, S5 value, OEM id, the COM1 serial port and the PM block base as a form. <b>Apply and rebuild</b> writes <code>x86/acpi.cfg</code>, so the ACPI tables and the board change together</li>
+   <li><code>acpi.cfg</code> has two new lines, <code>com1</code> and <code>pm io</code>; the DSDT lists <code>Device(COM1)</code> with a <code>_CRS</code>. The IRQ is only described: the board has no interrupts</li>
   </ul>
   <p><b>0.1.0</b> (2026-11-26):</p>
   <ul>
