@@ -246,6 +246,17 @@ html { scroll-behavior: smooth; }
 .rc-card p { margin: .35em 0; font-size: .95em; line-height: 1.5; }
 .rc-card ul { margin: .4em 0 0; padding-left: 1.1em; font-size: .93em; }
 
+/* ---------- Copyright footer ---------- */
+.rc-copyright {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--table-border-color, rgba(128,128,128,.35));
+  font-size: .8rem;
+  line-height: 1.5;
+  opacity: .75;
+}
+.rc-copyright p { margin: .3em 0; }
+
 /* ---------- Print ---------- */
 @media print {
   .content details { break-inside: avoid; }
