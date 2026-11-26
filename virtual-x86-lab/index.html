@@ -471,6 +471,7 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
   <div id="ptabs" role="tablist" aria-label="Debug windows">
    <select id="dcore" hidden title="Two-core program: the core whose registers, code position, call stack and locals the debug windows show. A breakpoint or fault on either core stops both." aria-label="Core shown in the debug windows"></select>
    <button class="pt on" data-w="term">Terminal</button>
+   <button class="pt" data-w="acp">ACPI</button>
    <button class="pt" data-w="lg">Bus log</button>
    <button class="pt" data-w="out">Output</button>
    <button class="pt" data-w="rg">Registers</button>
@@ -482,7 +483,6 @@ button.brand:hover{background:var(--btnh)}button.brand:hover b{text-decoration:u
    <button class="pt" data-w="ds2">Disassembly</button>
    <button class="pt" data-w="cs">Call stack</button>
    <button class="pt" data-w="tk">Tasks</button>
-   <button class="pt" data-w="acp">ACPI</button>
    <button class="pt" data-w="pr">Peripherals</button>
    <button class="pt" data-w="help">Help</button>
   </div>
@@ -5228,7 +5228,7 @@ $("us").onclick=sendRx;$("ui").onkeydown=e=>{if(e.key==="Enter")sendRx()};
 $("tclr").onclick=()=>{tout="";td=1};$("lc").onclick=()=>{logs=[];ld=1};
 
 /* ---------- tabs and splitter ---------- */
-function setTab(t){curTab=t;document.querySelectorAll("#ptabs .pt").forEach(b=>{const on=b.dataset.w===t;b.classList.toggle("on",on);b.setAttribute("aria-selected",on)});
+function setTab(t){curTab=t;document.querySelectorAll("#ptabs .pt").forEach(b=>{const on=b.dataset.w===t;b.classList.toggle("on",on);b.setAttribute("aria-selected",on);if(on&&b.scrollIntoView)b.scrollIntoView({block:"nearest",inline:"nearest"})});
  document.querySelectorAll("#wins .win").forEach(w=>w.hidden=w.id!=="w-"+t);$("bottom").classList.remove("hid");
  if(t==="mm")updM();if(t==="map")rMap(1);if(t==="wt")renderW();if(t==="bp")rBpWin();if(t==="ds2"){buildDis();paintDis(true)}if(t==="cs")rCs();if(t==="tk")rTasks();if(t==="lc")rLocals();if(t==="pr")rPr();if(t==="acp")rAcp();if(t==="out")rOut();if(t==="term"){td=1}if(t==="lg")ld=1;persist()}
 $("ptabs").addEventListener("click",e=>{const b=e.target.closest(".pt");if(b)setTab(b.dataset.w)});
