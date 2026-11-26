@@ -5385,7 +5385,7 @@ $("dm").value="mix";
 (function init(){let p=null;try{p=JSON.parse(localStorage.getItem(PK))}catch(e){}
  if(p&&Array.isArray(p.files)&&p.files.length){files=p.files.map(f=>({n:String(f.n),t:String(f.t),bp:f.bp||[],off:f.off||[],cond:f.cond||{}}));act=Math.min(p.act|0,files.length-1);wl=p.wl||[];curTab=p.curTab||"term";bh=p.bh||300;if(p.theme)document.documentElement.dataset.theme=p.theme;
   opn=Array.isArray(p.opn)?p.opn:[];spiText=p.spiText||"";if(coreById(p.core)&&coreById(p.core).ready)coreSel=p.core;fold=new Set(p.fold||[]);known=p.known||[];if(p.docTab)docCur=p.docTab;sw=p.sw|0;rw=p.rw|0;
-  const upd=[];DEMO.forEach(d=>{const f=files.find(x=>x.n===d.n);if(f&&staleEx(f,d)){f.t=d.t;f.bp=[];f.off=[];f.cond={};upd.push(baseN(d.n))}});
+    const upd=[];DEMO.forEach(d=>{const f=files.find(x=>x.n===d.n);if(f&&staleEx(f,d)){f.t=d.t;f.bp=[];f.off=[];f.cond={};upd.push(baseN(d.n))}});
   if(upd.length)setTimeout(()=>{setSt("Updated "+upd.length+" example file(s) you had not edited to the latest version: "+upd.join(", "));addOut("ok","Example files updated to the latest version: "+upd.join(", "));rOut()},50);
   DEFAULTS().forEach(d=>{if(!known.includes(d.n)&&!files.some(f=>f.n===d.n))files.push({n:d.n,t:d.t,bp:[],off:[],cond:{}})})}
  else{files=DEFAULTS();act=0;wl=["r0","GPIO_OUT"];fold=new Set(["vxworks"])}
