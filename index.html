@@ -6,79 +6,99 @@
 <title>Gopu Sugumar - public projects</title>
 <meta name="description" content="Free in-browser labs, courses, books and tools by Gopu Sugumar.">
 <style>
-:root{color-scheme:light dark;--bg:#0a0e13;--card:#121a24;--ln:#243040;--tx:#e3e9f2;--mu:#93a1b5;--ac:#3ddc97;--glow:rgba(61,220,151,.14);--shadow:0 1px 0 rgba(255,255,255,.03) inset,0 8px 24px rgba(0,0,0,.35);
+:root{color-scheme:light dark;--bg:#070b11;--card:#101822;--card2:#0c121a;--ln:#223044;--tx:#e8eef7;--mu:#98a6ba;--ac:#3ddc97;--ac2:#58a6ff;--grid:rgba(120,150,190,.07);--shadow:0 12px 32px rgba(0,0,0,.4);
 --a1:#58a6ff;--a2:#f2b84b;--a3:#ff7a90;--a4:#b392f0;--a5:#ff9a5a}
-@media (prefers-color-scheme:light){:root{--bg:#f3f6f9;--card:#fff;--ln:#d5dde6;--tx:#18222f;--mu:#566579;--ac:#0b8a5e;--glow:rgba(11,138,94,.12);--shadow:0 1px 2px rgba(20,40,70,.06),0 8px 24px rgba(20,40,70,.07);
+@media (prefers-color-scheme:light){:root{--bg:#f4f7fb;--card:#fff;--card2:#f7f9fc;--ln:#d8e0ea;--tx:#15202e;--mu:#546378;--ac:#0b8a5e;--ac2:#1565c0;--grid:rgba(30,60,100,.06);--shadow:0 10px 28px rgba(20,40,70,.10);
 --a1:#1565c0;--a2:#a86a00;--a3:#c62848;--a4:#6f42c1;--a5:#c24e0a}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-background-image:radial-gradient(60rem 28rem at 15% -8%,var(--glow),transparent 60%),radial-gradient(44rem 24rem at 100% 0,rgba(88,166,255,.08),transparent 60%);background-repeat:no-repeat}
-main{max-width:1040px;margin:0 auto;padding:64px 20px 40px}
-header{margin-bottom:40px}
-.eyebrow{display:inline-block;font:600 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ac);border:1px solid var(--ln);border-radius:99px;padding:7px 12px;background:var(--card)}
-h1{font-size:clamp(34px,6vw,56px);line-height:1.08;letter-spacing:-.02em;margin:18px 0 12px;font-weight:800}
-h1 span{background:linear-gradient(90deg,var(--ac),var(--a1));-webkit-background-clip:text;background-clip:text;color:transparent}
-.sub{max-width:42rem;color:var(--mu);font-size:18px;margin:0}
-.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
-.pills b{font-weight:600;font-size:13px;color:var(--mu);border:1px solid var(--ln);border-radius:99px;padding:5px 12px}
-ul{list-style:none;padding:0;margin:0;display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(min(100%,310px),1fr))}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--tx);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;position:relative}
+body::before{content:"";position:absolute;inset:0 0 auto 0;height:640px;pointer-events:none;
+background:radial-gradient(50rem 24rem at 12% -4%,color-mix(in srgb,var(--ac) 22%,transparent),transparent 65%),radial-gradient(40rem 22rem at 92% 0,color-mix(in srgb,var(--ac2) 18%,transparent),transparent 65%),
+linear-gradient(var(--grid) 1px,transparent 1px) 0 0/44px 44px,linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/44px 44px;
+-webkit-mask-image:linear-gradient(#000 40%,transparent);mask-image:linear-gradient(#000 40%,transparent)}
+main{position:relative;max-width:1080px;margin:0 auto;padding:72px 20px 40px}
+header{margin-bottom:48px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font:600 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ac);border:1px solid var(--ln);border-radius:99px;padding:8px 14px;background:color-mix(in srgb,var(--card) 80%,transparent)}
+.eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--ac);box-shadow:0 0 0 4px color-mix(in srgb,var(--ac) 25%,transparent)}
+h1{font-size:clamp(38px,7vw,68px);line-height:1.04;letter-spacing:-.03em;margin:22px 0 16px;font-weight:800;max-width:14em}
+h1 span{background:linear-gradient(90deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{max-width:40rem;color:var(--mu);font-size:19px;margin:0}
+.stats{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.stats div{background:color-mix(in srgb,var(--card) 85%,transparent);border:1px solid var(--ln);border-radius:14px;padding:12px 18px;min-width:130px}
+.stats b{display:block;font-size:26px;line-height:1.1;letter-spacing:-.02em}
+.stats small{color:var(--mu);font-size:13px}
+.label{font:600 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--mu);margin:0 0 16px}
+ul{list-style:none;padding:0;margin:0;display:grid;gap:20px;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr))}
 li{display:flex}
-.card{position:relative;display:flex;flex-direction:column;width:100%;padding:22px 22px 24px;color:inherit;text-decoration:none;background:var(--card);border:1px solid var(--ln);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;
-transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
-.card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:var(--c)}
+.card{position:relative;display:flex;flex-direction:column;width:100%;padding:24px;color:inherit;text-decoration:none;border-radius:18px;overflow:hidden;
+background:linear-gradient(160deg,color-mix(in srgb,var(--c) 9%,var(--card)),var(--card) 55%);border:1px solid var(--ln);box-shadow:var(--shadow);
+transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--c),transparent)}
+.card::after{content:"";position:absolute;width:220px;height:220px;right:-90px;top:-90px;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--c) 28%,transparent),transparent);opacity:.55;transition:opacity .2s ease;pointer-events:none}
 li.a1{--c:var(--a1)}li.a2{--c:var(--a2)}li.a3{--c:var(--a3)}li.a4{--c:var(--a4)}li.a5{--c:var(--a5)}
-.card:hover,.card:focus-visible{transform:translateY(-4px);border-color:var(--c)}
+.card:hover,.card:focus-visible{transform:translateY(-6px);border-color:var(--c);box-shadow:0 18px 40px color-mix(in srgb,var(--c) 22%,transparent)}
+.card:hover::after{opacity:1}
 .card:focus-visible{outline:2px solid var(--c);outline-offset:3px}
-.mono{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font:700 15px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--c);border:1px solid var(--c);background:color-mix(in srgb,var(--c) 12%,transparent)}
-.tag{position:absolute;top:22px;right:22px;font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--c)}
-h2{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:20px;line-height:1.25;margin:18px 0 8px}
-.arr{color:var(--c);transition:transform .18s ease}
-.card:hover .arr{transform:translateX(5px)}
-.card p{margin:0;color:var(--mu);font-size:14.5px;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
-footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--ln);color:var(--mu);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-@media (prefers-reduced-motion:reduce){.card,.arr{transition:none}.card:hover{transform:none}}
+.ico{position:relative;z-index:1;width:52px;height:52px;border-radius:14px;display:grid;place-items:center;color:var(--c);border:1px solid color-mix(in srgb,var(--c) 45%,transparent);background:color-mix(in srgb,var(--c) 14%,var(--card))}
+.tag{position:absolute;z-index:1;top:24px;right:24px;font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--c);border:1px solid color-mix(in srgb,var(--c) 40%,transparent);border-radius:99px;padding:6px 10px}
+h2{position:relative;z-index:1;font-size:21px;line-height:1.25;margin:20px 0 8px;letter-spacing:-.01em}
+.card p{position:relative;z-index:1;margin:0 0 20px;color:var(--mu);font-size:14.5px;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.go{position:relative;z-index:1;margin-top:auto;font-weight:600;font-size:14px;color:var(--c);display:inline-flex;gap:6px}
+.arr{transition:transform .2s ease}
+.card:hover .arr{transform:translateX(6px)}
+footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--ln);color:var(--mu);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+@media (max-width:520px){main{padding-top:44px}.stats div{flex:1}}
+@media (prefers-reduced-motion:reduce){.card,.arr{transition:none}.card:hover{transform:none}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
 <main>
 <header>
-<span class="eyebrow">Free &middot; in your browser</span>
+<span class="eyebrow"><i></i>Free &middot; runs in your browser</span>
 <h1>Learn, build and <span>tinker</span>, no install</h1>
-<p class="sub">Virtual boards, courses, a Rust book and everyday tools by Gopu Sugumar. Everything runs on your device. Each project has its own folder and licence.</p>
-<div class="pills"><b>Embedded</b><b>Systems</b><b>Rust</b><b>Exam prep</b><b>Utilities</b></div>
+<p class="sub">Virtual boards, a full embedded course, a Rust book and everyday tools by Gopu Sugumar. Everything runs on your device. Each project has its own folder and licence.</p>
+<div class="stats"><div><b>6</b><small>projects</small></div><div><b>0</b><small>installs</small></div><div><b>100%</b><small>free and open</small></div></div>
 </header>
+<p class="label">Projects</p>
 <ul>
 <!-- One <li> per project (class a1-a5 sets the accent colour); each project lives in its own folder on the main branch. -->
  <li class="a1"><a class="card" href="virtual-arm-lab/">
-  <span class="mono" aria-hidden="true">ARM</span>
+  <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg></span>
   <span class="tag">Embedded</span>
-  <h2>Virtual ARM Lab<span class="arr" aria-hidden="true">&rarr;</span></h2>
-  <p>A virtual ARM Cortex-M3 style microcontroller board in the browser, with an IDE, a debugger, a C compiler and a VxWorks 7 style kernel, for learning embedded programming.</p></a></li>
+  <h2>Virtual ARM Lab</h2>
+  <p>A virtual ARM Cortex-M3 style microcontroller board in the browser, with an IDE, a debugger, a C compiler and a VxWorks 7 style kernel, for learning embedded programming.</p>
+  <span class="go">Open <span class="arr" aria-hidden="true">&rarr;</span></span></a></li>
  <li class="a1"><a class="card" href="virtual-x86-lab/">
-  <span class="mono" aria-hidden="true">x86</span>
+  <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4M7 9l2 2-2 2M12 13h4"/></svg></span>
   <span class="tag">Embedded</span>
-  <h2>Virtual x86 Lab<span class="arr" aria-hidden="true">&rarr;</span></h2>
-  <p>A small 32-bit x86 board in the browser, with an assembler, a C compiler, a debugger and ACPI tables, for learning how a PC-class system starts.</p></a></li>
+  <h2>Virtual x86 Lab</h2>
+  <p>A small 32-bit x86 board in the browser, with an assembler, a C compiler, a debugger and ACPI tables, for learning how a PC-class system starts.</p>
+  <span class="go">Open <span class="arr" aria-hidden="true">&rarr;</span></span></a></li>
  <li class="a2"><a class="card" href="embedded-system-training/">
-  <span class="mono" aria-hidden="true">EST</span>
+  <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 3 3 6 3s6-1.500 6-3v-4.500M22 9v6"/></svg></span>
   <span class="tag">Course</span>
-  <h2>Embedded System Training<span class="arr" aria-hidden="true">&rarr;</span></h2>
-  <p>An embedded software course from fundamentals to expert level (3+ years), covering embedded C, MCU peripherals, UART/SPI/I2C/CAN and avionics buses, RTOS, DO-178C certification and MC/DC, with diagrams, a 516-question expert quiz (25 random questions per module per attempt) and a downloadable result report.</p></a></li>
+  <h2>Embedded System Training</h2>
+  <p>An embedded software course from fundamentals to expert level (3+ years), covering embedded C, MCU peripherals, UART/SPI/I2C/CAN and avionics buses, RTOS, DO-178C certification and MC/DC, with diagrams, a 516-question expert quiz (25 random questions per module per attempt) and a downloadable result report.</p>
+  <span class="go">Open <span class="arr" aria-hidden="true">&rarr;</span></span></a></li>
  <li class="a3"><a class="card" href="ncert-prep/">
-  <span class="mono" aria-hidden="true">NC</span>
+  <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12a4 4 0 014 4v12H8a4 4 0 01-4-4z"/><path d="M8 9h8M8 13h6"/></svg></span>
   <span class="tag">Education</span>
-  <h2>NCERT Exam Prep<span class="arr" aria-hidden="true">&rarr;</span></h2>
-  <p>Printable CBSE exam-preparation material from NCERT textbook chapters: summary notes, diagrams, formula summaries, revision tables, practice tests and 1/2/3/5-mark and case-based questions with answers, for one chapter or several at once, written by your own Claude or Gemini key. Works on phones; no install.</p></a></li>
+  <h2>NCERT Exam Prep</h2>
+  <p>Printable CBSE exam-preparation material from NCERT textbook chapters: summary notes, diagrams, formula summaries, revision tables, practice tests and 1/2/3/5-mark and case-based questions with answers, for one chapter or several at once, written by your own Claude or Gemini key. Works on phones; no install.</p>
+  <span class="go">Open <span class="arr" aria-hidden="true">&rarr;</span></span></a></li>
  <li class="a4"><a class="card" href="sandboxed/">
-  <span class="mono" aria-hidden="true">SB</span>
+  <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14.700 6.300a4 4 0 00-5.400 5.400L3 18l3 3 6.300-6.300a4 4 0 005.400-5.400l-2.400 2.400-2.500-.5-.5-2.500z"/></svg></span>
   <span class="tag">Tools</span>
-  <h2>Sandboxed Tools<span class="arr" aria-hidden="true">&rarr;</span></h2>
-  <p>Free in-browser tools that run on your device, with nothing uploaded. PDF Studio cleans scanned pages to a white background with crisp text, merges, splits, reorders and rotates pages, makes several-pages-per-sheet collages, makes scans searchable with OCR, lets you zoom in to check the result, and downloads or prints it. Passport Photo crops to the passport size of your country, replaces the background, evens out the lighting, removes stickers or marks you paint over, and prints a sheet of copies. Document Scanner turns a phone photo of a page into a flat, clean scan (PDF or image), several pages at a time, and puts both sides of an ID card at true size on one sheet.</p></a></li>
+  <h2>Sandboxed Tools</h2>
+  <p>Free in-browser tools that run on your device, with nothing uploaded. PDF Studio cleans scanned pages to a white background with crisp text, merges, splits, reorders and rotates pages, makes several-pages-per-sheet collages, makes scans searchable with OCR, lets you zoom in to check the result, and downloads or prints it. Passport Photo crops to the passport size of your country, replaces the background, evens out the lighting, removes stickers or marks you paint over, and prints a sheet of copies. Document Scanner turns a phone photo of a page into a flat, clean scan (PDF or image), several pages at a time, and puts both sides of an ID card at true size on one sheet.</p>
+  <span class="go">Open <span class="arr" aria-hidden="true">&rarr;</span></span></a></li>
  <li class="a5"><a class="card" href="rust-for-c/">
-  <span class="mono" aria-hidden="true">Rs</span>
+  <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></span>
   <span class="tag">Book</span>
-  <h2>Rust for C Programmers<span class="arr" aria-hidden="true">&rarr;</span></h2>
-  <p>A free online book that teaches Rust to experienced C developers by mapping each Rust concept onto the C pattern and memory model you already know: ownership, borrowing, lifetimes, traits, unsafe, FFI, concurrency and no_std. 25 chapters with runnable snippets, exercises with solutions, appendices and a downloadable PDF.</p></a></li>
+  <h2>Rust for C Programmers</h2>
+  <p>A free online book that teaches Rust to experienced C developers by mapping each Rust concept onto the C pattern and memory model you already know: ownership, borrowing, lifetimes, traits, unsafe, FFI, concurrency and no_std. 25 chapters with runnable snippets, exercises with solutions, appendices and a downloadable PDF.</p>
+  <span class="go">Open <span class="arr" aria-hidden="true">&rarr;</span></span></a></li>
 </ul>
 <footer><span>Copyright &copy; 2026 Gopu Sugumar</span><span>Licensed under GPL-3.0-or-later</span></footer>
 </main>
