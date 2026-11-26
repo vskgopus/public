@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -320,13 +320,35 @@ the stack just as in C; put them in a <code>Vec</code> or <code>Box</code>.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Build a <code>Vec&lt;String&gt;</code> of three words, then join them with a space using
-<code>join(" ")</code>.</li>
-<li>Push 20 bytes into an empty <code>Vec&lt;u8&gt;</code>, printing <code>v.capacity()</code> after each
-<code>push</code>, and see how the capacity grows.</li>
-<li>Write <code>fn count_vowels(s: &amp;str) -&gt; usize</code> using <code>chars()</code>. How would the C
-version handle <code>é</code>?</li>
+<li>
+<p>Build a <code>Vec&lt;String&gt;</code> of three words, then join them with a space using
+<code>join(" ")</code>.</p>
+</li>
+<li>
+<p>Push 20 bytes into an empty <code>Vec&lt;u8&gt;</code>, printing <code>v.capacity()</code> after each
+<code>push</code>, and see how the capacity grows.</p>
+</li>
+<li>
+<p>Write <code>fn count_vowels(s: &amp;str) -&gt; usize</code> using <code>chars()</code>. How would the C
+version handle <code>é</code>?</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Capitalize the first letter of every word.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn title_case(s: &amp;str) -&gt; String {
+    todo!("split_whitespace, uppercase the first char, join with a space")
+}
+
+fn main() {
+    assert_eq!(title_case("hello big world"), "Hello Big World");
+    assert_eq!(title_case(""), "");
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Run-length encode a string: <code>"aaabcc"</code> becomes <code>"a3b1c2"</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -358,6 +380,47 @@ fn main() {
 <p><code>chars()</code> yields Unicode scalar values, so <code>é</code> is one item. A C loop over <code>char</code> sees
 the UTF-8 bytes <code>0xC3 0xA9</code> of <code>é</code> as two separate values, and neither equals <code>'e'</code>
 or any other single-byte vowel, so it must decode UTF-8 itself.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn title_case(s: &amp;str) -&gt; String {
+    s.split_whitespace()
+        .map(|w| {
+            let mut cs = w.chars();
+            match cs.next() {
+                Some(first) =&gt; first.to_uppercase().collect::&lt;String&gt;() + cs.as_str(),
+                None =&gt; String::new(),
+            }
+        })
+        .collect::&lt;Vec&lt;_&gt;&gt;()
+        .join(" ")
+}
+
+fn main() {
+    assert_eq!(title_case("hello big world"), "Hello Big World");
+    assert_eq!(title_case(""), "");
+    println!("ok");
+}</code></pre>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn rle(s: &amp;str) -&gt; String {
+    let mut out = String::new();
+    let mut chars = s.chars().peekable();
+    while let Some(c) = chars.next() {
+        let mut n = 1;
+        while chars.peek() == Some(&amp;c) {
+            chars.next();
+            n += 1;
+        }
+        out.push(c);
+        out.push_str(&amp;n.to_string());
+    }
+    out
+}
+
+fn main() {
+    assert_eq!(rle("aaabcc"), "a3b1c2");
+    assert_eq!(rle(""), "");
+    println!("ok");
+}</code></pre>
+<p><code>String</code> grows as needed, so there is no buffer size to compute and no <code>snprintf</code> to check.</p>
 </details>
 
                     </main>

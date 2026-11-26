@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -336,12 +336,52 @@ is the same cost as the C vtable.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Add a third shape and put it in the <code>Vec&lt;Box&lt;dyn Shape&gt;&gt;</code>. Did you change any
-existing code?</li>
-<li>Replace <code>Vec&lt;Box&lt;dyn Shape&gt;&gt;</code> with <code>Vec&lt;&amp;dyn Shape&gt;</code> using references to locals.</li>
-<li>Write <code>fn pick(flag: bool) -&gt; Box&lt;dyn Shape&gt;</code> that returns a <code>Circle</code> or a
-<code>Rect</code>. Why does the same signature with <code>impl Shape</code> fail?</li>
+<li>
+<p>Add a third shape and put it in the <code>Vec&lt;Box&lt;dyn Shape&gt;&gt;</code>. Did you change any
+existing code?</p>
+</li>
+<li>
+<p>Replace <code>Vec&lt;Box&lt;dyn Shape&gt;&gt;</code> with <code>Vec&lt;&amp;dyn Shape&gt;</code> using references to locals.</p>
+</li>
+<li>
+<p>Write <code>fn pick(flag: bool) -&gt; Box&lt;dyn Shape&gt;</code> that returns a <code>Circle</code> or a
+<code>Rect</code>. Why does the same signature with <code>impl Shape</code> fail?</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Give <code>Animal</code> a default method <code>speak</code> that returns <code>"&lt;name&gt; says &lt;sound&gt;"</code>,
+then use it through trait objects.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">trait Animal {
+    fn name(&amp;self) -&gt; String;
+    fn sound(&amp;self) -&gt; String;
+    fn speak(&amp;self) -&gt; String {
+        todo!()
+    }
+}
+
+struct Dog;
+struct Cat;
+impl Animal for Dog {
+    fn name(&amp;self) -&gt; String { "Dog".into() }
+    fn sound(&amp;self) -&gt; String { "woof".into() }
+}
+impl Animal for Cat {
+    fn name(&amp;self) -&gt; String { "Cat".into() }
+    fn sound(&amp;self) -&gt; String { "meow".into() }
+}
+
+fn main() {
+    let zoo: Vec&lt;Box&lt;dyn Animal&gt;&gt; = vec![Box::new(Dog), Box::new(Cat)];
+    let said: Vec&lt;String&gt; = zoo.iter().map(|a| a.speak()).collect();
+    assert_eq!(said, ["Dog says woof", "Cat says meow"]);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Write <code>fn evens() -&gt; impl Iterator&lt;Item = u32&gt;</code> that yields 0, 2, 4, … forever.
+Take the first three.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -416,6 +456,40 @@ fn pick(flag: bool) -&gt; impl Shape {
     if flag { Circle } else { Rect }   // error[E0308]: `if` and `else` have incompatible types
 }
 <span class="boring">}</span></code></pre>
+<p><strong>4.</strong> Replace the body of <code>speak</code> with:</p>
+<pre class="playground"><code class="language-rust edition2024">trait Animal {
+    fn name(&amp;self) -&gt; String;
+    fn sound(&amp;self) -&gt; String;
+    fn speak(&amp;self) -&gt; String {
+        format!("{} says {}", self.name(), self.sound())
+    }
+}
+
+struct Dog;
+impl Animal for Dog {
+    fn name(&amp;self) -&gt; String { "Dog".into() }
+    fn sound(&amp;self) -&gt; String { "woof".into() }
+}
+
+fn main() {
+    let zoo: Vec&lt;Box&lt;dyn Animal&gt;&gt; = vec![Box::new(Dog)];
+    assert_eq!(zoo[0].speak(), "Dog says woof");
+    println!("ok");
+}</code></pre>
+<p>A default method is written once in the trait and works for every type that implements
+it, with dynamic dispatch for <code>name</code> and <code>sound</code>.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn evens() -&gt; impl Iterator&lt;Item = u32&gt; {
+    (0..).step_by(2)
+}
+
+fn main() {
+    let v: Vec&lt;u32&gt; = evens().take(3).collect();
+    assert_eq!(v, [0, 2, 4]);
+    println!("ok");
+}</code></pre>
+<p>The concrete iterator type is hidden from the caller but known to the compiler, so the
+call is inlined and there is no heap allocation.</p>
 </details>
 
                     </main>

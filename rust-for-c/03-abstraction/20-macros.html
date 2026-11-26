@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -316,10 +316,35 @@ can be hard to read: keep macros small.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Write <code>macro_rules! min</code> like <code>max</code>.</li>
-<li>Write a macro <code>hashmap!{ "a" =&gt; 1, "b" =&gt; 2 }</code> that builds a <code>HashMap</code>.</li>
-<li>Run <code>println!("{}", 1)</code> with an extra argument and read the compile error.</li>
+<li>
+<p>Write <code>macro_rules! min</code> like <code>max</code>.</p>
+</li>
+<li>
+<p>Write a macro <code>hashmap!{ "a" =&gt; 1, "b" =&gt; 2 }</code> that builds a <code>HashMap</code>.</p>
+</li>
+<li>
+<p>Run <code>println!("{}", 1)</code> with an extra argument and read the compile error.</p>
+</li>
+<li>
+<p><strong>Fix the macro.</strong> <code>square!</code> is wrong on purpose: it returns its argument. Fix it so both checks
+pass, and evaluate the argument only once.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">macro_rules! square {
+    ($x:expr) =&gt; {
+        $x
+    };
+}
+
+fn main() {
+    assert_eq!(square!(3), 9);
+    assert_eq!(square!(1 + 2), 9);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Write <code>my_vec![1, 2, 3]</code> (with an optional trailing comma) that builds a <code>Vec</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -353,6 +378,39 @@ fn main() {
 <p><strong>3.</strong> The format string is checked at compile time, which <code>printf</code> cannot do:</p>
 <pre class="playground"><code class="language-rust compile_fail edition2024">fn main() {
     println!("{}", 1, 2);   // error: argument never used
+}</code></pre>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">macro_rules! square {
+    ($x:expr) =&gt; {{
+        let v = $x;
+        v * v
+    }};
+}
+
+fn main() {
+    assert_eq!(square!(3), 9);
+    assert_eq!(square!(1 + 2), 9);
+    println!("ok");
+}</code></pre>
+<p>An <code>expr</code> fragment keeps its grouping, so <code>square!(1 + 2)</code> is <code>3 * 3</code>, not <code>1 + 2 * 1 + 2</code>
+as the C macro <code>#define SQ(x) x * x</code> gives. The <code>let</code> evaluates the argument only once.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">macro_rules! my_vec {
+    ($($x:expr),* $(,)?) =&gt; {{
+        let mut v = Vec::new();
+        $( v.push($x); )*
+        v
+    }};
+}
+
+fn main() {
+    let a = my_vec![1, 2, 3];
+    let b: Vec&lt;i32&gt; = my_vec![];
+    let c = my_vec![4, 5,];
+    assert_eq!(a, [1, 2, 3]);
+    assert!(b.is_empty());
+    assert_eq!(c, [4, 5]);
+    println!("ok");
 }</code></pre>
 </details>
 

@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -317,10 +317,33 @@ different closures together.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Write <code>fn compose(f: impl Fn(i32) -&gt; i32, g: impl Fn(i32) -&gt; i32) -&gt; impl Fn(i32) -&gt; i32</code>.</li>
-<li>Make a counter: <code>fn make_counter() -&gt; impl FnMut() -&gt; u32</code> that returns 1, 2, 3…</li>
-<li>Remove <code>move</code> from <code>make_adder</code> and read the error.</li>
+<li>
+<p>Write <code>fn compose(f: impl Fn(i32) -&gt; i32, g: impl Fn(i32) -&gt; i32) -&gt; impl Fn(i32) -&gt; i32</code>.</p>
+</li>
+<li>
+<p>Make a counter: <code>fn make_counter() -&gt; impl FnMut() -&gt; u32</code> that returns 1, 2, 3…</p>
+</li>
+<li>
+<p>Remove <code>move</code> from <code>make_adder</code> and read the error.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Apply a function <code>n</code> times.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn apply_n(f: impl Fn(i32) -&gt; i32, n: usize, x: i32) -&gt; i32 {
+    todo!()
+}
+
+fn main() {
+    assert_eq!(apply_n(|v| v * 2, 3, 1), 8);
+    assert_eq!(apply_n(|v| v + 10, 0, 5), 5);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Write <code>fn make_accumulator() -&gt; impl FnMut(i32) -&gt; i32</code> that returns the running
+sum of everything passed so far. Then sort <code>["pear", "fig", "banana"]</code> by length with <code>sort_by_key</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -350,6 +373,41 @@ fn main() {
 <p><strong>3.</strong> Without <code>move</code>, the closure borrows <code>n</code>, which lives in <code>make_adder</code>’s stack frame
 and is gone when the function returns, so the compiler stops with <code>error[E0373]: closure may outlive the current function</code>, because it borrows <code>n</code>. The fix is to copy <code>n</code> into the
 closure with <code>move</code>. In C this is a function pointer that returns a pointer to a dead local.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn apply_n(f: impl Fn(i32) -&gt; i32, n: usize, x: i32) -&gt; i32 {
+    let mut acc = x;
+    for _ in 0..n {
+        acc = f(acc);
+    }
+    acc
+}
+
+fn main() {
+    assert_eq!(apply_n(|v| v * 2, 3, 1), 8);
+    assert_eq!(apply_n(|v| v + 10, 0, 5), 5);
+    println!("ok");
+}</code></pre>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn make_accumulator() -&gt; impl FnMut(i32) -&gt; i32 {
+    let mut total = 0;
+    move |x| {
+        total += x;
+        total
+    }
+}
+
+fn main() {
+    let mut acc = make_accumulator();
+    assert_eq!(acc(5), 5);
+    assert_eq!(acc(3), 8);
+
+    let mut words = ["pear", "fig", "banana"];
+    words.sort_by_key(|w| w.len());
+    assert_eq!(words, ["fig", "pear", "banana"]);
+    println!("ok");
+}</code></pre>
+<p>The closure owns <code>total</code>; it is a function plus its state, like a C callback with a
+context struct.</p>
 </details>
 
                     </main>

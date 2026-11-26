@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -283,12 +283,35 @@ synchronization in Rust.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Remove <code>mut</code> from <code>y</code> in the first example and read the error.</li>
-<li>Make <code>spaces</code> change type without shadowing, using <code>let mut</code>. What does the
-compiler say?</li>
-<li>Replace a <code>#define BUF_SIZE 256</code> with a <code>const</code> and use it as an array
-length: <code>[0u8; BUF_SIZE]</code>.</li>
+<li>
+<p>Remove <code>mut</code> from <code>y</code> in the first example and read the error.</p>
+</li>
+<li>
+<p>Make <code>spaces</code> change type without shadowing, using <code>let mut</code>. What does the
+compiler say?</p>
+</li>
+<li>
+<p>Replace a <code>#define BUF_SIZE 256</code> with a <code>const</code> and use it as an array
+length: <code>[0u8; BUF_SIZE]</code>.</p>
+</li>
+<li>
+<p><strong>Fix the code.</strong> This program does not compile. Change one thing (not the <code>assert_eq!</code>) so it
+passes.</p>
+<pre class="playground"><code class="language-rust editable compile_fail edition2024">fn main() {
+    let count = 0;
+    for i in 0..4 {
+        count += i;
+    }
+    assert_eq!(count, 6);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Define <code>const SECONDS_PER_DAY: u32</code>, use it to make an array with one slot
+per hour (<code>[0u8; 24]</code>) from a <code>const HOURS: usize</code>, and check the values with <code>assert_eq!</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> The compiler stops with <code>error[E0384]: cannot assign twice to immutable variable</code>, and its help text suggests <code>let mut y</code>. Rust’s default is the reverse of C:
@@ -306,6 +329,26 @@ fn main() {
     let buf = [0u8; BUF_SIZE];
     println!("{}", buf.len());   // 256
 }</code></pre>
+<p><strong>4.</strong> Declare the variable mutable: <code>let mut count = 0;</code>.</p>
+<pre class="playground"><code class="language-rust edition2024">fn main() {
+    let mut count = 0;
+    for i in 0..4 {
+        count += i;
+    }
+    assert_eq!(count, 6);
+    println!("ok");
+}</code></pre>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">const HOURS: usize = 24;
+const SECONDS_PER_DAY: u32 = 24 * 60 * 60;
+
+fn main() {
+    let slots = [0u8; HOURS];
+    assert_eq!(slots.len(), 24);
+    assert_eq!(SECONDS_PER_DAY, 86_400);
+    println!("ok");
+}</code></pre>
+<p>A <code>const</code> is inlined where it is used, like a <code>#define</code>, but it has a type and obeys scope.</p>
 </details>
 
                     </main>

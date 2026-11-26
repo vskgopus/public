@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -276,6 +276,45 @@ fn main() {
     }
 }</code></pre>
 <p>Forgetting <code>from_raw</code> leaks; calling it twice is a double free.</p>
+<h3 id="uninitialized-memory-maybeuninit"><a class="header" href="#uninitialized-memory-maybeuninit">Uninitialized memory: <code>MaybeUninit</code></a></h3>
+<p>Safe Rust never lets you read an uninitialized variable. When you really need a buffer
+that is filled piece by piece, such as an array built in a loop or memory handed to a C
+function, <code>MaybeUninit&lt;T&gt;</code> is the type that may hold garbage. You write each element
+first, and only then claim it is initialized:</p>
+<pre class="playground"><code class="language-rust edition2024">use std::mem::MaybeUninit;
+
+fn main() {
+    let mut arr: [MaybeUninit&lt;u32&gt;; 4] = [const { MaybeUninit::uninit() }; 4];
+    for (i, slot) in arr.iter_mut().enumerate() {
+        slot.write(i as u32 * 10);
+    }
+    // SAFETY: every element was written in the loop above.
+    let arr: [u32; 4] = unsafe { std::mem::transmute(arr) };
+    println!("{arr:?}");   // [0, 10, 20, 30]
+}</code></pre>
+<p>Calling <code>assume_init</code> (or the <code>transmute</code> above) on memory that is not fully written is
+<strong>undefined behavior</strong>, exactly like reading an uninitialized <code>int</code> in C. The safe
+alternatives (<code>[0; 4]</code>, <code>Vec::with_capacity</code> plus <code>push</code>) are almost always enough; reach
+for <code>MaybeUninit</code> when you have measured a need.</p>
+<h3 id="raw-pointers-without-references-raw"><a class="header" href="#raw-pointers-without-references-raw">Raw pointers without references: <code>&amp;raw</code></a></h3>
+<p>Creating a reference <code>&amp;x</code> promises that it is valid and aligned. Sometimes you must not
+make that promise, for example for a field of a <code>#[repr(packed)]</code> struct, which may sit at
+an odd address. <code>&amp;raw const</code> and <code>&amp;raw mut</code> produce a raw pointer directly, with no
+reference in between:</p>
+<pre class="playground"><code class="language-rust edition2024">#[repr(C, packed)]
+struct Header {
+    tag: u8,
+    len: u32,       // unaligned: bytes 1..5
+}
+
+fn main() {
+    let h = Header { tag: 1, len: 7 };
+    let p = &amp;raw const h.len;
+    // SAFETY: `p` points into `h`, which is alive; the read does not assume alignment.
+    println!("{}", unsafe { p.read_unaligned() });   // 7
+}</code></pre>
+<p>The same syntax is how you touch a <code>static mut</code> without creating a reference to it,
+which edition 2024 rejects by default.</p>
 <h2 id="side-by-side"><a class="header" href="#side-by-side">Side by side</a></h2>
 <div class="table-wrapper">
 <table>
@@ -320,13 +359,37 @@ check it in the safe wrapper.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Write <code>fn swap_raw(a: *mut i32, b: *mut i32)</code> using <code>unsafe</code>, then a safe
-wrapper <code>fn swap(a: &amp;mut i32, b: &amp;mut i32)</code> that calls it.</li>
-<li>Use <code>Box::into_raw</code> and drop the box with <code>Box::from_raw</code>. Then comment out
-<code>from_raw</code> and think about what leaked.</li>
-<li>Search the Rust source for <code>unsafe</code> in <code>Vec::push</code>‘s implementation (via
-the docs’ <code>[src]</code> link) and read the safety comments.</li>
+<li>
+<p>Write <code>fn swap_raw(a: *mut i32, b: *mut i32)</code> using <code>unsafe</code>, then a safe
+wrapper <code>fn swap(a: &amp;mut i32, b: &amp;mut i32)</code> that calls it.</p>
+</li>
+<li>
+<p>Use <code>Box::into_raw</code> and drop the box with <code>Box::from_raw</code>. Then comment out
+<code>from_raw</code> and think about what leaked.</p>
+</li>
+<li>
+<p>Search the Rust source for <code>unsafe</code> in <code>Vec::push</code>‘s implementation (via
+the docs’ <code>[src]</code> link) and read the safety comments.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Write a safe <code>read_at</code> that checks the index, then reads through a raw
+pointer inside a small <code>unsafe</code> block.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn read_at(v: &amp;[i32], i: usize) -&gt; Option&lt;i32&gt; {
+    todo!("check i &lt; v.len(), then read *v.as_ptr().add(i) inside unsafe")
+}
+
+fn main() {
+    assert_eq!(read_at(&amp;[1, 2, 3], 1), Some(2));
+    assert_eq!(read_at(&amp;[1, 2, 3], 3), None);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Build an array of the first four squares with <code>MaybeUninit</code>: write each element,
+then convert. Assert the result is <code>[0, 1, 4, 9]</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -367,6 +430,41 @@ and a leak checker such as Valgrind or Miri reports it.</p>
 element into spare capacity, after code that guarantees the capacity is large enough,
 and a comment that states that precondition. This is the pattern from this chapter: a
 small <code>unsafe</code> core with a stated contract, wrapped in a safe API.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn read_at(v: &amp;[i32], i: usize) -&gt; Option&lt;i32&gt; {
+    if i &lt; v.len() {
+        // SAFETY: `i` is in bounds, so the pointer is valid and aligned.
+        Some(unsafe { *v.as_ptr().add(i) })
+    } else {
+        None
+    }
+}
+
+fn main() {
+    assert_eq!(read_at(&amp;[1, 2, 3], 1), Some(2));
+    assert_eq!(read_at(&amp;[1, 2, 3], 3), None);
+    println!("ok");
+}</code></pre>
+<p>(<code>v.get(i).copied()</code> does all of this safely; the exercise shows the shape of a safe
+wrapper around an <code>unsafe</code> core.)</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">use std::mem::MaybeUninit;
+
+fn squares() -&gt; [u32; 4] {
+    let mut arr: [MaybeUninit&lt;u32&gt;; 4] = [const { MaybeUninit::uninit() }; 4];
+    for (i, slot) in arr.iter_mut().enumerate() {
+        slot.write((i * i) as u32);
+    }
+    // SAFETY: every element was written in the loop.
+    unsafe { std::mem::transmute(arr) }
+}
+
+fn main() {
+    assert_eq!(squares(), [0, 1, 4, 9]);
+    println!("ok");
+}</code></pre>
+<p>If the loop wrote only three elements, the <code>transmute</code> would still compile, and the
+program would have undefined behavior: that is what <code>unsafe</code> means.</p>
 </details>
 
                     </main>

@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -325,12 +325,42 @@ them only when the compiler asks.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Remove <code>&lt;'a&gt;</code> from <code>longest</code> and read the error. Which elision rule fails?</li>
-<li>Write <code>fn first&lt;'a&gt;(xs: &amp;'a [String]) -&gt; &amp;'a String</code>. Use it, then <code>drop</code> the
-vector before using the result to see the error.</li>
-<li>Give <code>Parser</code> a method <code>next_word(&amp;mut self) -&gt; Option&lt;&amp;'a str&gt;</code> that advances
-<code>pos</code> past the next space.</li>
+<li>
+<p>Remove <code>&lt;'a&gt;</code> from <code>longest</code> and read the error. Which elision rule fails?</p>
+</li>
+<li>
+<p>Write <code>fn first&lt;'a&gt;(xs: &amp;'a [String]) -&gt; &amp;'a String</code>. Use it, then <code>drop</code> the
+vector before using the result to see the error.</p>
+</li>
+<li>
+<p>Give <code>Parser</code> a method <code>next_word(&amp;mut self) -&gt; Option&lt;&amp;'a str&gt;</code> that advances
+<code>pos</code> past the next space.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Return the longest line of the text, borrowed from it (no copy).</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn longest_line&lt;'a&gt;(text: &amp;'a str) -&gt; &amp;'a str {
+    todo!("use text.lines() and max_by_key on the length")
+}
+
+fn main() {
+    assert_eq!(longest_line("a\nbbb\ncc"), "bbb");
+    assert_eq!(longest_line(""), "");
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Fix the code.</strong> This returns a reference to a local. Change the return type so it compiles.</p>
+<pre class="playground"><code class="language-rust editable compile_fail edition2024">fn greeting(name: &amp;str) -&gt; &amp;str {
+    let s = format!("hello {name}");
+    &amp;s
+}
+
+fn main() {
+    assert_eq!(greeting("ann"), "hello ann");
+}</code></pre>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> The compiler reports <code>error[E0106]: missing lifetime specifier</code>, and explains that the return type
@@ -389,6 +419,27 @@ fn main() {
     let b = p.next_word();
     println!("{a:?} {b:?} {:?}", p.next_word());   // Some("alpha") Some("beta") None
 }</code></pre>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn longest_line&lt;'a&gt;(text: &amp;'a str) -&gt; &amp;'a str {
+    text.lines().max_by_key(|l| l.len()).unwrap_or("")
+}
+
+fn main() {
+    assert_eq!(longest_line("a\nbbb\ncc"), "bbb");
+    assert_eq!(longest_line(""), "");
+    println!("ok");
+}</code></pre>
+<p>The result points into <code>text</code>, so it must not outlive it: that is what <code>'a</code> says.</p>
+<p><strong>5.</strong> Return the owned <code>String</code>, which moves out to the caller:</p>
+<pre class="playground"><code class="language-rust edition2024">fn greeting(name: &amp;str) -&gt; String {
+    format!("hello {name}")
+}
+
+fn main() {
+    assert_eq!(greeting("ann"), "hello ann");
+}</code></pre>
+<p>A reference can only point at data that outlives the call; a new value must be returned
+by value. This is the pattern C solves with a caller-supplied buffer.</p>
 </details>
 
                     </main>

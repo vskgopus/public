@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -563,13 +563,53 @@ one function at a time.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Add <code>fn push_back(&amp;mut self, val: i32)</code> to <code>List</code>. Why is it harder than
-<code>push</code>, and what would a tail pointer require? (Hint: two owners of one node.)</li>
-<li>Make <code>List&lt;T&gt;</code> generic over its element type.</li>
-<li>Make <code>wordfreq</code> take the number of lines to print from <code>std::env::args()</code>.</li>
-<li>Port a C function of your own, for example a string tokenizer, and write tests
-for the C behavior first.</li>
+<li>
+<p>Add <code>fn push_back(&amp;mut self, val: i32)</code> to <code>List</code>. Why is it harder than
+<code>push</code>, and what would a tail pointer require? (Hint: two owners of one node.)</p>
+</li>
+<li>
+<p>Make <code>List&lt;T&gt;</code> generic over its element type.</p>
+</li>
+<li>
+<p>Make <code>wordfreq</code> take the number of lines to print from <code>std::env::args()</code>.</p>
+</li>
+<li>
+<p>Port a C function of your own, for example a string tokenizer, and write tests
+for the C behavior first.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Add <code>contains</code> to a small list: walk the nodes and compare.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">struct Node {
+    val: i32,
+    next: Option&lt;Box&lt;Node&gt;&gt;,
+}
+
+struct List {
+    head: Option&lt;Box&lt;Node&gt;&gt;,
+}
+
+impl List {
+    fn push(&amp;mut self, val: i32) {
+        let node = Box::new(Node { val, next: self.head.take() });
+        self.head = Some(node);
+    }
+
+    fn contains(&amp;self, x: i32) -&gt; bool {
+        todo!("follow `next` until it is None; hint: a `while let` over `as_deref()`")
+    }
+}
+
+fn main() {
+    let mut l = List { head: None };
+    l.push(1);
+    l.push(2);
+    assert!(l.contains(1));
+    assert!(!l.contains(9));
+    println!("ok");
+}</code></pre>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> A singly linked list with only a head pointer must walk to the end to append, which is
@@ -650,6 +690,44 @@ Rust. For a tokenizer, <code>strtok</code> modifies its input and keeps hidden g
 fn main() {
     assert_eq!(tokens("a,b;;c", &amp;[',', ';']), ["a", "b", "c"]);
 }</code></pre>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">struct Node {
+    val: i32,
+    next: Option&lt;Box&lt;Node&gt;&gt;,
+}
+
+struct List {
+    head: Option&lt;Box&lt;Node&gt;&gt;,
+}
+
+impl List {
+    fn push(&amp;mut self, val: i32) {
+        let node = Box::new(Node { val, next: self.head.take() });
+        self.head = Some(node);
+    }
+
+    fn contains(&amp;self, x: i32) -&gt; bool {
+        let mut cur = self.head.as_deref();
+        while let Some(node) = cur {
+            if node.val == x {
+                return true;
+            }
+            cur = node.next.as_deref();
+        }
+        false
+    }
+}
+
+fn main() {
+    let mut l = List { head: None };
+    l.push(1);
+    l.push(2);
+    assert!(l.contains(1));
+    assert!(!l.contains(9));
+    println!("ok");
+}</code></pre>
+<p><code>as_deref()</code> turns <code>&amp;Option&lt;Box&lt;Node&gt;&gt;</code> into <code>Option&lt;&amp;Node&gt;</code>: a borrowed cursor with no
+raw pointers, like the C loop <code>for (n = head; n; n = n-&gt;next)</code>.</p>
 </details>
 
                     </main>

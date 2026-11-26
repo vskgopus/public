@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -213,7 +213,7 @@ six-section template.</p>
 <tr><td>Out-of-range float to integer conversion</td><td><strong>Defined.</strong> <code>as</code> saturates: <code>1e10 as i32</code> is <code>i32::MAX</code>, <code>-1.5 as u8</code> is <code>0</code>, and <code>NaN as i32</code> is <code>0</code></td><td>3</td></tr>
 <tr><td>Narrowing integer conversion (<code>(uint8_t)300</code>)</td><td><strong>Defined.</strong> <code>300i32 as u8</code> is <code>44</code> (truncates). Use <code>u8::try_from(x)</code> to get an error instead</td><td>3</td></tr>
 <tr><td>Implicit conversion between integer types</td><td><strong>Compile error</strong> (<code>E0308</code>). Every conversion is written out</td><td>3</td></tr>
-<tr><td>Unspecified evaluation order (<code>i = i++ + i</code>, <code>f(a(), b())</code>)</td><td><strong>Defined.</strong> Operands and arguments are evaluated left to right</td><td>Not covered</td></tr>
+<tr><td>Unspecified evaluation order (<code>i = i++ + i</code>, <code>f(a(), b())</code>)</td><td><strong>Defined.</strong> Operands and arguments are evaluated left to right</td><td>4</td></tr>
 </tbody>
 </table>
 </div>
@@ -234,7 +234,7 @@ six-section template.</p>
 <tr><td>Pointer outlives the data it points to</td><td><strong>Compile error</strong> (<code>E0597</code> does not live long enough)</td><td>9</td></tr>
 <tr><td>Writing through a <code>const</code> pointer</td><td><strong>Compile error</strong> (<code>E0594</code>). Mutation needs <code>&amp;mut</code>.</td><td>8</td></tr>
 <tr><td>Modifying a string literal</td><td><strong>Compile error.</strong> A <code>&amp;'static str</code> is immutable</td><td>9</td></tr>
-<tr><td>Strict aliasing violation (reading a <code>float</code> through an <code>int *</code>)</td><td>No type-based aliasing rule exists, so a reinterpretation through a pointer cast is not UB for that reason. Reinterpret with <code>f32::to_bits</code>, <code>from_ne_bytes</code> or <code>transmute</code> (the last is <code>unsafe</code>).</td><td>Not covered</td></tr>
+<tr><td>Strict aliasing violation (reading a <code>float</code> through an <code>int *</code>)</td><td>No type-based aliasing rule exists, so a reinterpretation through a pointer cast is not UB for that reason. Reinterpret with <code>f32::to_bits</code>, <code>from_ne_bytes</code> or <code>transmute</code> (the last is <code>unsafe</code>).</td><td>3, 12</td></tr>
 <tr><td>Overlapping <code>memcpy</code></td><td><code>ptr::copy</code> is <code>memmove</code>. <code>ptr::copy_nonoverlapping</code> is <code>memcpy</code>, and an overlap is <strong>still UB</strong>. In safe code, <code>copy_from_slice</code> panics unless lengths match, and the borrow checker rejects overlap.</td><td>12</td></tr>
 <tr><td>Misaligned pointer dereference</td><td>Safe code cannot produce one. A misaligned raw-pointer read is <strong>still UB</strong>. Use <code>read_unaligned</code> instead.</td><td>21</td></tr>
 <tr><td>Pointer arithmetic past one-past-the-end</td><td>Safe code has no pointer arithmetic. <code>ptr.add(n)</code> outside the allocation is <strong>still UB</strong>.</td><td>12</td></tr>
@@ -255,7 +255,7 @@ six-section template.</p>
 <tr><td>Integer value outside an <code>enum</code>’s range</td><td><strong>Compile error.</strong> A number does not cast to an enum (<code>E0605</code>). The only way in is <code>unsafe</code> <code>transmute</code>, and an invalid value is <strong>still UB</strong>.</td><td>6, 12</td></tr>
 <tr><td><code>bool</code> that is neither 0 nor 1</td><td><strong>Compile error</strong> (<code>E0308</code>): an integer is not a <code>bool</code>. A <code>bool</code> forged by <code>unsafe</code> code is <strong>still UB</strong>.</td><td>3</td></tr>
 <tr><td>Invalid UTF-8 treated as text</td><td><strong>Defined.</strong> <code>String::from_utf8</code> returns <code>Err</code>, and slicing inside a character panics. <code>from_utf8_unchecked</code> on invalid bytes is <strong>still UB</strong>. Indexing a <code>str</code> by integer is a compile error (<code>E0277</code>).</td><td>10</td></tr>
-<tr><td>Deep recursion overflowing the stack</td><td><strong>Defined.</strong> The process aborts with a stack overflow message.</td><td>Not covered</td></tr>
+<tr><td>Deep recursion overflowing the stack</td><td><strong>Defined.</strong> The process aborts with a stack overflow message.</td><td>4</td></tr>
 </tbody>
 </table>
 </div>
@@ -281,7 +281,7 @@ six-section template.</p>
 <tbody>
 <tr><td>Memory leak</td><td><strong>Defined, not UB.</strong> <code>mem::forget</code> and reference cycles in <code>Rc</code> are safe. The compiler does not promise to prevent a leak.</td><td>11</td></tr>
 <tr><td>Use of a closed file or freed handle</td><td><strong>Compile error.</strong> The handle was moved or dropped.</td><td>11</td></tr>
-<tr><td><code>RefCell</code> borrowed mutably twice</td><td><strong>Panic</strong> (<code>RefCell already borrowed</code>). The borrow rules move from compile time to run time.</td><td>Not covered</td></tr>
+<tr><td><code>RefCell</code> borrowed mutably twice</td><td><strong>Panic</strong> (<code>RefCell already borrowed</code>). The borrow rules move from compile time to run time.</td><td>8</td></tr>
 </tbody>
 </table>
 </div>

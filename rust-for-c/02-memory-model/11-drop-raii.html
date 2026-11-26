@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -329,12 +329,54 @@ values are never dropped.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Make <code>work</code> acquire a third resource between the others and predict the order
-of the drop messages before you run it.</li>
-<li>Create a <code>Guard</code> that prints <code>"lock"</code> in <code>new</code> and <code>"unlock"</code> in <code>drop</code>, and
-use it in a function with two <code>return</code> statements.</li>
-<li>Try <code>let x = Noisy("x"); x.drop();</code> and read the error.</li>
+<li>
+<p>Make <code>work</code> acquire a third resource between the others and predict the order
+of the drop messages before you run it.</p>
+</li>
+<li>
+<p>Create a <code>Guard</code> that prints <code>"lock"</code> in <code>new</code> and <code>"unlock"</code> in <code>drop</code>, and
+use it in a function with two <code>return</code> statements.</p>
+</li>
+<li>
+<p>Try <code>let x = Noisy("x"); x.drop();</code> and read the error.</p>
+</li>
+<li>
+<p><strong>Predict the order.</strong> Three values are dropped at the end of the block. Fill in the order,
+then run the program to check.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">use std::cell::RefCell;
+
+struct Noisy&lt;'a&gt; {
+    name: &amp;'static str,
+    log: &amp;'a RefCell&lt;Vec&lt;&amp;'static str&gt;&gt;,
+}
+
+impl Drop for Noisy&lt;'_&gt; {
+    fn drop(&amp;mut self) {
+        self.log.borrow_mut().push(self.name);
+    }
+}
+
+fn expected_order() -&gt; Vec&lt;&amp;'static str&gt; {
+    todo!("the order in which a, b and c are dropped")
+}
+
+fn main() {
+    let log = RefCell::new(Vec::new());
+    {
+        let _a = Noisy { name: "a", log: &amp;log };
+        let _b = Noisy { name: "b", log: &amp;log };
+        let _c = Noisy { name: "c", log: &amp;log };
+    }
+    assert_eq!(*log.borrow(), expected_order());
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Move a <code>Noisy</code> into a function with <code>fn finish(n: Noisy)</code>. When is it dropped:
+at the call, or at the end of <code>finish</code>? Record the order in a log and assert it.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> Locals drop in reverse order of declaration:</p>
@@ -398,6 +440,42 @@ fn main() {
     let x = Noisy("x");
     x.drop();   // error[E0040]: explicit use of destructor method
 }</code></pre>
+<p><strong>4.</strong> Locals drop in reverse order of declaration: <code>vec!["c", "b", "a"]</code>.</p>
+<pre class="playground"><code class="language-rust edition2024">fn expected_order() -&gt; Vec&lt;&amp;'static str&gt; {
+    vec!["c", "b", "a"]
+}
+
+fn main() {
+    assert_eq!(expected_order(), ["c", "b", "a"]);
+}</code></pre>
+<p>(The rest of the program is unchanged.)</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">use std::cell::RefCell;
+
+struct Noisy&lt;'a&gt; {
+    name: &amp;'static str,
+    log: &amp;'a RefCell&lt;Vec&lt;String&gt;&gt;,
+}
+
+impl Drop for Noisy&lt;'_&gt; {
+    fn drop(&amp;mut self) {
+        self.log.borrow_mut().push(format!("drop {}", self.name));
+    }
+}
+
+fn finish(n: Noisy) {
+    n.log.borrow_mut().push("in finish".to_string());
+}   // n is dropped here: the function owns it
+
+fn main() {
+    let log = RefCell::new(Vec::new());
+    let x = Noisy { name: "x", log: &amp;log };
+    finish(x);
+    log.borrow_mut().push("after finish".to_string());
+    assert_eq!(*log.borrow(), ["in finish", "drop x", "after finish"]);
+    println!("ok");
+}</code></pre>
+<p>Passing a value moves ownership, so the destructor runs when the new owner is done.</p>
 </details>
 
                     </main>

@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -177,8 +177,7 @@
                     <main>
                         <h1 id="keyword-reference"><a class="header" href="#keyword-reference">Keyword reference</a></h1>
 <p>Every Rust keyword, with the nearest C construct and the chapter that teaches
-it. “None” means C has no counterpart. “Not covered” means the book does not
-teach it; see <a href="further-reading.html">Further reading</a>.</p>
+it. “None” means C has no counterpart.</p>
 <p>This page is a lookup table, not a chapter, so it does not follow the
 six-section template.</p>
 <h2 id="strict-keywords"><a class="header" href="#strict-keywords">Strict keywords</a></h2>
@@ -191,8 +190,8 @@ six-section template.</p>
 </thead>
 <tbody>
 <tr><td><code>as</code></td><td>A cast <code>(T)x</code>, but only for primitives; also renames in <code>use</code></td><td>3, 19</td></tr>
-<tr><td><code>async</code></td><td>None (closest: a hand-written state machine)</td><td>Not covered; mentioned in 22</td></tr>
-<tr><td><code>await</code></td><td>None</td><td>Not covered</td></tr>
+<tr><td><code>async</code></td><td>None (closest: a hand-written state machine)</td><td>22</td></tr>
+<tr><td><code>await</code></td><td>None (pauses an <code>async fn</code> until a future is ready)</td><td>22</td></tr>
 <tr><td><code>break</code></td><td><code>break</code>, and it can carry a value out of <code>loop</code></td><td>5</td></tr>
 <tr><td><code>const</code></td><td><code>const</code> / <code>#define</code> constant; also <code>const fn</code> (compile-time functions)</td><td>2</td></tr>
 <tr><td><code>continue</code></td><td><code>continue</code></td><td>5</td></tr>
@@ -214,7 +213,7 @@ six-section template.</p>
 <tr><td><code>move</code></td><td><code>memcpy</code> of ownership; on closures, captures by value</td><td>7, 17</td></tr>
 <tr><td><code>mut</code></td><td>The absence of <code>const</code></td><td>2, 8</td></tr>
 <tr><td><code>pub</code></td><td>Non-<code>static</code> linkage; the opposite of <code>static</code> on a function</td><td>19</td></tr>
-<tr><td><code>ref</code></td><td>Not covered</td><td></td></tr>
+<tr><td><code>ref</code></td><td>Borrow instead of move in a pattern: <code>Some(ref s)</code></td><td>6</td></tr>
 <tr><td><code>return</code></td><td><code>return</code> (the last expression of a block is the usual way)</td><td>4</td></tr>
 <tr><td><code>self</code></td><td>The explicit <code>T *this</code> parameter of a method</td><td>13</td></tr>
 <tr><td><code>Self</code></td><td>The type being defined (no C analogue; you repeat the struct name)</td><td>13</td></tr>
@@ -247,7 +246,7 @@ variable names elsewhere.</p>
 <tbody>
 <tr><td><code>union</code></td><td><code>union Name { ... }</code></td><td><code>union</code> (reads are <code>unsafe</code>)</td><td>6, 12</td></tr>
 <tr><td><code>macro_rules</code></td><td><code>macro_rules! name { ... }</code></td><td><code>#define</code> macros, but hygienic and syntax-aware</td><td>20</td></tr>
-<tr><td><code>raw</code></td><td><code>&amp;raw const x</code>, <code>&amp;raw mut x</code></td><td><code>&amp;x</code> taken as a raw pointer directly</td><td>Not covered</td></tr>
+<tr><td><code>raw</code></td><td><code>&amp;raw const x</code>, <code>&amp;raw mut x</code></td><td><code>&amp;x</code> taken as a raw pointer directly</td><td>12</td></tr>
 <tr><td><code>safe</code></td><td><code>safe fn</code> inside <code>unsafe extern</code> blocks</td><td>None</td><td>12, 21</td></tr>
 <tr><td><code>'static</code></td><td>A lifetime name, not a keyword on its own</td><td>Storage duration of a global</td><td>9</td></tr>
 </tbody>

@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -380,12 +380,35 @@ free function.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Call <code>getpid()</code> or <code>atoi</code> from Rust through an <code>unsafe extern "C"</code> block.</li>
-<li>Declare a <code>#[repr(C)] struct Point { x: i32, y: i32 }</code> and compare its size
-with the C <code>sizeof</code>.</li>
-<li>Write a safe wrapper <code>fn c_strlen(s: &amp;str) -&gt; usize</code> around <code>strlen</code> that
-rejects interior NULs.</li>
+<li>
+<p>Call <code>getpid()</code> or <code>atoi</code> from Rust through an <code>unsafe extern "C"</code> block.</p>
+</li>
+<li>
+<p>Declare a <code>#[repr(C)] struct Point { x: i32, y: i32 }</code> and compare its size
+with the C <code>sizeof</code>.</p>
+</li>
+<li>
+<p>Write a safe wrapper <code>fn c_strlen(s: &amp;str) -&gt; usize</code> around <code>strlen</code> that
+rejects interior NULs.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Call the C library function <code>abs</code> from Rust.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn c_abs(x: i32) -&gt; i32 {
+    todo!("declare `fn abs(x: i32) -&gt; i32` in an unsafe extern \"C\" block, then call it in unsafe")
+}
+
+fn main() {
+    assert_eq!(c_abs(-5), 5);
+    assert_eq!(c_abs(7), 7);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Find the layout of this <code>#[repr(C)]</code> struct: its size, and the offset of each
+field (<code>std::mem::offset_of!</code>). Predict first, using C’s rules.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -428,6 +451,41 @@ fn main() {
     println!("{:?}", c_strlen("hello"));   // Ok(5)
     println!("{:?}", c_strlen("he\0llo")); // Err(NulError(2, ...))
 }</code></pre>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">unsafe extern "C" {
+    fn abs(x: i32) -&gt; i32;
+}
+
+fn c_abs(x: i32) -&gt; i32 {
+    // SAFETY: `abs` has no preconditions beyond a valid int.
+    unsafe { abs(x) }
+}
+
+fn main() {
+    assert_eq!(c_abs(-5), 5);
+    assert_eq!(c_abs(7), 7);
+    println!("ok");
+}</code></pre>
+<p>The wrapper hides the <code>unsafe</code> from callers. (<code>i32::abs</code> is the safe, idiomatic call; this is
+practice for functions that have no Rust version.)</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">use std::mem::{offset_of, size_of};
+
+#[repr(C)]
+struct Header {
+    a: u8,
+    b: u32,
+    c: u16,
+}
+
+fn main() {
+    assert_eq!(offset_of!(Header, a), 0);
+    assert_eq!(offset_of!(Header, b), 4);    // 3 bytes of padding after `a`
+    assert_eq!(offset_of!(Header, c), 8);
+    assert_eq!(size_of::&lt;Header&gt;(), 12);     // 2 bytes of tail padding, for alignment 4
+    println!("ok");
+}</code></pre>
+<p>These numbers are exactly what a C compiler gives for the same struct on common targets.</p>
 </details>
 
                     </main>

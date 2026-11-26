@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -283,6 +283,18 @@ fn main() {
     println!("{n}");
     Ok(())              // a returned Err prints the error and exits with code 1
 }</code></pre>
+<h3 id="naming-the-type-the-turbofish"><a class="header" href="#naming-the-type-the-turbofish">Naming the type: the turbofish</a></h3>
+<p><code>s.parse()</code> can produce any type that implements <code>FromStr</code>, so the compiler needs to know
+which one. You can annotate the result (<code>let n: u8 = s.parse()?;</code>) or name the type at the
+call with the <strong>turbofish</strong>, <code>::&lt;T&gt;</code>:</p>
+<pre class="playground"><code class="language-rust edition2024">fn main() {
+    println!("{:?}", "42".parse::&lt;u8&gt;());      // Ok(42)
+    println!("{:?}", "300".parse::&lt;u8&gt;());     // Err: number too large for u8
+    let v = [1, 2, 3].iter().map(|x| x * 2).collect::&lt;Vec&lt;i32&gt;&gt;();
+    println!("{v:?}");
+}</code></pre>
+<p>C has no equivalent, because it has no inference to guide: you pick <code>atoi</code>, <code>strtol</code> or
+<code>strtod</code> by hand.</p>
 <h2 id="side-by-side"><a class="header" href="#side-by-side">Side by side</a></h2>
 <div class="table-wrapper">
 <table>
@@ -330,12 +342,37 @@ failure means.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Write <code>fn divide(a: i32, b: i32) -&gt; Result&lt;i32, String&gt;</code> that rejects <code>b == 0</code>.</li>
-<li>Call <code>parse_sum</code> in a loop over a list of string pairs and print each
-result.</li>
-<li>Add a <code>Range</code> error variant to <code>ConfigError</code> for ports below 1024, and return
-it from <code>port</code>.</li>
+<li>
+<p>Write <code>fn divide(a: i32, b: i32) -&gt; Result&lt;i32, String&gt;</code> that rejects <code>b == 0</code>.</p>
+</li>
+<li>
+<p>Call <code>parse_sum</code> in a loop over a list of string pairs and print each
+result.</p>
+</li>
+<li>
+<p>Add a <code>Range</code> error variant to <code>ConfigError</code> for ports below 1024, and return
+it from <code>port</code>.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Parse <code>"name=5"</code> into <code>("name", 5)</code>. Use <code>split_once</code>, <code>ok_or</code>, <code>?</code> and
+<code>parse::&lt;i32&gt;()</code>.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn parse_kv(s: &amp;str) -&gt; Result&lt;(String, i32), String&gt; {
+    todo!()
+}
+
+fn main() {
+    assert_eq!(parse_kv("a=5"), Ok(("a".to_string(), 5)));
+    assert!(parse_kv("a").is_err());
+    assert!(parse_kv("a=x").is_err());
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> <code>fn first_even_square(v: &amp;[i32]) -&gt; Option&lt;i32&gt;</code> returns the square of the first
+even number, or <code>None</code>. Use <code>find</code> and <code>map</code>, no <code>if</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -391,6 +428,30 @@ fn port(value: Option&lt;&amp;str&gt;) -&gt; Result&lt;u16, ConfigError&gt; {
 fn main() {
     println!("{:?}", port(Some("8080")));   // Ok(8080)
     println!("{:?}", port(Some("80")));     // Err(Range(80))
+}</code></pre>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn parse_kv(s: &amp;str) -&gt; Result&lt;(String, i32), String&gt; {
+    let (k, v) = s.split_once('=').ok_or("missing '='")?;
+    let n = v.parse::&lt;i32&gt;().map_err(|e| format!("bad number {v:?}: {e}"))?;
+    Ok((k.to_string(), n))
+}
+
+fn main() {
+    assert_eq!(parse_kv("a=5"), Ok(("a".to_string(), 5)));
+    assert!(parse_kv("a").is_err());
+    assert!(parse_kv("a=x").is_err());
+    println!("ok");
+}</code></pre>
+<p><code>?</code> converts the <code>&amp;str</code> error from <code>ok_or</code> into a <code>String</code> through <code>From</code>.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn first_even_square(v: &amp;[i32]) -&gt; Option&lt;i32&gt; {
+    v.iter().find(|&amp;&amp;x| x % 2 == 0).map(|x| x * x)
+}
+
+fn main() {
+    assert_eq!(first_even_square(&amp;[3, 5, 4, 6]), Some(16));
+    assert_eq!(first_even_square(&amp;[1, 3]), None);
+    println!("ok");
 }</code></pre>
 </details>
 

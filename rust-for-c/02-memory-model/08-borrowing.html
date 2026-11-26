@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -263,6 +263,37 @@ fine:</p>
     v.push(4);                     // fine now
     println!("{v:?}");
 }</code></pre>
+<h3 id="checking-at-run-time-cell-and-refcell"><a class="header" href="#checking-at-run-time-cell-and-refcell">Checking at run time: <code>Cell</code> and <code>RefCell</code></a></h3>
+<p>The borrow rules are checked at compile time, and some programs need them checked at
+<strong>run time</strong> instead, for example a shared counter or log that several closures update.
+<code>Cell&lt;T&gt;</code> and <code>RefCell&lt;T&gt;</code> allow mutation through a shared reference (this is called
+<strong>interior mutability</strong>). <code>Cell</code> copies values in and out; <code>RefCell</code> hands out guards
+and counts them:</p>
+<pre class="playground"><code class="language-rust edition2024">use std::cell::{Cell, RefCell};
+
+fn main() {
+    let hits = Cell::new(0);
+    let log = RefCell::new(Vec::new());
+    let record = |s: &amp;str| {
+        hits.set(hits.get() + 1);                   // mutates through a shared reference
+        log.borrow_mut().push(s.to_string());
+    };
+    record("a");
+    record("b");
+    println!("{} {:?}", hits.get(), log.borrow());   // 2 ["a", "b"]
+}</code></pre>
+<p><code>RefCell</code> keeps the same rules (many readers or one writer) but enforces them when the
+program runs. Breaking them is a <strong>panic</strong>, not undefined behavior:</p>
+<pre class="playground"><code class="language-rust should_panic edition2024">use std::cell::RefCell;
+
+fn main() {
+    let c = RefCell::new(1);
+    let _a = c.borrow_mut();
+    let _b = c.borrow_mut();   // panics: RefCell already borrowed
+}</code></pre>
+<p><code>try_borrow_mut</code> returns a <code>Result</code> instead of panicking. Prefer ordinary <code>&amp;mut</code> when you
+can, because it costs nothing and is checked by the compiler. A <code>RefCell</code> is not safe to
+share between threads (it is not <code>Sync</code>); chapter 22 uses <code>Mutex</code> for that.</p>
 <h2 id="side-by-side"><a class="header" href="#side-by-side">Side by side</a></h2>
 <div class="table-wrapper">
 <table>
@@ -304,12 +335,53 @@ message; it names the two conflicting uses.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Write <code>fn swap(a: &amp;mut i32, b: &amp;mut i32)</code> and call it <code>swap(&amp;mut x, &amp;mut y)</code>.
-Then try <code>swap(&amp;mut x, &amp;mut x)</code> and read the error. What does C let you do?</li>
-<li>Make the <code>push</code>-while-borrowed example compile by moving the <code>println!</code> first.</li>
-<li>Write <code>fn longest_len(v: &amp;Vec&lt;String&gt;) -&gt; usize</code> and call it twice in a row
-without cloning.</li>
+<li>
+<p>Write <code>fn swap(a: &amp;mut i32, b: &amp;mut i32)</code> and call it <code>swap(&amp;mut x, &amp;mut y)</code>.
+Then try <code>swap(&amp;mut x, &amp;mut x)</code> and read the error. What does C let you do?</p>
+</li>
+<li>
+<p>Make the <code>push</code>-while-borrowed example compile by moving the <code>println!</code> first.</p>
+</li>
+<li>
+<p>Write <code>fn longest_len(v: &amp;Vec&lt;String&gt;) -&gt; usize</code> and call it twice in a row
+without cloning.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> A <code>Cell</code> lets a method change a field through <code>&amp;self</code>. Finish <code>hit</code>.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">use std::cell::Cell;
+
+struct Counter {
+    hits: Cell&lt;u32&gt;,
+}
+
+impl Counter {
+    fn hit(&amp;self) {
+        todo!("add 1 to self.hits using get and set")
+    }
+}
+
+fn main() {
+    let c = Counter { hits: Cell::new(0) };
+    c.hit();
+    c.hit();
+    assert_eq!(c.hits.get(), 2);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Fix the code.</strong> Two mutable borrows of <code>v</code> overlap. Reorder the lines so the program compiles
+and the assertion holds.</p>
+<pre class="playground"><code class="language-rust editable compile_fail edition2024">fn main() {
+    let mut v = vec![1];
+    let a = &amp;mut v;
+    let b = &amp;mut v;
+    a.push(2);
+    b.push(3);
+    assert_eq!(v, [1, 2, 3]);
+}</code></pre>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -357,6 +429,36 @@ fn main() {
     println!("{}", longest_len(&amp;v));   // 3: the shared borrow ended, no clone needed
 }</code></pre>
 <p>Idiomatic Rust takes <code>&amp;[String]</code> instead of <code>&amp;Vec&lt;String&gt;</code>, which accepts both.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">use std::cell::Cell;
+
+struct Counter {
+    hits: Cell&lt;u32&gt;,
+}
+
+impl Counter {
+    fn hit(&amp;self) {
+        self.hits.set(self.hits.get() + 1);
+    }
+}
+
+fn main() {
+    let c = Counter { hits: Cell::new(0) };
+    c.hit();
+    c.hit();
+    assert_eq!(c.hits.get(), 2);
+    println!("ok");
+}</code></pre>
+<p><strong>5.</strong> Finish with the first borrow before taking the second:</p>
+<pre class="playground"><code class="language-rust edition2024">fn main() {
+    let mut v = vec![1];
+    let a = &amp;mut v;
+    a.push(2);            // last use of `a`
+    let b = &amp;mut v;       // a new, non-overlapping borrow
+    b.push(3);
+    assert_eq!(v, [1, 2, 3]);
+}</code></pre>
+<p>A borrow lasts only until its last use, so no extra braces are needed.</p>
 </details>
 
                     </main>

@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -322,6 +322,21 @@ fn main() {
 <p>This is the C convention <code>counter_new()</code>, <code>counter_bump(struct counter *c)</code>,
 with the naming and the pointer argument built into the language. Chapter 13
 covers it fully.</p>
+<h3 id="binding-by-reference-with-ref"><a class="header" href="#binding-by-reference-with-ref">Binding by reference with <code>ref</code></a></h3>
+<p>Matching on a value moves non-<code>Copy</code> data out of it. Putting <code>ref</code> in front of a binding
+borrows that part instead, so the original stays usable:</p>
+<pre class="playground"><code class="language-rust edition2024">fn main() {
+    let opt = Some(String::from("hi"));
+    match opt {
+        Some(ref s) =&gt; println!("{s} {}", s.len()),   // s is a &amp;String
+        None =&gt; {}
+    }
+    println!("{opt:?}");          // still usable: nothing was moved
+}</code></pre>
+<p>Use <code>ref mut</code> to borrow mutably. Most code does not need either: matching on a reference
+(<code>match &amp;opt { Some(s) =&gt; ... }</code> or <code>if let Some(s) = &amp;opt</code>) borrows the same way, and
+since edition 2024 you may not write <code>ref</code> inside a pattern that already matches through
+a reference. Read <code>ref</code> when you meet it in older code; write <code>&amp;</code> yourself.</p>
 <h2 id="side-by-side"><a class="header" href="#side-by-side">Side by side</a></h2>
 <div class="table-wrapper">
 <table>
@@ -379,12 +394,50 @@ Chapter 14 builds on this.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Write <code>fn largest(xs: &amp;[i32]) -&gt; Option&lt;i32&gt;</code> that returns <code>None</code> for an empty
-slice. Why can the C version not do this?</li>
-<li>Add a <code>Triangle { base, height }</code> variant to <code>Shape</code> and observe the compile
-error in <code>area</code>.</li>
-<li>Run the layout example. Reorder the <code>CLayout</code> fields to shrink it, and compare.</li>
+<li>
+<p>Write <code>fn largest(xs: &amp;[i32]) -&gt; Option&lt;i32&gt;</code> that returns <code>None</code> for an empty
+slice. Why can the C version not do this?</p>
+</li>
+<li>
+<p>Add a <code>Triangle { base, height }</code> variant to <code>Shape</code> and observe the compile
+error in <code>area</code>.</p>
+</li>
+<li>
+<p>Run the layout example. Reorder the <code>CLayout</code> fields to shrink it, and compare.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Finish <code>perimeter</code> for each shape.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">use std::f64::consts::PI;
+
+enum Shape {
+    Circle(f64),
+    Rect(f64, f64),
+}
+
+fn perimeter(s: &amp;Shape) -&gt; f64 {
+    todo!("match on s")
+}
+
+fn main() {
+    assert_eq!(perimeter(&amp;Shape::Rect(2.0, 3.0)), 10.0);
+    assert!((perimeter(&amp;Shape::Circle(1.0)) - 2.0 * PI).abs() &lt; 1e-9);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Borrow in a pattern.</strong> This <code>match</code> moves the <code>String</code> out of <code>opt</code>, so <code>opt</code> cannot be
+printed afterwards. Make it compile with <code>ref</code>, then again by matching on <code>&amp;opt</code>.</p>
+<pre class="playground"><code class="language-rust editable compile_fail edition2024">fn main() {
+    let opt = Some(String::from("hi"));
+    match opt {
+        Some(s) =&gt; println!("{s}"),
+        None =&gt; {}
+    }
+    println!("{opt:?}");
+}</code></pre>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -432,6 +485,41 @@ fn main() {
     println!("{} {}", size_of::&lt;CLayout&gt;(), size_of::&lt;Shrunk&gt;());   // 12 8
 }</code></pre>
 <p>A plain Rust struct (without <code>#[repr(C)]</code>) is free to reorder fields and does this for you.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">use std::f64::consts::PI;
+
+enum Shape {
+    Circle(f64),
+    Rect(f64, f64),
+}
+
+fn perimeter(s: &amp;Shape) -&gt; f64 {
+    match s {
+        Shape::Circle(r) =&gt; 2.0 * PI * r,
+        Shape::Rect(w, h) =&gt; 2.0 * (w + h),
+    }
+}
+
+fn main() {
+    assert_eq!(perimeter(&amp;Shape::Rect(2.0, 3.0)), 10.0);
+    assert!((perimeter(&amp;Shape::Circle(1.0)) - 2.0 * PI).abs() &lt; 1e-9);
+    println!("ok");
+}</code></pre>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn main() {
+    let opt = Some(String::from("hi"));
+    match opt {
+        Some(ref s) =&gt; println!("{s}"),     // borrow with `ref`
+        None =&gt; {}
+    }
+    println!("{opt:?}");
+
+    match &amp;opt {
+        Some(s) =&gt; println!("{s}"),         // the modern spelling: match a reference
+        None =&gt; {}
+    }
+    println!("{opt:?}");
+}</code></pre>
 </details>
 
                     </main>

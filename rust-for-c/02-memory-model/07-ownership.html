@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -295,13 +295,37 @@ deliberately.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Make the <code>compile_fail</code> example work in two different ways: by cloning, and
-by borrowing (<code>let b = &amp;a;</code>).</li>
-<li>Write <code>fn append_world(mut s: String) -&gt; String</code> that takes ownership,
-appends <code>" world"</code> with <code>push_str</code>, and returns it.</li>
-<li>Why does <code>let t = (String::from("a"), 5); let u = t;</code> make <code>t</code> unusable, but a
-<code>(i32, i32)</code> stays usable?</li>
+<li>
+<p>Make the <code>compile_fail</code> example work in two different ways: by cloning, and
+by borrowing (<code>let b = &amp;a;</code>).</p>
+</li>
+<li>
+<p>Write <code>fn append_world(mut s: String) -&gt; String</code> that takes ownership,
+appends <code>" world"</code> with <code>push_str</code>, and returns it.</p>
+</li>
+<li>
+<p>Why does <code>let t = (String::from("a"), 5); let u = t;</code> make <code>t</code> unusable, but a
+<code>(i32, i32)</code> stays usable?</p>
+</li>
+<li>
+<p><strong>Fix the code.</strong> <code>consume</code> takes ownership of the string, so <code>name</code> is gone afterwards. Fix it
+two ways: by cloning at the call, and by changing <code>consume</code> to borrow.</p>
+<pre class="playground"><code class="language-rust editable compile_fail edition2024">fn consume(s: String) -&gt; usize {
+    s.len()
+}
+
+fn main() {
+    let name = String::from("ferris");
+    let n = consume(name);
+    println!("{n} {name}");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Write <code>fn longer(a: String, b: String) -&gt; String</code> that consumes both and returns
+the longer one (the first if they are equal). Explain why no <code>clone</code> is needed.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> Both fixes keep <code>a</code> usable:</p>
@@ -334,6 +358,34 @@ owners of one buffer (a double free in C). The tuple <code>(String, i32)</code> 
 }</code></pre>
 <p><code>(i32, i32)</code> owns nothing, so a bitwise copy is complete. Such types implement <code>Copy</code>,
 and <code>let u = t;</code> leaves <code>t</code> usable.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn consume(s: String) -&gt; usize {
+    s.len()
+}
+
+fn borrow(s: &amp;str) -&gt; usize {
+    s.len()
+}
+
+fn main() {
+    let name = String::from("ferris");
+    let a = consume(name.clone());     // fix 1: hand over a copy
+    let b = borrow(&amp;name);             // fix 2: lend instead of give
+    println!("{a} {b} {name}");
+}</code></pre>
+<p>Prefer fix 2 whenever the function only reads: no allocation, and <code>name</code> stays untouched.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn longer(a: String, b: String) -&gt; String {
+    if b.len() &gt; a.len() { b } else { a }
+}
+
+fn main() {
+    assert_eq!(longer("hi".to_string(), "hello".to_string()), "hello");
+    assert_eq!(longer("ab".to_string(), "cd".to_string()), "ab");
+    println!("ok");
+}</code></pre>
+<p>Each argument is moved in, so the function owns both and may return either. The one not
+returned is dropped (freed) at the end of the function.</p>
 </details>
 
                     </main>

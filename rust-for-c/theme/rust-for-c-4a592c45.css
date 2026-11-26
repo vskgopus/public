@@ -100,6 +100,14 @@ html { scroll-behavior: smooth; }
 .content pre:has(> code.language-rust.should_panic)::after {
   content: "PANICS"; color: #b45309; background: rgba(180, 83, 9, .12);
 }
+/* Starter code the reader completes: editable and expected to fail until finished */
+.content pre:has(> code.language-rust.should_panic.editable) { border-left-color: #7c3aed; }
+.content pre:has(> code.language-rust.should_panic.editable)::after {
+  content: "YOUR TURN"; color: #7c3aed; background: rgba(124, 58, 237, .12);
+}
+.content pre:has(> code.language-rust.editable:not(.should_panic):not(.compile_fail))::after {
+  content: "TRY IT";
+}
 
 /* inline code */
 .content :not(pre) > code {

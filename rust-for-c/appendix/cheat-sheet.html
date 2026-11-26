@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -214,6 +214,7 @@ six-section template.</p>
 <tr><td><code>INT_MAX</code></td><td><code>i32::MAX</code></td><td>3</td></tr>
 <tr><td><code>__builtin_add_overflow</code></td><td><code>checked_add</code>, <code>overflowing_add</code></td><td>3</td></tr>
 <tr><td><code>sizeof(T)</code></td><td><code>std::mem::size_of::&lt;T&gt;()</code></td><td>3</td></tr>
+<tr><td><code>*(uint32_t *)&amp;f</code> (type pun)</td><td><code>f.to_bits()</code>, <code>f32::from_bits(u)</code></td><td>3</td></tr>
 <tr><td><code>int f(int a)</code></td><td><code>fn f(a: i32) -&gt; i32</code></td><td>4</td></tr>
 <tr><td><code>int (*fp)(int)</code></td><td><code>fn(i32) -&gt; i32</code></td><td>4</td></tr>
 <tr><td>out-parameter <code>int *out</code></td><td>return a tuple or a struct</td><td>4</td></tr>
@@ -270,6 +271,8 @@ six-section template.</p>
 <tr><td><code>goto cleanup</code> ladder</td><td>locals dropped automatically</td><td>11</td></tr>
 <tr><td><code>__attribute__((cleanup(fn)))</code></td><td><code>impl Drop</code></td><td>11</td></tr>
 <tr><td><code>pthread_mutex_unlock</code> on every path</td><td><code>MutexGuard</code> dropped</td><td>11</td></tr>
+<tr><td>mutate behind a <code>const</code> pointer (counters, caches)</td><td><code>Cell&lt;T&gt;</code> / <code>RefCell&lt;T&gt;</code></td><td>8</td></tr>
+<tr><td>buffer filled piece by piece</td><td><code>MaybeUninit&lt;T&gt;</code></td><td>12</td></tr>
 <tr><td><code>int *p</code></td><td><code>*mut i32</code> / <code>*const i32</code></td><td>12</td></tr>
 <tr><td><code>p + i</code></td><td><code>p.add(i)</code> (unsafe, counts elements)</td><td>12</td></tr>
 <tr><td><code>memcpy</code></td><td><code>ptr::copy_nonoverlapping</code> (unsafe)</td><td>12</td></tr>
@@ -329,6 +332,7 @@ six-section template.</p>
 <tr><td><code>_Atomic int</code>, <code>atomic_fetch_add</code></td><td><code>AtomicI32</code>, <code>fetch_add</code></td><td>22</td></tr>
 <tr><td>pipe or queue plus a lock</td><td><code>mpsc::channel</code></td><td>22</td></tr>
 <tr><td>shared pointer with a refcount</td><td><code>Arc&lt;T&gt;</code></td><td>22</td></tr>
+<tr><td>event loop built from state machines</td><td><code>async fn</code> and <code>.await</code></td><td>22</td></tr>
 <tr><td><code>-ffreestanding -nostdlib</code></td><td><code>#![no_std]</code></td><td>23</td></tr>
 <tr><td><code>volatile uint32_t *</code></td><td><code>read_volatile</code> / <code>write_volatile</code></td><td>23</td></tr>
 <tr><td><code>assert</code> handler, <code>abort()</code></td><td><code>#[panic_handler]</code></td><td>23</td></tr>

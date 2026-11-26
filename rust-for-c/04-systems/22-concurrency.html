@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -331,6 +331,44 @@ fn main() {
     got.sort();
     println!("{got:?}");                           // [0, 10, 20]
 }</code></pre>
+<h3 id="async-and-await"><a class="header" href="#async-and-await"><code>async</code> and <code>await</code></a></h3>
+<p>Threads are not the only way to wait for many things at once. An <code>async fn</code> returns a
+<strong>future</strong>: a value describing a computation that has not run yet, compiled into a state
+machine, much like the hand-written one a C event loop uses. <code>.await</code> pauses the
+function until the awaited future is ready. Nothing runs until something <strong>polls</strong> the
+future, and the standard library ships no scheduler: a crate such as <code>tokio</code> provides
+one. To show there is no magic, here is a complete executor for futures that never
+block:</p>
+<pre class="playground"><code class="language-rust edition2024">use std::future::Future;
+use std::pin::pin;
+use std::task::{Context, Poll, Waker};
+
+async fn add(a: i32, b: i32) -&gt; i32 {
+    a + b
+}
+
+async fn sum() -&gt; i32 {
+    add(1, 2).await + add(3, 4).await
+}
+
+fn block_on&lt;F: Future&gt;(f: F) -&gt; F::Output {
+    let mut f = pin!(f);                       // a future must not move once polled
+    let mut cx = Context::from_waker(Waker::noop());
+    loop {
+        if let Poll::Ready(v) = f.as_mut().poll(&amp;mut cx) {
+            return v;
+        }
+    }
+}
+
+fn main() {
+    println!("{}", block_on(sum()));          // 10
+}</code></pre>
+<p><code>pin!</code> fixes the future in place, because a state machine may hold pointers into itself;
+that is what the standard library’s <code>Pin</code> type guarantees. A real executor also parks the
+thread until a <code>Waker</code> says the future can make progress, instead of spinning as this
+one does. Use async for programs with very many mostly idle connections; ordinary threads
+(this chapter) are simpler and enough for most work.</p>
 <h2 id="side-by-side"><a class="header" href="#side-by-side">Side by side</a></h2>
 <div class="table-wrapper">
 <table>
@@ -372,11 +410,37 @@ last owner goes away; <code>Rc</code> does the same non-atomically and is cheape
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Remove <code>move</code> from the <code>spawn</code> in the first example and read the error.</li>
-<li>Replace the <code>Mutex</code> counter with <code>AtomicUsize</code> and compare the code.</li>
-<li>Write a producer thread sending 1..=5 over a channel and a consumer that sums
-them.</li>
+<li>
+<p>Remove <code>move</code> from the <code>spawn</code> in the first example and read the error.</p>
+</li>
+<li>
+<p>Replace the <code>Mutex</code> counter with <code>AtomicUsize</code> and compare the code.</p>
+</li>
+<li>
+<p>Write a producer thread sending 1..=5 over a channel and a consumer that sums
+them.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Sum a vector on two threads: split it in half, sum each half in its own
+thread, and add the results.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">use std::thread;
+
+fn parallel_sum(mut data: Vec&lt;u32&gt;) -&gt; u32 {
+    todo!("split_off, thread::spawn(move || ...) twice, join both")
+}
+
+fn main() {
+    let data: Vec&lt;u32&gt; = (1..=100).collect();
+    assert_eq!(parallel_sum(data), 5050);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Using the <code>block_on</code> function from the <code>async</code> section above, write
+<code>async fn total() -&gt; i32</code> that awaits <code>add(1, 2)</code>, <code>add(3, 4)</code> and <code>add(5, 6)</code> and returns the sum.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> Without <code>move</code> the closure borrows a local variable, and the thread may outlive that
@@ -421,6 +485,49 @@ fn main() {
     let sum: i32 = rx.iter().sum();   // ends when the channel closes
     producer.join().unwrap();
     println!("{sum}");                // 15
+}</code></pre>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">use std::thread;
+
+fn parallel_sum(mut data: Vec&lt;u32&gt;) -&gt; u32 {
+    let right = data.split_off(data.len() / 2);
+    let h1 = thread::spawn(move || data.iter().sum::&lt;u32&gt;());
+    let h2 = thread::spawn(move || right.iter().sum::&lt;u32&gt;());
+    h1.join().unwrap() + h2.join().unwrap()
+}
+
+fn main() {
+    let data: Vec&lt;u32&gt; = (1..=100).collect();
+    assert_eq!(parallel_sum(data), 5050);
+    println!("ok");
+}</code></pre>
+<p>Each half is moved into its thread, so there is no shared data and no lock.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">use std::future::Future;
+use std::pin::pin;
+use std::task::{Context, Poll, Waker};
+
+async fn add(a: i32, b: i32) -&gt; i32 {
+    a + b
+}
+
+async fn total() -&gt; i32 {
+    add(1, 2).await + add(3, 4).await + add(5, 6).await
+}
+
+fn block_on&lt;F: Future&gt;(f: F) -&gt; F::Output {
+    let mut f = pin!(f);
+    let mut cx = Context::from_waker(Waker::noop());
+    loop {
+        if let Poll::Ready(v) = f.as_mut().poll(&amp;mut cx) {
+            return v;
+        }
+    }
+}
+
+fn main() {
+    assert_eq!(block_on(total()), 21);
+    println!("ok");
 }</code></pre>
 </details>
 

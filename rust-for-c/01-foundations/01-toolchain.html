@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -253,13 +253,34 @@ the <em>prelude</em>; the rest comes in with <code>use</code>.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Run <code>cargo new hello</code> and <code>cargo run</code>. Then add <code>let unused = 5;</code> to <code>main</code>
-and read the warning.</li>
-<li>Compare <code>cargo build</code> and <code>cargo build --release</code>: where do the binaries go,
-and how big are they?</li>
-<li>Paste the hello program into Compiler Explorer next to the C version and
-compare the generated code.</li>
+<li>
+<p>Run <code>cargo new hello</code> and <code>cargo run</code>. Then add <code>let unused = 5;</code> to <code>main</code>
+and read the warning.</p>
+</li>
+<li>
+<p>Compare <code>cargo build</code> and <code>cargo build --release</code>: where do the binaries go,
+and how big are they?</p>
+</li>
+<li>
+<p>Paste the hello program into Compiler Explorer next to the C version and
+compare the generated code.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Count the command-line arguments with <code>std::env::args()</code>. Replace the
+<code>todo!</code> and press <strong>Run</strong>; the check passes when you are right. (The playground passes no
+arguments, so the count is 1: the program name.)</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn main() {
+    let n: usize = todo!("count the arguments");
+    assert_eq!(n, 1);
+    println!("ok: {n}");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> In a new project (<code>cargo new calc</code>), write <code>fn add(a: i32, b: i32) -&gt; i32</code> and
+two <code>#[test]</code> functions for it. Run <code>cargo test</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> The build prints a warning, and the program still runs:</p>
@@ -280,6 +301,38 @@ against <code>gcc -O2</code>.</p>
 see: Rust’s <code>println!</code> expands to a call into the standard library’s formatting
 machinery instead of <code>printf</code>, and a debug build keeps the overflow checks that
 release removes (chapter 3).</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn main() {
+    let n: usize = std::env::args().count();
+    assert_eq!(n, 1);
+    println!("ok: {n}");
+}</code></pre>
+<p><code>args()</code> is an iterator, and the first item is the program name, as <code>argv[0]</code> is in C.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn add(a: i32, b: i32) -&gt; i32 {
+    a + b
+}
+
+fn main() {
+    println!("{}", add(2, 3));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn adds_positive() {
+        assert_eq!(add(2, 3), 5);
+    }
+
+    #[test]
+    fn adds_negative() {
+        assert_eq!(add(-2, -3), -5);
+    }
+}</code></pre>
+<p><code>cargo test</code> prints <code>test result: ok. 2 passed</code>. Tests live next to the code and need no
+separate harness or makefile target.</p>
 </details>
 
                     </main>

@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -266,6 +266,34 @@ fn main() {
     println!("{}", apply(f, 21));      // 42
 }</code></pre>
 <p>Closures, which can capture variables, come in chapter 17.</p>
+<h3 id="evaluation-order-and-recursion-depth"><a class="header" href="#evaluation-order-and-recursion-depth">Evaluation order and recursion depth</a></h3>
+<p>C leaves the order of evaluation of operands and function arguments unspecified, so
+<code>f(a(), b())</code> may call <code>b</code> first, and <code>i = i++ + i</code> is undefined. Rust evaluates
+operands and arguments <strong>left to right</strong>, always:</p>
+<pre class="playground"><code class="language-rust edition2024">fn say(s: &amp;str, n: i32) -&gt; i32 {
+    print!("{s} ");
+    n
+}
+
+fn main() {
+    let x = say("a", 1) + say("b", 2) * say("c", 3);
+    println!("= {x}");     // prints: a b c = 7
+}</code></pre>
+<p>The <code>*</code> binds tighter, but the three calls still happen in the order they are written.</p>
+<p>Recursion works as in C, with one caution: Rust does not promise tail-call
+optimization, so a recursion that is too deep uses up the thread’s stack. That is not
+undefined behavior. The runtime detects it and aborts the process:</p>
+<pre class="playground"><code class="language-rust no_run edition2024">fn depth(n: u64) -&gt; u64 {
+    if n == 0 { 0 } else { 1 + depth(n - 1) }
+}
+
+fn main() {
+    println!("{}", depth(100_000_000));
+}
+// thread 'main' has overflowed its stack
+// fatal runtime error: stack overflow, aborting</code></pre>
+<p>When a recursion can be deep, write it as a loop (chapter 25 does this for dropping a long
+list).</p>
 <h2 id="side-by-side"><a class="header" href="#side-by-side">Side by side</a></h2>
 <div class="table-wrapper">
 <table>
@@ -307,12 +335,41 @@ end of every function.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Write <code>fn min_max(a: i32, b: i32) -&gt; (i32, i32)</code> and call it with a
-destructuring <code>let</code>.</li>
-<li>Add a stray <code>;</code> after the last expression of a function returning <code>i32</code> and
-read the two-part error.</li>
-<li>Write <code>fn compose(f: fn(i32) -&gt; i32, g: fn(i32) -&gt; i32, x: i32) -&gt; i32</code>.</li>
+<li>
+<p>Write <code>fn min_max(a: i32, b: i32) -&gt; (i32, i32)</code> and call it with a
+destructuring <code>let</code>.</p>
+</li>
+<li>
+<p>Add a stray <code>;</code> after the last expression of a function returning <code>i32</code> and
+read the two-part error.</p>
+</li>
+<li>
+<p>Write <code>fn compose(f: fn(i32) -&gt; i32, g: fn(i32) -&gt; i32, x: i32) -&gt; i32</code>.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Write Euclid’s algorithm.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn gcd(a: u64, b: u64) -&gt; u64 {
+    todo!("loop while b != 0: (a, b) = (b, a % b)")
+}
+
+fn main() {
+    assert_eq!(gcd(12, 18), 6);
+    assert_eq!(gcd(17, 5), 1);
+    assert_eq!(gcd(0, 9), 9);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Write a recursive <code>fn factorial(n: u64) -&gt; Option&lt;u64&gt;</code> that returns <code>None</code>
+instead of overflowing (use <code>checked_mul</code>). Check that <code>factorial(20)</code> works and
+<code>factorial(21)</code> is <code>None</code>.</p>
+</li>
+<li>
+<p><strong>Predict the order.</strong> The function <code>say(s, n)</code> prints <code>s</code> and returns <code>n</code>. In what order does
+<code>say("a", 1) + say("b", 2) * say("c", 3)</code> print? Does <code>f(say("x", 1), say("y", 2))</code> differ?</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -345,6 +402,40 @@ fn inc(x: i32) -&gt; i32 { x + 1 }
 fn main() {
     println!("{}", compose(double, inc, 5));   // 11
 }</code></pre>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn gcd(mut a: u64, mut b: u64) -&gt; u64 {
+    while b != 0 {
+        (a, b) = (b, a % b);
+    }
+    a
+}
+
+fn main() {
+    assert_eq!(gcd(12, 18), 6);
+    assert_eq!(gcd(17, 5), 1);
+    assert_eq!(gcd(0, 9), 9);
+    println!("ok");
+}</code></pre>
+<p><code>mut a</code> in the parameter list makes the local copy mutable; the caller’s values are not
+affected.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn factorial(n: u64) -&gt; Option&lt;u64&gt; {
+    if n == 0 {
+        return Some(1);
+    }
+    factorial(n - 1)?.checked_mul(n)
+}
+
+fn main() {
+    assert_eq!(factorial(20), Some(2_432_902_008_176_640_000));
+    assert_eq!(factorial(21), None);
+    println!("ok");
+}</code></pre>
+<p>The <code>?</code> returns <code>None</code> early when the recursive call fails. A C version would silently wrap
+(for unsigned) or invoke undefined behavior (for signed).</p>
+<p><strong>6.</strong> Both print left to right: <code>a b c</code> and <code>x y</code>. Rust fixes the order of evaluation of operands and
+arguments, whereas C leaves it unspecified. Precedence (<code>*</code> before <code>+</code>) decides how the
+results combine, not when each call happens.</p>
 </details>
 
                     </main>

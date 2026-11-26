@@ -29,7 +29,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-62f66b31.js"></script>
+        <script src="toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -189,9 +189,10 @@ hazard that pattern carries, and what Rust does instead.</p>
 
 </div>
 
-<p>25 chapters, one capstone, five reference appendices, and a collapsible solution under
+<p>25 chapters, one capstone, five reference appendices, and a worked solution for
 every exercise. Start with <a href="#toolchain-cargo-vs-ccmake">the toolchain</a>, or jump
-to the part you need.</p>
+to the part you need. Prefer paper? <a href="rust-for-c.pdf">Download the PDF</a>, or use
+<a href="#try-it-yourself">Try it yourself</a> to write and run your own code.</p>
 <div class="rc-grid">
 <div class="rc-card">
 <p class="rc-num">Phase 1 · Chapters 1-6</p>
@@ -283,6 +284,103 @@ int main(void) {
 </tbody>
 </table>
 </div>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="try-it-yourself"><a class="header" href="#try-it-yourself">Try it yourself</a></h1>
+<p>A place to write, compile and run Rust without leaving the book. Edit any block below
+and press <strong>Run</strong> (the triangle that appears when you hover over the code). The code is
+sent to the <a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2024">Rust Playground</a>,
+compiled with stable Rust (edition 2024), and the output or the compiler’s error appears
+under the block. The <strong>undo</strong> button restores the original text.</p>
+<h2 id="a-blank-page"><a class="header" href="#a-blank-page">A blank page</a></h2>
+<pre class="playground"><code class="language-rust editable edition2024">fn main() {
+    println!("Hello from my own code!");
+}</code></pre>
+<p>Try breaking it on purpose: delete a semicolon, rename a variable on one line only, or
+call <code>.push()</code> on a <code>Vec</code> that was not declared <code>mut</code>. Reading the compiler’s message is
+a skill worth practicing here, where nothing is at stake.</p>
+<h2 id="a-self-checking-page"><a class="header" href="#a-self-checking-page">A self-checking page</a></h2>
+<p>Write the function body, press <strong>Run</strong>, and the checks tell you whether it is right. A
+failed check stops the program with a message that shows the expected and the actual
+value.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn is_leap_year(year: u32) -&gt; bool {
+    // Replace this with your own code.
+    false
+}
+
+fn main() {
+    assert!(is_leap_year(2024));
+    assert!(!is_leap_year(1900));
+    assert!(is_leap_year(2000));
+    assert_eq!(is_leap_year(2023), false);
+    println!("all checks passed");
+}</code></pre>
+<p>The same pattern works for any function: write a few <code>assert!</code> and <code>assert_eq!</code> lines in
+<code>main</code> first, as a C programmer would write a small driver with <code>assert()</code>, then fill in
+the function until they pass.</p>
+<h2 id="a-page-with-real-tests"><a class="header" href="#a-page-with-real-tests">A page with real tests</a></h2>
+<p>Rust has unit tests built in. A function marked <code>#[test]</code> runs only in test mode, and a
+<code>#[cfg(test)]</code> module is left out of normal builds. In the full Playground, open the
+<strong>Run</strong> menu and choose <strong>Test</strong>. On your own machine, run <code>cargo test</code>. (The <strong>Run</strong>
+button in this book runs <code>main</code>, not the tests.)</p>
+<pre class="playground"><code class="language-rust editable edition2024">fn clamp(x: i32, lo: i32, hi: i32) -&gt; i32 {
+    // Replace this with your own code.
+    x
+}
+
+fn main() {
+    println!("{}", clamp(15, 0, 10));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn inside() {
+        assert_eq!(clamp(5, 0, 10), 5);
+    }
+
+    #[test]
+    fn below() {
+        assert_eq!(clamp(-3, 0, 10), 0);
+    }
+
+    #[test]
+    fn above() {
+        assert_eq!(clamp(15, 0, 10), 10);
+    }
+}</code></pre>
+<h2 id="a-porting-pad"><a class="header" href="#a-porting-pad">A porting pad</a></h2>
+<p>Port this C function to Rust. Think about what the types promise: no null, no
+unchecked index, and a result that says when there is no answer.</p>
+<pre><code class="language-c">/* returns the index of the first negative value, or -1 */
+int first_negative(const int *a, size_t n) {
+    for (size_t i = 0; i &lt; n; i++)
+        if (a[i] &lt; 0) return (int)i;
+    return -1;
+}
+</code></pre>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn first_negative(a: &amp;[i32]) -&gt; Option&lt;usize&gt; {
+    // Your port here. Hint: `a.iter().position(...)` or a `for` loop with `enumerate()`.
+    None
+}
+
+fn main() {
+    assert_eq!(first_negative(&amp;[3, 4, -1, 7]), Some(2));
+    assert_eq!(first_negative(&amp;[]), None);
+    assert_eq!(first_negative(&amp;[1, 2]), None);
+    println!("ported");
+}</code></pre>
+<h2 id="on-your-own-machine"><a class="header" href="#on-your-own-machine">On your own machine</a></h2>
+<p>When you outgrow a single block, create a project and use the real tools:</p>
+<pre><code class="language-text">cargo new scratch
+cd scratch
+cargo run          # build and run
+cargo test         # run the #[test] functions
+cargo clippy       # extra advice from the linter
+</code></pre>
+<p>The Playground cannot read files, open sockets or use extra crates; a local project can.
+The <a href="#toolchain-cargo-vs-ccmake">toolchain chapter</a> shows how to install Rust.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="how-to-read-this-book"><a class="header" href="#how-to-read-this-book">How to read this book</a></h1>
 <ul>
@@ -402,13 +500,34 @@ the <em>prelude</em>; the rest comes in with <code>use</code>.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Run <code>cargo new hello</code> and <code>cargo run</code>. Then add <code>let unused = 5;</code> to <code>main</code>
-and read the warning.</li>
-<li>Compare <code>cargo build</code> and <code>cargo build --release</code>: where do the binaries go,
-and how big are they?</li>
-<li>Paste the hello program into Compiler Explorer next to the C version and
-compare the generated code.</li>
+<li>
+<p>Run <code>cargo new hello</code> and <code>cargo run</code>. Then add <code>let unused = 5;</code> to <code>main</code>
+and read the warning.</p>
+</li>
+<li>
+<p>Compare <code>cargo build</code> and <code>cargo build --release</code>: where do the binaries go,
+and how big are they?</p>
+</li>
+<li>
+<p>Paste the hello program into Compiler Explorer next to the C version and
+compare the generated code.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Count the command-line arguments with <code>std::env::args()</code>. Replace the
+<code>todo!</code> and press <strong>Run</strong>; the check passes when you are right. (The playground passes no
+arguments, so the count is 1: the program name.)</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn main() {
+    let n: usize = todo!("count the arguments");
+    assert_eq!(n, 1);
+    println!("ok: {n}");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> In a new project (<code>cargo new calc</code>), write <code>fn add(a: i32, b: i32) -&gt; i32</code> and
+two <code>#[test]</code> functions for it. Run <code>cargo test</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> The build prints a warning, and the program still runs:</p>
@@ -429,6 +548,38 @@ against <code>gcc -O2</code>.</p>
 see: Rust’s <code>println!</code> expands to a call into the standard library’s formatting
 machinery instead of <code>printf</code>, and a debug build keeps the overflow checks that
 release removes (chapter 3).</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn main() {
+    let n: usize = std::env::args().count();
+    assert_eq!(n, 1);
+    println!("ok: {n}");
+}</code></pre>
+<p><code>args()</code> is an iterator, and the first item is the program name, as <code>argv[0]</code> is in C.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn add(a: i32, b: i32) -&gt; i32 {
+    a + b
+}
+
+fn main() {
+    println!("{}", add(2, 3));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn adds_positive() {
+        assert_eq!(add(2, 3), 5);
+    }
+
+    #[test]
+    fn adds_negative() {
+        assert_eq!(add(-2, -3), -5);
+    }
+}</code></pre>
+<p><code>cargo test</code> prints <code>test result: ok. 2 passed</code>. Tests live next to the code and need no
+separate harness or makefile target.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="variables-and-mutability"><a class="header" href="#variables-and-mutability">Variables and mutability</a></h1>
@@ -539,12 +690,35 @@ synchronization in Rust.</li>
 </ul>
 <h2 id="exercises-1"><a class="header" href="#exercises-1">Exercises</a></h2>
 <ol>
-<li>Remove <code>mut</code> from <code>y</code> in the first example and read the error.</li>
-<li>Make <code>spaces</code> change type without shadowing, using <code>let mut</code>. What does the
-compiler say?</li>
-<li>Replace a <code>#define BUF_SIZE 256</code> with a <code>const</code> and use it as an array
-length: <code>[0u8; BUF_SIZE]</code>.</li>
+<li>
+<p>Remove <code>mut</code> from <code>y</code> in the first example and read the error.</p>
+</li>
+<li>
+<p>Make <code>spaces</code> change type without shadowing, using <code>let mut</code>. What does the
+compiler say?</p>
+</li>
+<li>
+<p>Replace a <code>#define BUF_SIZE 256</code> with a <code>const</code> and use it as an array
+length: <code>[0u8; BUF_SIZE]</code>.</p>
+</li>
+<li>
+<p><strong>Fix the code.</strong> This program does not compile. Change one thing (not the <code>assert_eq!</code>) so it
+passes.</p>
+<pre class="playground"><code class="language-rust editable compile_fail edition2024">fn main() {
+    let count = 0;
+    for i in 0..4 {
+        count += i;
+    }
+    assert_eq!(count, 6);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Define <code>const SECONDS_PER_DAY: u32</code>, use it to make an array with one slot
+per hour (<code>[0u8; 24]</code>) from a <code>const HOURS: usize</code>, and check the values with <code>assert_eq!</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> The compiler stops with <code>error[E0384]: cannot assign twice to immutable variable</code>, and its help text suggests <code>let mut y</code>. Rust’s default is the reverse of C:
@@ -562,6 +736,26 @@ fn main() {
     let buf = [0u8; BUF_SIZE];
     println!("{}", buf.len());   // 256
 }</code></pre>
+<p><strong>4.</strong> Declare the variable mutable: <code>let mut count = 0;</code>.</p>
+<pre class="playground"><code class="language-rust edition2024">fn main() {
+    let mut count = 0;
+    for i in 0..4 {
+        count += i;
+    }
+    assert_eq!(count, 6);
+    println!("ok");
+}</code></pre>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">const HOURS: usize = 24;
+const SECONDS_PER_DAY: u32 = 24 * 60 * 60;
+
+fn main() {
+    let slots = [0u8; HOURS];
+    assert_eq!(slots.len(), 24);
+    assert_eq!(SECONDS_PER_DAY, 86_400);
+    println!("ok");
+}</code></pre>
+<p>A <code>const</code> is inlined where it is used, like a <code>#define</code>, but it has a type and obeys scope.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="primitive-types"><a class="header" href="#primitive-types">Primitive types</a></h1>
@@ -651,6 +845,21 @@ fn main() {
 }</code></pre>
 <p>An <code>if</code> condition must be a real <code>bool</code>; an integer is not accepted (next
 chapters).</p>
+<h3 id="reinterpreting-bits"><a class="header" href="#reinterpreting-bits">Reinterpreting bits</a></h3>
+<p>C code often reads a <code>float</code> as an <code>int</code> with a pointer cast (<code>*(uint32_t *)&amp;f</code>), which
+breaks the strict aliasing rule and is undefined behavior. Rust has no such rule to trip
+over, and gives you named, safe conversions instead:</p>
+<pre class="playground"><code class="language-rust edition2024">fn main() {
+    let f = 1.0f32;
+    println!("{:#x}", f.to_bits());                 // 0x3f800000: the IEEE 754 bits
+    println!("{}", f32::from_bits(0x40490fdb));      // 3.1415927
+    let bytes = 0x12345678u32.to_le_bytes();         // [0x78, 0x56, 0x34, 0x12]
+    println!("{bytes:x?} {:#x}", u32::from_le_bytes(bytes));
+}</code></pre>
+<p><code>to_le_bytes</code>, <code>to_be_bytes</code> and <code>to_ne_bytes</code> make the byte order explicit, which a C
+cast hides. When you need an arbitrary reinterpretation, <code>std::mem::transmute</code> exists,
+but it is <code>unsafe</code> and the compiler insists that both types have the same size
+(chapter 12).</p>
 <h2 id="side-by-side-2"><a class="header" href="#side-by-side-2">Side by side</a></h2>
 <div class="table-wrapper">
 <table>
@@ -690,11 +899,36 @@ undefined behavior.</li>
 </ul>
 <h2 id="exercises-2"><a class="header" href="#exercises-2">Exercises</a></h2>
 <ol>
-<li>What does <code>(-7i32).rem_euclid(3)</code> print, and how does it differ from
-<code>-7 % 3</code>?</li>
-<li>Call <code>255u8.checked_add(1)</code>, <code>.wrapping_add(1)</code> and <code>.saturating_add(1)</code>.</li>
-<li>Try <code>let x: u32 = -1;</code> and read the error. How do you write the C result?</li>
+<li>
+<p>What does <code>(-7i32).rem_euclid(3)</code> print, and how does it differ from
+<code>-7 % 3</code>?</p>
+</li>
+<li>
+<p>Call <code>255u8.checked_add(1)</code>, <code>.wrapping_add(1)</code> and <code>.saturating_add(1)</code>.</p>
+</li>
+<li>
+<p>Try <code>let x: u32 = -1;</code> and read the error. How do you write the C result?</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Convert Fahrenheit to Celsius with integer arithmetic.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn to_celsius(f: i32) -&gt; i32 {
+    todo!("(f - 32) * 5 / 9")
+}
+
+fn main() {
+    assert_eq!(to_celsius(212), 100);
+    assert_eq!(to_celsius(32), 0);
+    assert_eq!(to_celsius(14), -10);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Predict, then check.</strong> Write down the value of each expression, then run it:
+<code>300i32 as u8</code>, <code>-1i8 as u8</code>, <code>3.9f64 as i32</code>, <code>-1.5f32 as u8</code>, and
+<code>f32::from_bits(1.0f32.to_bits())</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> <code>(-7i32).rem_euclid(3)</code> is <code>2</code>. <code>-7 % 3</code> is <code>-1</code>. The <code>%</code> operator takes the sign
@@ -716,6 +950,30 @@ of the dividend, as C99 does, while <code>rem_euclid</code> always returns a res
 }</code></pre>
 <p>The C result (all bits set) is written out explicitly: <code>u32::MAX</code>, <code>!0u32</code>, or
 <code>-1i32 as u32</code>.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn to_celsius(f: i32) -&gt; i32 {
+    (f - 32) * 5 / 9
+}
+
+fn main() {
+    assert_eq!(to_celsius(212), 100);
+    assert_eq!(to_celsius(32), 0);
+    assert_eq!(to_celsius(14), -10);
+    println!("ok");
+}</code></pre>
+<p>Integer division truncates toward zero, as in C. Multiply before dividing, or you lose
+the fraction.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn main() {
+    assert_eq!(300i32 as u8, 44);          // truncates: 300 - 256
+    assert_eq!(-1i8 as u8, 255);           // same bits, read as unsigned
+    assert_eq!(3.9f64 as i32, 3);          // float to int truncates toward zero
+    assert_eq!(-1.5f32 as u8, 0);          // saturates at the bounds
+    assert_eq!(f32::from_bits(1.0f32.to_bits()), 1.0);
+    println!("ok");
+}</code></pre>
+<p>Only the first two are the casts C also performs; the float casts never have undefined
+behavior in Rust.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="functions-and-expressions"><a class="header" href="#functions-and-expressions">Functions and expressions</a></h1>
@@ -809,6 +1067,34 @@ fn main() {
     println!("{}", apply(f, 21));      // 42
 }</code></pre>
 <p>Closures, which can capture variables, come in chapter 17.</p>
+<h3 id="evaluation-order-and-recursion-depth"><a class="header" href="#evaluation-order-and-recursion-depth">Evaluation order and recursion depth</a></h3>
+<p>C leaves the order of evaluation of operands and function arguments unspecified, so
+<code>f(a(), b())</code> may call <code>b</code> first, and <code>i = i++ + i</code> is undefined. Rust evaluates
+operands and arguments <strong>left to right</strong>, always:</p>
+<pre class="playground"><code class="language-rust edition2024">fn say(s: &amp;str, n: i32) -&gt; i32 {
+    print!("{s} ");
+    n
+}
+
+fn main() {
+    let x = say("a", 1) + say("b", 2) * say("c", 3);
+    println!("= {x}");     // prints: a b c = 7
+}</code></pre>
+<p>The <code>*</code> binds tighter, but the three calls still happen in the order they are written.</p>
+<p>Recursion works as in C, with one caution: Rust does not promise tail-call
+optimization, so a recursion that is too deep uses up the thread’s stack. That is not
+undefined behavior. The runtime detects it and aborts the process:</p>
+<pre class="playground"><code class="language-rust no_run edition2024">fn depth(n: u64) -&gt; u64 {
+    if n == 0 { 0 } else { 1 + depth(n - 1) }
+}
+
+fn main() {
+    println!("{}", depth(100_000_000));
+}
+// thread 'main' has overflowed its stack
+// fatal runtime error: stack overflow, aborting</code></pre>
+<p>When a recursion can be deep, write it as a loop (chapter 25 does this for dropping a long
+list).</p>
 <h2 id="side-by-side-3"><a class="header" href="#side-by-side-3">Side by side</a></h2>
 <div class="table-wrapper">
 <table>
@@ -850,12 +1136,41 @@ end of every function.</li>
 </ul>
 <h2 id="exercises-3"><a class="header" href="#exercises-3">Exercises</a></h2>
 <ol>
-<li>Write <code>fn min_max(a: i32, b: i32) -&gt; (i32, i32)</code> and call it with a
-destructuring <code>let</code>.</li>
-<li>Add a stray <code>;</code> after the last expression of a function returning <code>i32</code> and
-read the two-part error.</li>
-<li>Write <code>fn compose(f: fn(i32) -&gt; i32, g: fn(i32) -&gt; i32, x: i32) -&gt; i32</code>.</li>
+<li>
+<p>Write <code>fn min_max(a: i32, b: i32) -&gt; (i32, i32)</code> and call it with a
+destructuring <code>let</code>.</p>
+</li>
+<li>
+<p>Add a stray <code>;</code> after the last expression of a function returning <code>i32</code> and
+read the two-part error.</p>
+</li>
+<li>
+<p>Write <code>fn compose(f: fn(i32) -&gt; i32, g: fn(i32) -&gt; i32, x: i32) -&gt; i32</code>.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Write Euclid’s algorithm.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn gcd(a: u64, b: u64) -&gt; u64 {
+    todo!("loop while b != 0: (a, b) = (b, a % b)")
+}
+
+fn main() {
+    assert_eq!(gcd(12, 18), 6);
+    assert_eq!(gcd(17, 5), 1);
+    assert_eq!(gcd(0, 9), 9);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Write a recursive <code>fn factorial(n: u64) -&gt; Option&lt;u64&gt;</code> that returns <code>None</code>
+instead of overflowing (use <code>checked_mul</code>). Check that <code>factorial(20)</code> works and
+<code>factorial(21)</code> is <code>None</code>.</p>
+</li>
+<li>
+<p><strong>Predict the order.</strong> The function <code>say(s, n)</code> prints <code>s</code> and returns <code>n</code>. In what order does
+<code>say("a", 1) + say("b", 2) * say("c", 3)</code> print? Does <code>f(say("x", 1), say("y", 2))</code> differ?</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -888,6 +1203,40 @@ fn inc(x: i32) -&gt; i32 { x + 1 }
 fn main() {
     println!("{}", compose(double, inc, 5));   // 11
 }</code></pre>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn gcd(mut a: u64, mut b: u64) -&gt; u64 {
+    while b != 0 {
+        (a, b) = (b, a % b);
+    }
+    a
+}
+
+fn main() {
+    assert_eq!(gcd(12, 18), 6);
+    assert_eq!(gcd(17, 5), 1);
+    assert_eq!(gcd(0, 9), 9);
+    println!("ok");
+}</code></pre>
+<p><code>mut a</code> in the parameter list makes the local copy mutable; the caller’s values are not
+affected.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn factorial(n: u64) -&gt; Option&lt;u64&gt; {
+    if n == 0 {
+        return Some(1);
+    }
+    factorial(n - 1)?.checked_mul(n)
+}
+
+fn main() {
+    assert_eq!(factorial(20), Some(2_432_902_008_176_640_000));
+    assert_eq!(factorial(21), None);
+    println!("ok");
+}</code></pre>
+<p>The <code>?</code> returns <code>None</code> early when the recursive call fails. A C version would silently wrap
+(for unsigned) or invoke undefined behavior (for signed).</p>
+<p><strong>6.</strong> Both print left to right: <code>a b c</code> and <code>x y</code>. Rust fixes the order of evaluation of operands and
+arguments, whereas C leaves it unspecified. Precedence (<code>*</code> before <code>+</code>) decides how the
+results combine, not when each call happens.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="control-flow"><a class="header" href="#control-flow">Control flow</a></h1>
@@ -1078,10 +1427,35 @@ also lets the compiler drop bounds checks that an indexed loop might keep.</li>
 </ul>
 <h2 id="exercises-4"><a class="header" href="#exercises-4">Exercises</a></h2>
 <ol>
-<li>Rewrite FizzBuzz (1..=100) with a single <code>match</code> on <code>(i % 3, i % 5)</code>.</li>
-<li>Convert <code>do { ... } while (x != 0)</code> to a <code>loop</code>.</li>
-<li>Remove the <code>_</code> arm of <code>describe</code> and read the exhaustiveness error.</li>
+<li>
+<p>Rewrite FizzBuzz (1..=100) with a single <code>match</code> on <code>(i % 3, i % 5)</code>.</p>
+</li>
+<li>
+<p>Convert <code>do { ... } while (x != 0)</code> to a <code>loop</code>.</p>
+</li>
+<li>
+<p>Remove the <code>_</code> arm of <code>describe</code> and read the exhaustiveness error.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Count the steps of the Collatz sequence (halve if even, otherwise
+<code>3n + 1</code>) until it reaches 1.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn collatz_steps(mut n: u64) -&gt; u32 {
+    todo!("loop until n == 1, counting steps")
+}
+
+fn main() {
+    assert_eq!(collatz_steps(1), 0);
+    assert_eq!(collatz_steps(6), 8);
+    assert_eq!(collatz_steps(27), 111);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Write <code>fn grade(score: u32) -&gt; char</code> with a <code>match</code>: 90 and up is <code>'A'</code>, 80-89
+<code>'B'</code>, 70-79 <code>'C'</code>, anything lower <code>'F'</code>. Test the boundaries (89, 90, 69, 70).</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -1110,6 +1484,40 @@ at the bottom does the same:</p>
 <p><strong>3.</strong> Without the <code>_</code> arm the compiler rejects the <code>match</code> with <code>error[E0004]: non-exhaustive patterns</code>, and names a range of values that no arm covers. A guard such
 as <code>x if x &lt; 0</code> does not count towards exhaustiveness, because the compiler cannot
 reason about arbitrary conditions. C compilers at best warn about a missing <code>default</code>.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn collatz_steps(mut n: u64) -&gt; u32 {
+    let mut steps = 0;
+    while n != 1 {
+        n = if n % 2 == 0 { n / 2 } else { 3 * n + 1 };
+        steps += 1;
+    }
+    steps
+}
+
+fn main() {
+    assert_eq!(collatz_steps(1), 0);
+    assert_eq!(collatz_steps(6), 8);
+    assert_eq!(collatz_steps(27), 111);
+    println!("ok");
+}</code></pre>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn grade(score: u32) -&gt; char {
+    match score {
+        90.. =&gt; 'A',
+        80..=89 =&gt; 'B',
+        70..=79 =&gt; 'C',
+        _ =&gt; 'F',
+    }
+}
+
+fn main() {
+    assert_eq!(grade(90), 'A');
+    assert_eq!(grade(89), 'B');
+    assert_eq!(grade(70), 'C');
+    assert_eq!(grade(69), 'F');
+    println!("ok");
+}</code></pre>
+<p>Ranges replace the <code>if</code>/<code>else if</code> ladder, and the compiler checks that every value is covered.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="compound-types"><a class="header" href="#compound-types">Compound types</a></h1>
@@ -1259,6 +1667,21 @@ fn main() {
 <p>This is the C convention <code>counter_new()</code>, <code>counter_bump(struct counter *c)</code>,
 with the naming and the pointer argument built into the language. Chapter 13
 covers it fully.</p>
+<h3 id="binding-by-reference-with-ref"><a class="header" href="#binding-by-reference-with-ref">Binding by reference with <code>ref</code></a></h3>
+<p>Matching on a value moves non-<code>Copy</code> data out of it. Putting <code>ref</code> in front of a binding
+borrows that part instead, so the original stays usable:</p>
+<pre class="playground"><code class="language-rust edition2024">fn main() {
+    let opt = Some(String::from("hi"));
+    match opt {
+        Some(ref s) =&gt; println!("{s} {}", s.len()),   // s is a &amp;String
+        None =&gt; {}
+    }
+    println!("{opt:?}");          // still usable: nothing was moved
+}</code></pre>
+<p>Use <code>ref mut</code> to borrow mutably. Most code does not need either: matching on a reference
+(<code>match &amp;opt { Some(s) =&gt; ... }</code> or <code>if let Some(s) = &amp;opt</code>) borrows the same way, and
+since edition 2024 you may not write <code>ref</code> inside a pattern that already matches through
+a reference. Read <code>ref</code> when you meet it in older code; write <code>&amp;</code> yourself.</p>
 <h2 id="side-by-side-5"><a class="header" href="#side-by-side-5">Side by side</a></h2>
 <div class="table-wrapper">
 <table>
@@ -1316,12 +1739,50 @@ Chapter 14 builds on this.</li>
 </ul>
 <h2 id="exercises-5"><a class="header" href="#exercises-5">Exercises</a></h2>
 <ol>
-<li>Write <code>fn largest(xs: &amp;[i32]) -&gt; Option&lt;i32&gt;</code> that returns <code>None</code> for an empty
-slice. Why can the C version not do this?</li>
-<li>Add a <code>Triangle { base, height }</code> variant to <code>Shape</code> and observe the compile
-error in <code>area</code>.</li>
-<li>Run the layout example. Reorder the <code>CLayout</code> fields to shrink it, and compare.</li>
+<li>
+<p>Write <code>fn largest(xs: &amp;[i32]) -&gt; Option&lt;i32&gt;</code> that returns <code>None</code> for an empty
+slice. Why can the C version not do this?</p>
+</li>
+<li>
+<p>Add a <code>Triangle { base, height }</code> variant to <code>Shape</code> and observe the compile
+error in <code>area</code>.</p>
+</li>
+<li>
+<p>Run the layout example. Reorder the <code>CLayout</code> fields to shrink it, and compare.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Finish <code>perimeter</code> for each shape.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">use std::f64::consts::PI;
+
+enum Shape {
+    Circle(f64),
+    Rect(f64, f64),
+}
+
+fn perimeter(s: &amp;Shape) -&gt; f64 {
+    todo!("match on s")
+}
+
+fn main() {
+    assert_eq!(perimeter(&amp;Shape::Rect(2.0, 3.0)), 10.0);
+    assert!((perimeter(&amp;Shape::Circle(1.0)) - 2.0 * PI).abs() &lt; 1e-9);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Borrow in a pattern.</strong> This <code>match</code> moves the <code>String</code> out of <code>opt</code>, so <code>opt</code> cannot be
+printed afterwards. Make it compile with <code>ref</code>, then again by matching on <code>&amp;opt</code>.</p>
+<pre class="playground"><code class="language-rust editable compile_fail edition2024">fn main() {
+    let opt = Some(String::from("hi"));
+    match opt {
+        Some(s) =&gt; println!("{s}"),
+        None =&gt; {}
+    }
+    println!("{opt:?}");
+}</code></pre>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -1369,6 +1830,41 @@ fn main() {
     println!("{} {}", size_of::&lt;CLayout&gt;(), size_of::&lt;Shrunk&gt;());   // 12 8
 }</code></pre>
 <p>A plain Rust struct (without <code>#[repr(C)]</code>) is free to reorder fields and does this for you.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">use std::f64::consts::PI;
+
+enum Shape {
+    Circle(f64),
+    Rect(f64, f64),
+}
+
+fn perimeter(s: &amp;Shape) -&gt; f64 {
+    match s {
+        Shape::Circle(r) =&gt; 2.0 * PI * r,
+        Shape::Rect(w, h) =&gt; 2.0 * (w + h),
+    }
+}
+
+fn main() {
+    assert_eq!(perimeter(&amp;Shape::Rect(2.0, 3.0)), 10.0);
+    assert!((perimeter(&amp;Shape::Circle(1.0)) - 2.0 * PI).abs() &lt; 1e-9);
+    println!("ok");
+}</code></pre>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn main() {
+    let opt = Some(String::from("hi"));
+    match opt {
+        Some(ref s) =&gt; println!("{s}"),     // borrow with `ref`
+        None =&gt; {}
+    }
+    println!("{opt:?}");
+
+    match &amp;opt {
+        Some(s) =&gt; println!("{s}"),         // the modern spelling: match a reference
+        None =&gt; {}
+    }
+    println!("{opt:?}");
+}</code></pre>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="ownership-and-moves"><a class="header" href="#ownership-and-moves">Ownership and moves</a></h1>
@@ -1491,13 +1987,37 @@ deliberately.</li>
 </ul>
 <h2 id="exercises-6"><a class="header" href="#exercises-6">Exercises</a></h2>
 <ol>
-<li>Make the <code>compile_fail</code> example work in two different ways: by cloning, and
-by borrowing (<code>let b = &amp;a;</code>).</li>
-<li>Write <code>fn append_world(mut s: String) -&gt; String</code> that takes ownership,
-appends <code>" world"</code> with <code>push_str</code>, and returns it.</li>
-<li>Why does <code>let t = (String::from("a"), 5); let u = t;</code> make <code>t</code> unusable, but a
-<code>(i32, i32)</code> stays usable?</li>
+<li>
+<p>Make the <code>compile_fail</code> example work in two different ways: by cloning, and
+by borrowing (<code>let b = &amp;a;</code>).</p>
+</li>
+<li>
+<p>Write <code>fn append_world(mut s: String) -&gt; String</code> that takes ownership,
+appends <code>" world"</code> with <code>push_str</code>, and returns it.</p>
+</li>
+<li>
+<p>Why does <code>let t = (String::from("a"), 5); let u = t;</code> make <code>t</code> unusable, but a
+<code>(i32, i32)</code> stays usable?</p>
+</li>
+<li>
+<p><strong>Fix the code.</strong> <code>consume</code> takes ownership of the string, so <code>name</code> is gone afterwards. Fix it
+two ways: by cloning at the call, and by changing <code>consume</code> to borrow.</p>
+<pre class="playground"><code class="language-rust editable compile_fail edition2024">fn consume(s: String) -&gt; usize {
+    s.len()
+}
+
+fn main() {
+    let name = String::from("ferris");
+    let n = consume(name);
+    println!("{n} {name}");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Write <code>fn longer(a: String, b: String) -&gt; String</code> that consumes both and returns
+the longer one (the first if they are equal). Explain why no <code>clone</code> is needed.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> Both fixes keep <code>a</code> usable:</p>
@@ -1530,6 +2050,34 @@ owners of one buffer (a double free in C). The tuple <code>(String, i32)</code> 
 }</code></pre>
 <p><code>(i32, i32)</code> owns nothing, so a bitwise copy is complete. Such types implement <code>Copy</code>,
 and <code>let u = t;</code> leaves <code>t</code> usable.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn consume(s: String) -&gt; usize {
+    s.len()
+}
+
+fn borrow(s: &amp;str) -&gt; usize {
+    s.len()
+}
+
+fn main() {
+    let name = String::from("ferris");
+    let a = consume(name.clone());     // fix 1: hand over a copy
+    let b = borrow(&amp;name);             // fix 2: lend instead of give
+    println!("{a} {b} {name}");
+}</code></pre>
+<p>Prefer fix 2 whenever the function only reads: no allocation, and <code>name</code> stays untouched.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn longer(a: String, b: String) -&gt; String {
+    if b.len() &gt; a.len() { b } else { a }
+}
+
+fn main() {
+    assert_eq!(longer("hi".to_string(), "hello".to_string()), "hello");
+    assert_eq!(longer("ab".to_string(), "cd".to_string()), "ab");
+    println!("ok");
+}</code></pre>
+<p>Each argument is moved in, so the function owns both and may return either. The one not
+returned is dropped (freed) at the end of the function.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="borrowing"><a class="header" href="#borrowing">Borrowing</a></h1>
@@ -1620,6 +2168,37 @@ fine:</p>
     v.push(4);                     // fine now
     println!("{v:?}");
 }</code></pre>
+<h3 id="checking-at-run-time-cell-and-refcell"><a class="header" href="#checking-at-run-time-cell-and-refcell">Checking at run time: <code>Cell</code> and <code>RefCell</code></a></h3>
+<p>The borrow rules are checked at compile time, and some programs need them checked at
+<strong>run time</strong> instead, for example a shared counter or log that several closures update.
+<code>Cell&lt;T&gt;</code> and <code>RefCell&lt;T&gt;</code> allow mutation through a shared reference (this is called
+<strong>interior mutability</strong>). <code>Cell</code> copies values in and out; <code>RefCell</code> hands out guards
+and counts them:</p>
+<pre class="playground"><code class="language-rust edition2024">use std::cell::{Cell, RefCell};
+
+fn main() {
+    let hits = Cell::new(0);
+    let log = RefCell::new(Vec::new());
+    let record = |s: &amp;str| {
+        hits.set(hits.get() + 1);                   // mutates through a shared reference
+        log.borrow_mut().push(s.to_string());
+    };
+    record("a");
+    record("b");
+    println!("{} {:?}", hits.get(), log.borrow());   // 2 ["a", "b"]
+}</code></pre>
+<p><code>RefCell</code> keeps the same rules (many readers or one writer) but enforces them when the
+program runs. Breaking them is a <strong>panic</strong>, not undefined behavior:</p>
+<pre class="playground"><code class="language-rust should_panic edition2024">use std::cell::RefCell;
+
+fn main() {
+    let c = RefCell::new(1);
+    let _a = c.borrow_mut();
+    let _b = c.borrow_mut();   // panics: RefCell already borrowed
+}</code></pre>
+<p><code>try_borrow_mut</code> returns a <code>Result</code> instead of panicking. Prefer ordinary <code>&amp;mut</code> when you
+can, because it costs nothing and is checked by the compiler. A <code>RefCell</code> is not safe to
+share between threads (it is not <code>Sync</code>); chapter 22 uses <code>Mutex</code> for that.</p>
 <h2 id="side-by-side-7"><a class="header" href="#side-by-side-7">Side by side</a></h2>
 <div class="table-wrapper">
 <table>
@@ -1661,12 +2240,53 @@ message; it names the two conflicting uses.</li>
 </ul>
 <h2 id="exercises-7"><a class="header" href="#exercises-7">Exercises</a></h2>
 <ol>
-<li>Write <code>fn swap(a: &amp;mut i32, b: &amp;mut i32)</code> and call it <code>swap(&amp;mut x, &amp;mut y)</code>.
-Then try <code>swap(&amp;mut x, &amp;mut x)</code> and read the error. What does C let you do?</li>
-<li>Make the <code>push</code>-while-borrowed example compile by moving the <code>println!</code> first.</li>
-<li>Write <code>fn longest_len(v: &amp;Vec&lt;String&gt;) -&gt; usize</code> and call it twice in a row
-without cloning.</li>
+<li>
+<p>Write <code>fn swap(a: &amp;mut i32, b: &amp;mut i32)</code> and call it <code>swap(&amp;mut x, &amp;mut y)</code>.
+Then try <code>swap(&amp;mut x, &amp;mut x)</code> and read the error. What does C let you do?</p>
+</li>
+<li>
+<p>Make the <code>push</code>-while-borrowed example compile by moving the <code>println!</code> first.</p>
+</li>
+<li>
+<p>Write <code>fn longest_len(v: &amp;Vec&lt;String&gt;) -&gt; usize</code> and call it twice in a row
+without cloning.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> A <code>Cell</code> lets a method change a field through <code>&amp;self</code>. Finish <code>hit</code>.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">use std::cell::Cell;
+
+struct Counter {
+    hits: Cell&lt;u32&gt;,
+}
+
+impl Counter {
+    fn hit(&amp;self) {
+        todo!("add 1 to self.hits using get and set")
+    }
+}
+
+fn main() {
+    let c = Counter { hits: Cell::new(0) };
+    c.hit();
+    c.hit();
+    assert_eq!(c.hits.get(), 2);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Fix the code.</strong> Two mutable borrows of <code>v</code> overlap. Reorder the lines so the program compiles
+and the assertion holds.</p>
+<pre class="playground"><code class="language-rust editable compile_fail edition2024">fn main() {
+    let mut v = vec![1];
+    let a = &amp;mut v;
+    let b = &amp;mut v;
+    a.push(2);
+    b.push(3);
+    assert_eq!(v, [1, 2, 3]);
+}</code></pre>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -1714,6 +2334,36 @@ fn main() {
     println!("{}", longest_len(&amp;v));   // 3: the shared borrow ended, no clone needed
 }</code></pre>
 <p>Idiomatic Rust takes <code>&amp;[String]</code> instead of <code>&amp;Vec&lt;String&gt;</code>, which accepts both.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">use std::cell::Cell;
+
+struct Counter {
+    hits: Cell&lt;u32&gt;,
+}
+
+impl Counter {
+    fn hit(&amp;self) {
+        self.hits.set(self.hits.get() + 1);
+    }
+}
+
+fn main() {
+    let c = Counter { hits: Cell::new(0) };
+    c.hit();
+    c.hit();
+    assert_eq!(c.hits.get(), 2);
+    println!("ok");
+}</code></pre>
+<p><strong>5.</strong> Finish with the first borrow before taking the second:</p>
+<pre class="playground"><code class="language-rust edition2024">fn main() {
+    let mut v = vec![1];
+    let a = &amp;mut v;
+    a.push(2);            // last use of `a`
+    let b = &amp;mut v;       // a new, non-overlapping borrow
+    b.push(3);
+    assert_eq!(v, [1, 2, 3]);
+}</code></pre>
+<p>A borrow lasts only until its last use, so no extra braces are needed.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="lifetimes"><a class="header" href="#lifetimes">Lifetimes</a></h1>
@@ -1866,12 +2516,42 @@ them only when the compiler asks.</li>
 </ul>
 <h2 id="exercises-8"><a class="header" href="#exercises-8">Exercises</a></h2>
 <ol>
-<li>Remove <code>&lt;'a&gt;</code> from <code>longest</code> and read the error. Which elision rule fails?</li>
-<li>Write <code>fn first&lt;'a&gt;(xs: &amp;'a [String]) -&gt; &amp;'a String</code>. Use it, then <code>drop</code> the
-vector before using the result to see the error.</li>
-<li>Give <code>Parser</code> a method <code>next_word(&amp;mut self) -&gt; Option&lt;&amp;'a str&gt;</code> that advances
-<code>pos</code> past the next space.</li>
+<li>
+<p>Remove <code>&lt;'a&gt;</code> from <code>longest</code> and read the error. Which elision rule fails?</p>
+</li>
+<li>
+<p>Write <code>fn first&lt;'a&gt;(xs: &amp;'a [String]) -&gt; &amp;'a String</code>. Use it, then <code>drop</code> the
+vector before using the result to see the error.</p>
+</li>
+<li>
+<p>Give <code>Parser</code> a method <code>next_word(&amp;mut self) -&gt; Option&lt;&amp;'a str&gt;</code> that advances
+<code>pos</code> past the next space.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Return the longest line of the text, borrowed from it (no copy).</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn longest_line&lt;'a&gt;(text: &amp;'a str) -&gt; &amp;'a str {
+    todo!("use text.lines() and max_by_key on the length")
+}
+
+fn main() {
+    assert_eq!(longest_line("a\nbbb\ncc"), "bbb");
+    assert_eq!(longest_line(""), "");
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Fix the code.</strong> This returns a reference to a local. Change the return type so it compiles.</p>
+<pre class="playground"><code class="language-rust editable compile_fail edition2024">fn greeting(name: &amp;str) -&gt; &amp;str {
+    let s = format!("hello {name}");
+    &amp;s
+}
+
+fn main() {
+    assert_eq!(greeting("ann"), "hello ann");
+}</code></pre>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> The compiler reports <code>error[E0106]: missing lifetime specifier</code>, and explains that the return type
@@ -1930,6 +2610,27 @@ fn main() {
     let b = p.next_word();
     println!("{a:?} {b:?} {:?}", p.next_word());   // Some("alpha") Some("beta") None
 }</code></pre>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn longest_line&lt;'a&gt;(text: &amp;'a str) -&gt; &amp;'a str {
+    text.lines().max_by_key(|l| l.len()).unwrap_or("")
+}
+
+fn main() {
+    assert_eq!(longest_line("a\nbbb\ncc"), "bbb");
+    assert_eq!(longest_line(""), "");
+    println!("ok");
+}</code></pre>
+<p>The result points into <code>text</code>, so it must not outlive it: that is what <code>'a</code> says.</p>
+<p><strong>5.</strong> Return the owned <code>String</code>, which moves out to the caller:</p>
+<pre class="playground"><code class="language-rust edition2024">fn greeting(name: &amp;str) -&gt; String {
+    format!("hello {name}")
+}
+
+fn main() {
+    assert_eq!(greeting("ann"), "hello ann");
+}</code></pre>
+<p>A reference can only point at data that outlives the call; a new value must be returned
+by value. This is the pattern C solves with a caller-supplied buffer.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="stack-heap-box-vec-string"><a class="header" href="#stack-heap-box-vec-string">Stack, heap, <code>Box</code>, <code>Vec</code>, <code>String</code></a></h1>
@@ -2077,13 +2778,35 @@ the stack just as in C; put them in a <code>Vec</code> or <code>Box</code>.</li>
 </ul>
 <h2 id="exercises-9"><a class="header" href="#exercises-9">Exercises</a></h2>
 <ol>
-<li>Build a <code>Vec&lt;String&gt;</code> of three words, then join them with a space using
-<code>join(" ")</code>.</li>
-<li>Push 20 bytes into an empty <code>Vec&lt;u8&gt;</code>, printing <code>v.capacity()</code> after each
-<code>push</code>, and see how the capacity grows.</li>
-<li>Write <code>fn count_vowels(s: &amp;str) -&gt; usize</code> using <code>chars()</code>. How would the C
-version handle <code>é</code>?</li>
+<li>
+<p>Build a <code>Vec&lt;String&gt;</code> of three words, then join them with a space using
+<code>join(" ")</code>.</p>
+</li>
+<li>
+<p>Push 20 bytes into an empty <code>Vec&lt;u8&gt;</code>, printing <code>v.capacity()</code> after each
+<code>push</code>, and see how the capacity grows.</p>
+</li>
+<li>
+<p>Write <code>fn count_vowels(s: &amp;str) -&gt; usize</code> using <code>chars()</code>. How would the C
+version handle <code>é</code>?</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Capitalize the first letter of every word.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn title_case(s: &amp;str) -&gt; String {
+    todo!("split_whitespace, uppercase the first char, join with a space")
+}
+
+fn main() {
+    assert_eq!(title_case("hello big world"), "Hello Big World");
+    assert_eq!(title_case(""), "");
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Run-length encode a string: <code>"aaabcc"</code> becomes <code>"a3b1c2"</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -2115,6 +2838,47 @@ fn main() {
 <p><code>chars()</code> yields Unicode scalar values, so <code>é</code> is one item. A C loop over <code>char</code> sees
 the UTF-8 bytes <code>0xC3 0xA9</code> of <code>é</code> as two separate values, and neither equals <code>'e'</code>
 or any other single-byte vowel, so it must decode UTF-8 itself.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn title_case(s: &amp;str) -&gt; String {
+    s.split_whitespace()
+        .map(|w| {
+            let mut cs = w.chars();
+            match cs.next() {
+                Some(first) =&gt; first.to_uppercase().collect::&lt;String&gt;() + cs.as_str(),
+                None =&gt; String::new(),
+            }
+        })
+        .collect::&lt;Vec&lt;_&gt;&gt;()
+        .join(" ")
+}
+
+fn main() {
+    assert_eq!(title_case("hello big world"), "Hello Big World");
+    assert_eq!(title_case(""), "");
+    println!("ok");
+}</code></pre>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn rle(s: &amp;str) -&gt; String {
+    let mut out = String::new();
+    let mut chars = s.chars().peekable();
+    while let Some(c) = chars.next() {
+        let mut n = 1;
+        while chars.peek() == Some(&amp;c) {
+            chars.next();
+            n += 1;
+        }
+        out.push(c);
+        out.push_str(&amp;n.to_string());
+    }
+    out
+}
+
+fn main() {
+    assert_eq!(rle("aaabcc"), "a3b1c2");
+    assert_eq!(rle(""), "");
+    println!("ok");
+}</code></pre>
+<p><code>String</code> grows as needed, so there is no buffer size to compute and no <code>snprintf</code> to check.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="drop-and-raii"><a class="header" href="#drop-and-raii"><code>Drop</code> and RAII</a></h1>
@@ -2271,12 +3035,54 @@ values are never dropped.</li>
 </ul>
 <h2 id="exercises-10"><a class="header" href="#exercises-10">Exercises</a></h2>
 <ol>
-<li>Make <code>work</code> acquire a third resource between the others and predict the order
-of the drop messages before you run it.</li>
-<li>Create a <code>Guard</code> that prints <code>"lock"</code> in <code>new</code> and <code>"unlock"</code> in <code>drop</code>, and
-use it in a function with two <code>return</code> statements.</li>
-<li>Try <code>let x = Noisy("x"); x.drop();</code> and read the error.</li>
+<li>
+<p>Make <code>work</code> acquire a third resource between the others and predict the order
+of the drop messages before you run it.</p>
+</li>
+<li>
+<p>Create a <code>Guard</code> that prints <code>"lock"</code> in <code>new</code> and <code>"unlock"</code> in <code>drop</code>, and
+use it in a function with two <code>return</code> statements.</p>
+</li>
+<li>
+<p>Try <code>let x = Noisy("x"); x.drop();</code> and read the error.</p>
+</li>
+<li>
+<p><strong>Predict the order.</strong> Three values are dropped at the end of the block. Fill in the order,
+then run the program to check.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">use std::cell::RefCell;
+
+struct Noisy&lt;'a&gt; {
+    name: &amp;'static str,
+    log: &amp;'a RefCell&lt;Vec&lt;&amp;'static str&gt;&gt;,
+}
+
+impl Drop for Noisy&lt;'_&gt; {
+    fn drop(&amp;mut self) {
+        self.log.borrow_mut().push(self.name);
+    }
+}
+
+fn expected_order() -&gt; Vec&lt;&amp;'static str&gt; {
+    todo!("the order in which a, b and c are dropped")
+}
+
+fn main() {
+    let log = RefCell::new(Vec::new());
+    {
+        let _a = Noisy { name: "a", log: &amp;log };
+        let _b = Noisy { name: "b", log: &amp;log };
+        let _c = Noisy { name: "c", log: &amp;log };
+    }
+    assert_eq!(*log.borrow(), expected_order());
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Move a <code>Noisy</code> into a function with <code>fn finish(n: Noisy)</code>. When is it dropped:
+at the call, or at the end of <code>finish</code>? Record the order in a log and assert it.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> Locals drop in reverse order of declaration:</p>
@@ -2340,6 +3146,42 @@ fn main() {
     let x = Noisy("x");
     x.drop();   // error[E0040]: explicit use of destructor method
 }</code></pre>
+<p><strong>4.</strong> Locals drop in reverse order of declaration: <code>vec!["c", "b", "a"]</code>.</p>
+<pre class="playground"><code class="language-rust edition2024">fn expected_order() -&gt; Vec&lt;&amp;'static str&gt; {
+    vec!["c", "b", "a"]
+}
+
+fn main() {
+    assert_eq!(expected_order(), ["c", "b", "a"]);
+}</code></pre>
+<p>(The rest of the program is unchanged.)</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">use std::cell::RefCell;
+
+struct Noisy&lt;'a&gt; {
+    name: &amp;'static str,
+    log: &amp;'a RefCell&lt;Vec&lt;String&gt;&gt;,
+}
+
+impl Drop for Noisy&lt;'_&gt; {
+    fn drop(&amp;mut self) {
+        self.log.borrow_mut().push(format!("drop {}", self.name));
+    }
+}
+
+fn finish(n: Noisy) {
+    n.log.borrow_mut().push("in finish".to_string());
+}   // n is dropped here: the function owns it
+
+fn main() {
+    let log = RefCell::new(Vec::new());
+    let x = Noisy { name: "x", log: &amp;log };
+    finish(x);
+    log.borrow_mut().push("after finish".to_string());
+    assert_eq!(*log.borrow(), ["in finish", "drop x", "after finish"]);
+    println!("ok");
+}</code></pre>
+<p>Passing a value moves ownership, so the destructor runs when the new owner is done.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="raw-pointers-and-unsafe"><a class="header" href="#raw-pointers-and-unsafe">Raw pointers and <code>unsafe</code></a></h1>
@@ -2443,6 +3285,45 @@ fn main() {
     }
 }</code></pre>
 <p>Forgetting <code>from_raw</code> leaks; calling it twice is a double free.</p>
+<h3 id="uninitialized-memory-maybeuninit"><a class="header" href="#uninitialized-memory-maybeuninit">Uninitialized memory: <code>MaybeUninit</code></a></h3>
+<p>Safe Rust never lets you read an uninitialized variable. When you really need a buffer
+that is filled piece by piece, such as an array built in a loop or memory handed to a C
+function, <code>MaybeUninit&lt;T&gt;</code> is the type that may hold garbage. You write each element
+first, and only then claim it is initialized:</p>
+<pre class="playground"><code class="language-rust edition2024">use std::mem::MaybeUninit;
+
+fn main() {
+    let mut arr: [MaybeUninit&lt;u32&gt;; 4] = [const { MaybeUninit::uninit() }; 4];
+    for (i, slot) in arr.iter_mut().enumerate() {
+        slot.write(i as u32 * 10);
+    }
+    // SAFETY: every element was written in the loop above.
+    let arr: [u32; 4] = unsafe { std::mem::transmute(arr) };
+    println!("{arr:?}");   // [0, 10, 20, 30]
+}</code></pre>
+<p>Calling <code>assume_init</code> (or the <code>transmute</code> above) on memory that is not fully written is
+<strong>undefined behavior</strong>, exactly like reading an uninitialized <code>int</code> in C. The safe
+alternatives (<code>[0; 4]</code>, <code>Vec::with_capacity</code> plus <code>push</code>) are almost always enough; reach
+for <code>MaybeUninit</code> when you have measured a need.</p>
+<h3 id="raw-pointers-without-references-raw"><a class="header" href="#raw-pointers-without-references-raw">Raw pointers without references: <code>&amp;raw</code></a></h3>
+<p>Creating a reference <code>&amp;x</code> promises that it is valid and aligned. Sometimes you must not
+make that promise, for example for a field of a <code>#[repr(packed)]</code> struct, which may sit at
+an odd address. <code>&amp;raw const</code> and <code>&amp;raw mut</code> produce a raw pointer directly, with no
+reference in between:</p>
+<pre class="playground"><code class="language-rust edition2024">#[repr(C, packed)]
+struct Header {
+    tag: u8,
+    len: u32,       // unaligned: bytes 1..5
+}
+
+fn main() {
+    let h = Header { tag: 1, len: 7 };
+    let p = &amp;raw const h.len;
+    // SAFETY: `p` points into `h`, which is alive; the read does not assume alignment.
+    println!("{}", unsafe { p.read_unaligned() });   // 7
+}</code></pre>
+<p>The same syntax is how you touch a <code>static mut</code> without creating a reference to it,
+which edition 2024 rejects by default.</p>
 <h2 id="side-by-side-11"><a class="header" href="#side-by-side-11">Side by side</a></h2>
 <div class="table-wrapper">
 <table>
@@ -2487,13 +3368,37 @@ check it in the safe wrapper.</li>
 </ul>
 <h2 id="exercises-11"><a class="header" href="#exercises-11">Exercises</a></h2>
 <ol>
-<li>Write <code>fn swap_raw(a: *mut i32, b: *mut i32)</code> using <code>unsafe</code>, then a safe
-wrapper <code>fn swap(a: &amp;mut i32, b: &amp;mut i32)</code> that calls it.</li>
-<li>Use <code>Box::into_raw</code> and drop the box with <code>Box::from_raw</code>. Then comment out
-<code>from_raw</code> and think about what leaked.</li>
-<li>Search the Rust source for <code>unsafe</code> in <code>Vec::push</code>‘s implementation (via
-the docs’ <code>[src]</code> link) and read the safety comments.</li>
+<li>
+<p>Write <code>fn swap_raw(a: *mut i32, b: *mut i32)</code> using <code>unsafe</code>, then a safe
+wrapper <code>fn swap(a: &amp;mut i32, b: &amp;mut i32)</code> that calls it.</p>
+</li>
+<li>
+<p>Use <code>Box::into_raw</code> and drop the box with <code>Box::from_raw</code>. Then comment out
+<code>from_raw</code> and think about what leaked.</p>
+</li>
+<li>
+<p>Search the Rust source for <code>unsafe</code> in <code>Vec::push</code>‘s implementation (via
+the docs’ <code>[src]</code> link) and read the safety comments.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Write a safe <code>read_at</code> that checks the index, then reads through a raw
+pointer inside a small <code>unsafe</code> block.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn read_at(v: &amp;[i32], i: usize) -&gt; Option&lt;i32&gt; {
+    todo!("check i &lt; v.len(), then read *v.as_ptr().add(i) inside unsafe")
+}
+
+fn main() {
+    assert_eq!(read_at(&amp;[1, 2, 3], 1), Some(2));
+    assert_eq!(read_at(&amp;[1, 2, 3], 3), None);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Build an array of the first four squares with <code>MaybeUninit</code>: write each element,
+then convert. Assert the result is <code>[0, 1, 4, 9]</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -2534,6 +3439,41 @@ and a leak checker such as Valgrind or Miri reports it.</p>
 element into spare capacity, after code that guarantees the capacity is large enough,
 and a comment that states that precondition. This is the pattern from this chapter: a
 small <code>unsafe</code> core with a stated contract, wrapped in a safe API.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn read_at(v: &amp;[i32], i: usize) -&gt; Option&lt;i32&gt; {
+    if i &lt; v.len() {
+        // SAFETY: `i` is in bounds, so the pointer is valid and aligned.
+        Some(unsafe { *v.as_ptr().add(i) })
+    } else {
+        None
+    }
+}
+
+fn main() {
+    assert_eq!(read_at(&amp;[1, 2, 3], 1), Some(2));
+    assert_eq!(read_at(&amp;[1, 2, 3], 3), None);
+    println!("ok");
+}</code></pre>
+<p>(<code>v.get(i).copied()</code> does all of this safely; the exercise shows the shape of a safe
+wrapper around an <code>unsafe</code> core.)</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">use std::mem::MaybeUninit;
+
+fn squares() -&gt; [u32; 4] {
+    let mut arr: [MaybeUninit&lt;u32&gt;; 4] = [const { MaybeUninit::uninit() }; 4];
+    for (i, slot) in arr.iter_mut().enumerate() {
+        slot.write((i * i) as u32);
+    }
+    // SAFETY: every element was written in the loop.
+    unsafe { std::mem::transmute(arr) }
+}
+
+fn main() {
+    assert_eq!(squares(), [0, 1, 4, 9]);
+    println!("ok");
+}</code></pre>
+<p>If the loop wrote only three elements, the <code>transmute</code> would still compile, and the
+program would have undefined behavior: that is what <code>unsafe</code> means.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="methods-and-associated-functions"><a class="header" href="#methods-and-associated-functions">Methods and associated functions</a></h1>
@@ -2697,11 +3637,49 @@ only when consuming.</li>
 </ul>
 <h2 id="exercises-12"><a class="header" href="#exercises-12">Exercises</a></h2>
 <ol>
-<li>Add <code>fn peek(&amp;self) -&gt; Option&lt;&amp;i32&gt;</code> to <code>Stack</code> (hint: <code>self.items.last()</code>).
-Then change it to return <code>Option&lt;i32&gt;</code> using <code>.copied()</code>. When is each better?</li>
-<li>Add <code>#[derive(Clone)]</code> to <code>Stack</code> and clone it before pushing.</li>
-<li>Write <code>impl Counter { fn reset(&amp;mut self) }</code> and call it both ways.</li>
+<li>
+<p>Add <code>fn peek(&amp;self) -&gt; Option&lt;&amp;i32&gt;</code> to <code>Stack</code> (hint: <code>self.items.last()</code>).
+Then change it to return <code>Option&lt;i32&gt;</code> using <code>.copied()</code>. When is each better?</p>
+</li>
+<li>
+<p>Add <code>#[derive(Clone)]</code> to <code>Stack</code> and clone it before pushing.</p>
+</li>
+<li>
+<p>Write <code>impl Counter { fn reset(&amp;mut self) }</code> and call it both ways.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Finish the two methods. <code>withdraw</code> must refuse to overdraw.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">struct Account {
+    balance: u32,
+}
+
+impl Account {
+    fn deposit(&amp;mut self, amount: u32) {
+        todo!()
+    }
+
+    fn withdraw(&amp;mut self, amount: u32) -&gt; Result&lt;(), String&gt; {
+        todo!("Err if amount &gt; balance")
+    }
+}
+
+fn main() {
+    let mut a = Account { balance: 10 };
+    a.deposit(5);
+    assert_eq!(a.balance, 15);
+    assert!(a.withdraw(20).is_err());
+    assert_eq!(a.balance, 15);
+    assert!(a.withdraw(15).is_ok());
+    assert_eq!(a.balance, 0);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> A builder: give <code>Config</code> the methods <code>new()</code>, <code>port(self, p: u16) -&gt; Config</code> and
+<code>verbose(self, v: bool) -&gt; Config</code> so that <code>Config::new().port(8080).verbose(true)</code> works.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -2753,6 +3731,64 @@ fn main() {
     Counter::reset(&amp;mut c);     // the same call, written as a plain function
     println!("{}", c.n);        // 0
 }</code></pre>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">struct Account {
+    balance: u32,
+}
+
+impl Account {
+    fn deposit(&amp;mut self, amount: u32) {
+        self.balance += amount;
+    }
+
+    fn withdraw(&amp;mut self, amount: u32) -&gt; Result&lt;(), String&gt; {
+        if amount &gt; self.balance {
+            return Err(format!("only {} available", self.balance));
+        }
+        self.balance -= amount;
+        Ok(())
+    }
+}
+
+fn main() {
+    let mut a = Account { balance: 10 };
+    a.deposit(5);
+    assert_eq!(a.balance, 15);
+    assert!(a.withdraw(20).is_err());
+    assert_eq!(a.balance, 15);
+    assert!(a.withdraw(15).is_ok());
+    assert_eq!(a.balance, 0);
+    println!("ok");
+}</code></pre>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">#[derive(Debug, PartialEq)]
+struct Config {
+    port: u16,
+    verbose: bool,
+}
+
+impl Config {
+    fn new() -&gt; Config {
+        Config { port: 80, verbose: false }
+    }
+
+    fn port(mut self, p: u16) -&gt; Config {
+        self.port = p;
+        self
+    }
+
+    fn verbose(mut self, v: bool) -&gt; Config {
+        self.verbose = v;
+        self
+    }
+}
+
+fn main() {
+    let c = Config::new().port(8080).verbose(true);
+    assert_eq!(c, Config { port: 8080, verbose: true });
+    println!("ok");
+}</code></pre>
+<p>Each method takes <code>self</code> by value and returns it, so the calls chain without borrowing.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="option-result-and-"><a class="header" href="#option-result-and-"><code>Option</code>, <code>Result</code> and <code>?</code></a></h1>
@@ -2863,6 +3899,18 @@ fn main() {
     println!("{n}");
     Ok(())              // a returned Err prints the error and exits with code 1
 }</code></pre>
+<h3 id="naming-the-type-the-turbofish"><a class="header" href="#naming-the-type-the-turbofish">Naming the type: the turbofish</a></h3>
+<p><code>s.parse()</code> can produce any type that implements <code>FromStr</code>, so the compiler needs to know
+which one. You can annotate the result (<code>let n: u8 = s.parse()?;</code>) or name the type at the
+call with the <strong>turbofish</strong>, <code>::&lt;T&gt;</code>:</p>
+<pre class="playground"><code class="language-rust edition2024">fn main() {
+    println!("{:?}", "42".parse::&lt;u8&gt;());      // Ok(42)
+    println!("{:?}", "300".parse::&lt;u8&gt;());     // Err: number too large for u8
+    let v = [1, 2, 3].iter().map(|x| x * 2).collect::&lt;Vec&lt;i32&gt;&gt;();
+    println!("{v:?}");
+}</code></pre>
+<p>C has no equivalent, because it has no inference to guide: you pick <code>atoi</code>, <code>strtol</code> or
+<code>strtod</code> by hand.</p>
 <h2 id="side-by-side-13"><a class="header" href="#side-by-side-13">Side by side</a></h2>
 <div class="table-wrapper">
 <table>
@@ -2910,12 +3958,37 @@ failure means.</li>
 </ul>
 <h2 id="exercises-13"><a class="header" href="#exercises-13">Exercises</a></h2>
 <ol>
-<li>Write <code>fn divide(a: i32, b: i32) -&gt; Result&lt;i32, String&gt;</code> that rejects <code>b == 0</code>.</li>
-<li>Call <code>parse_sum</code> in a loop over a list of string pairs and print each
-result.</li>
-<li>Add a <code>Range</code> error variant to <code>ConfigError</code> for ports below 1024, and return
-it from <code>port</code>.</li>
+<li>
+<p>Write <code>fn divide(a: i32, b: i32) -&gt; Result&lt;i32, String&gt;</code> that rejects <code>b == 0</code>.</p>
+</li>
+<li>
+<p>Call <code>parse_sum</code> in a loop over a list of string pairs and print each
+result.</p>
+</li>
+<li>
+<p>Add a <code>Range</code> error variant to <code>ConfigError</code> for ports below 1024, and return
+it from <code>port</code>.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Parse <code>"name=5"</code> into <code>("name", 5)</code>. Use <code>split_once</code>, <code>ok_or</code>, <code>?</code> and
+<code>parse::&lt;i32&gt;()</code>.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn parse_kv(s: &amp;str) -&gt; Result&lt;(String, i32), String&gt; {
+    todo!()
+}
+
+fn main() {
+    assert_eq!(parse_kv("a=5"), Ok(("a".to_string(), 5)));
+    assert!(parse_kv("a").is_err());
+    assert!(parse_kv("a=x").is_err());
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> <code>fn first_even_square(v: &amp;[i32]) -&gt; Option&lt;i32&gt;</code> returns the square of the first
+even number, or <code>None</code>. Use <code>find</code> and <code>map</code>, no <code>if</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -2971,6 +4044,30 @@ fn port(value: Option&lt;&amp;str&gt;) -&gt; Result&lt;u16, ConfigError&gt; {
 fn main() {
     println!("{:?}", port(Some("8080")));   // Ok(8080)
     println!("{:?}", port(Some("80")));     // Err(Range(80))
+}</code></pre>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn parse_kv(s: &amp;str) -&gt; Result&lt;(String, i32), String&gt; {
+    let (k, v) = s.split_once('=').ok_or("missing '='")?;
+    let n = v.parse::&lt;i32&gt;().map_err(|e| format!("bad number {v:?}: {e}"))?;
+    Ok((k.to_string(), n))
+}
+
+fn main() {
+    assert_eq!(parse_kv("a=5"), Ok(("a".to_string(), 5)));
+    assert!(parse_kv("a").is_err());
+    assert!(parse_kv("a=x").is_err());
+    println!("ok");
+}</code></pre>
+<p><code>?</code> converts the <code>&amp;str</code> error from <code>ok_or</code> into a <code>String</code> through <code>From</code>.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn first_even_square(v: &amp;[i32]) -&gt; Option&lt;i32&gt; {
+    v.iter().find(|&amp;&amp;x| x % 2 == 0).map(|x| x * x)
+}
+
+fn main() {
+    assert_eq!(first_even_square(&amp;[3, 5, 4, 6]), Some(16));
+    assert_eq!(first_even_square(&amp;[1, 3]), None);
+    println!("ok");
 }</code></pre>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
@@ -3106,6 +4203,27 @@ fn main() {
     println!("{} {}", p.larger(), q.larger());
 }</code></pre>
 <p><code>Vec&lt;T&gt;</code>, <code>Option&lt;T&gt;</code> and <code>Result&lt;T, E&gt;</code> are ordinary generic types.</p>
+<h3 id="the-newtype-pattern-and-the-orphan-rule"><a class="header" href="#the-newtype-pattern-and-the-orphan-rule">The newtype pattern and the orphan rule</a></h3>
+<p>You may implement a trait for a type only if your crate defines the trait or the type
+(the <strong>orphan rule</strong>). It stops two libraries from giving the same type conflicting
+behavior. When you need a foreign trait on a foreign type, wrap the type in a one-field
+tuple struct, a <strong>newtype</strong>, which is yours:</p>
+<pre class="playground"><code class="language-rust edition2024">use std::fmt;
+
+struct Names(Vec&lt;String&gt;);          // `Vec` and `Display` are both foreign; `Names` is ours
+
+impl fmt::Display for Names {
+    fn fmt(&amp;self, f: &amp;mut fmt::Formatter) -&gt; fmt::Result {
+        write!(f, "[{}]", self.0.join(", "))
+    }
+}
+
+fn main() {
+    println!("{}", Names(vec!["ann".into(), "bob".into()]));   // [ann, bob]
+}</code></pre>
+<p>A newtype costs nothing at run time: it has the same layout as the field inside. It is
+also how you give two <code>u32</code> quantities (meters and seconds, say) different types so they
+cannot be mixed up, which a C <code>typedef</code> does not enforce.</p>
 <h2 id="side-by-side-14"><a class="header" href="#side-by-side-14">Side by side</a></h2>
 <div class="table-wrapper">
 <table>
@@ -3144,11 +4262,37 @@ checked, not text-pasted.</li>
 </ul>
 <h2 id="exercises-14"><a class="header" href="#exercises-14">Exercises</a></h2>
 <ol>
-<li>Write <code>fn sum_all&lt;T: std::ops::Add&lt;Output = T&gt; + Copy + Default&gt;(xs: &amp;[T]) -&gt; T</code>.</li>
-<li>Implement <code>Shape</code> for a <code>Rect { w, h }</code> and call <code>print_area</code>.</li>
-<li>Implement <code>Display</code> for your own struct and print it with <code>{}</code> and with
-<code>{:&gt;10}</code>; what changes?</li>
+<li>
+<p>Write <code>fn sum_all&lt;T: std::ops::Add&lt;Output = T&gt; + Copy + Default&gt;(xs: &amp;[T]) -&gt; T</code>.</p>
+</li>
+<li>
+<p>Implement <code>Shape</code> for a <code>Rect { w, h }</code> and call <code>print_area</code>.</p>
+</li>
+<li>
+<p>Implement <code>Display</code> for your own struct and print it with <code>{}</code> and with
+<code>{:&gt;10}</code>; what changes?</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Return a reference to the largest element, or <code>None</code> for an empty slice.
+It must work for numbers and for strings.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn largest&lt;T: PartialOrd&gt;(xs: &amp;[T]) -&gt; Option&lt;&amp;T&gt; {
+    todo!()
+}
+
+fn main() {
+    assert_eq!(largest(&amp;[3, 9, 4]), Some(&amp;9));
+    assert_eq!(largest(&amp;["pear", "apple"]), Some(&amp;"pear"));
+    assert_eq!(largest::&lt;i32&gt;(&amp;[]), None);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Use the newtype pattern: <code>Meters(f64)</code> and <code>Seconds(f64)</code>. Implement
+<code>std::ops::Div&lt;Seconds&gt; for Meters</code> so that <code>Meters(100.0) / Seconds(10.0)</code> is <code>10.0</code>. Check that
+swapping the arguments does not compile.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -3204,6 +4348,43 @@ fn main() {
 <p>With <code>write!</code>, the width in <code>{:&gt;10}</code> is ignored, because your <code>fmt</code> writes the pieces
 itself and never looks at the padding request. To honor it, build a <code>String</code> and pass it
 to <code>f.pad(&amp;s)</code>, which applies width, alignment and fill.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn largest&lt;T: PartialOrd&gt;(xs: &amp;[T]) -&gt; Option&lt;&amp;T&gt; {
+    let mut best = xs.first()?;
+    for x in xs {
+        if x &gt; best {
+            best = x;
+        }
+    }
+    Some(best)
+}
+
+fn main() {
+    assert_eq!(largest(&amp;[3, 9, 4]), Some(&amp;9));
+    assert_eq!(largest(&amp;["pear", "apple"]), Some(&amp;"pear"));
+    assert_eq!(largest::&lt;i32&gt;(&amp;[]), None);
+    println!("ok");
+}</code></pre>
+<p>Returning a reference needs no <code>Copy</code> bound: the element stays in the slice.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">use std::ops::Div;
+
+struct Meters(f64);
+struct Seconds(f64);
+
+impl Div&lt;Seconds&gt; for Meters {
+    type Output = f64;                    // meters per second
+    fn div(self, t: Seconds) -&gt; f64 {
+        self.0 / t.0
+    }
+}
+
+fn main() {
+    assert_eq!(Meters(100.0) / Seconds(10.0), 10.0);
+    println!("ok");
+}</code></pre>
+<p><code>Seconds(10.0) / Meters(100.0)</code> is rejected, because no <code>Div&lt;Meters&gt; for Seconds</code> exists.
+Two C <code>double</code>s would have accepted either order.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="dyn-trait-and-impl-trait"><a class="header" href="#dyn-trait-and-impl-trait"><code>dyn Trait</code> and <code>impl Trait</code></a></h1>
@@ -3367,12 +4548,52 @@ is the same cost as the C vtable.</li>
 </ul>
 <h2 id="exercises-15"><a class="header" href="#exercises-15">Exercises</a></h2>
 <ol>
-<li>Add a third shape and put it in the <code>Vec&lt;Box&lt;dyn Shape&gt;&gt;</code>. Did you change any
-existing code?</li>
-<li>Replace <code>Vec&lt;Box&lt;dyn Shape&gt;&gt;</code> with <code>Vec&lt;&amp;dyn Shape&gt;</code> using references to locals.</li>
-<li>Write <code>fn pick(flag: bool) -&gt; Box&lt;dyn Shape&gt;</code> that returns a <code>Circle</code> or a
-<code>Rect</code>. Why does the same signature with <code>impl Shape</code> fail?</li>
+<li>
+<p>Add a third shape and put it in the <code>Vec&lt;Box&lt;dyn Shape&gt;&gt;</code>. Did you change any
+existing code?</p>
+</li>
+<li>
+<p>Replace <code>Vec&lt;Box&lt;dyn Shape&gt;&gt;</code> with <code>Vec&lt;&amp;dyn Shape&gt;</code> using references to locals.</p>
+</li>
+<li>
+<p>Write <code>fn pick(flag: bool) -&gt; Box&lt;dyn Shape&gt;</code> that returns a <code>Circle</code> or a
+<code>Rect</code>. Why does the same signature with <code>impl Shape</code> fail?</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Give <code>Animal</code> a default method <code>speak</code> that returns <code>"&lt;name&gt; says &lt;sound&gt;"</code>,
+then use it through trait objects.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">trait Animal {
+    fn name(&amp;self) -&gt; String;
+    fn sound(&amp;self) -&gt; String;
+    fn speak(&amp;self) -&gt; String {
+        todo!()
+    }
+}
+
+struct Dog;
+struct Cat;
+impl Animal for Dog {
+    fn name(&amp;self) -&gt; String { "Dog".into() }
+    fn sound(&amp;self) -&gt; String { "woof".into() }
+}
+impl Animal for Cat {
+    fn name(&amp;self) -&gt; String { "Cat".into() }
+    fn sound(&amp;self) -&gt; String { "meow".into() }
+}
+
+fn main() {
+    let zoo: Vec&lt;Box&lt;dyn Animal&gt;&gt; = vec![Box::new(Dog), Box::new(Cat)];
+    let said: Vec&lt;String&gt; = zoo.iter().map(|a| a.speak()).collect();
+    assert_eq!(said, ["Dog says woof", "Cat says meow"]);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Write <code>fn evens() -&gt; impl Iterator&lt;Item = u32&gt;</code> that yields 0, 2, 4, … forever.
+Take the first three.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -3447,6 +4668,40 @@ fn pick(flag: bool) -&gt; impl Shape {
     if flag { Circle } else { Rect }   // error[E0308]: `if` and `else` have incompatible types
 }
 <span class="boring">}</span></code></pre>
+<p><strong>4.</strong> Replace the body of <code>speak</code> with:</p>
+<pre class="playground"><code class="language-rust edition2024">trait Animal {
+    fn name(&amp;self) -&gt; String;
+    fn sound(&amp;self) -&gt; String;
+    fn speak(&amp;self) -&gt; String {
+        format!("{} says {}", self.name(), self.sound())
+    }
+}
+
+struct Dog;
+impl Animal for Dog {
+    fn name(&amp;self) -&gt; String { "Dog".into() }
+    fn sound(&amp;self) -&gt; String { "woof".into() }
+}
+
+fn main() {
+    let zoo: Vec&lt;Box&lt;dyn Animal&gt;&gt; = vec![Box::new(Dog)];
+    assert_eq!(zoo[0].speak(), "Dog says woof");
+    println!("ok");
+}</code></pre>
+<p>A default method is written once in the trait and works for every type that implements
+it, with dynamic dispatch for <code>name</code> and <code>sound</code>.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn evens() -&gt; impl Iterator&lt;Item = u32&gt; {
+    (0..).step_by(2)
+}
+
+fn main() {
+    let v: Vec&lt;u32&gt; = evens().take(3).collect();
+    assert_eq!(v, [0, 2, 4]);
+    println!("ok");
+}</code></pre>
+<p>The concrete iterator type is hidden from the caller but known to the compiler, so the
+call is inlined and there is no heap allocation.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="closures"><a class="header" href="#closures">Closures</a></h1>
@@ -3591,10 +4846,33 @@ different closures together.</li>
 </ul>
 <h2 id="exercises-16"><a class="header" href="#exercises-16">Exercises</a></h2>
 <ol>
-<li>Write <code>fn compose(f: impl Fn(i32) -&gt; i32, g: impl Fn(i32) -&gt; i32) -&gt; impl Fn(i32) -&gt; i32</code>.</li>
-<li>Make a counter: <code>fn make_counter() -&gt; impl FnMut() -&gt; u32</code> that returns 1, 2, 3…</li>
-<li>Remove <code>move</code> from <code>make_adder</code> and read the error.</li>
+<li>
+<p>Write <code>fn compose(f: impl Fn(i32) -&gt; i32, g: impl Fn(i32) -&gt; i32) -&gt; impl Fn(i32) -&gt; i32</code>.</p>
+</li>
+<li>
+<p>Make a counter: <code>fn make_counter() -&gt; impl FnMut() -&gt; u32</code> that returns 1, 2, 3…</p>
+</li>
+<li>
+<p>Remove <code>move</code> from <code>make_adder</code> and read the error.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Apply a function <code>n</code> times.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn apply_n(f: impl Fn(i32) -&gt; i32, n: usize, x: i32) -&gt; i32 {
+    todo!()
+}
+
+fn main() {
+    assert_eq!(apply_n(|v| v * 2, 3, 1), 8);
+    assert_eq!(apply_n(|v| v + 10, 0, 5), 5);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Write <code>fn make_accumulator() -&gt; impl FnMut(i32) -&gt; i32</code> that returns the running
+sum of everything passed so far. Then sort <code>["pear", "fig", "banana"]</code> by length with <code>sort_by_key</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -3624,6 +4902,41 @@ fn main() {
 <p><strong>3.</strong> Without <code>move</code>, the closure borrows <code>n</code>, which lives in <code>make_adder</code>’s stack frame
 and is gone when the function returns, so the compiler stops with <code>error[E0373]: closure may outlive the current function</code>, because it borrows <code>n</code>. The fix is to copy <code>n</code> into the
 closure with <code>move</code>. In C this is a function pointer that returns a pointer to a dead local.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn apply_n(f: impl Fn(i32) -&gt; i32, n: usize, x: i32) -&gt; i32 {
+    let mut acc = x;
+    for _ in 0..n {
+        acc = f(acc);
+    }
+    acc
+}
+
+fn main() {
+    assert_eq!(apply_n(|v| v * 2, 3, 1), 8);
+    assert_eq!(apply_n(|v| v + 10, 0, 5), 5);
+    println!("ok");
+}</code></pre>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn make_accumulator() -&gt; impl FnMut(i32) -&gt; i32 {
+    let mut total = 0;
+    move |x| {
+        total += x;
+        total
+    }
+}
+
+fn main() {
+    let mut acc = make_accumulator();
+    assert_eq!(acc(5), 5);
+    assert_eq!(acc(3), 8);
+
+    let mut words = ["pear", "fig", "banana"];
+    words.sort_by_key(|w| w.len());
+    assert_eq!(words, ["fig", "pear", "banana"]);
+    println!("ok");
+}</code></pre>
+<p>The closure owns <code>total</code>; it is a function plus its state, like a C callback with a
+context struct.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="iterators-and-collections"><a class="header" href="#iterators-and-collections">Iterators and collections</a></h1>
@@ -3806,10 +5119,34 @@ and then prefer <code>enumerate()</code>.</li>
 </ul>
 <h2 id="exercises-17"><a class="header" href="#exercises-17">Exercises</a></h2>
 <ol>
-<li>Reverse a string with <code>"hello".chars().rev().collect::&lt;String&gt;()</code>.</li>
-<li>Count characters in a string with a <code>HashMap&lt;char, usize&gt;</code> and print them sorted.</li>
-<li>Rewrite your favorite C loop (find the max, filter and sum) as one iterator chain.</li>
+<li>
+<p>Reverse a string with <code>"hello".chars().rev().collect::&lt;String&gt;()</code>.</p>
+</li>
+<li>
+<p>Count characters in a string with a <code>HashMap&lt;char, usize&gt;</code> and print them sorted.</p>
+</li>
+<li>
+<p>Rewrite your favorite C loop (find the max, filter and sum) as one iterator chain.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Turn a sentence into the lengths of its words, using one iterator chain.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn word_lengths(s: &amp;str) -&gt; Vec&lt;usize&gt; {
+    todo!("split_whitespace, map, collect")
+}
+
+fn main() {
+    assert_eq!(word_lengths("a bb ccc"), [1, 2, 3]);
+    assert_eq!(word_lengths("  "), Vec::&lt;usize&gt;::new());
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Return the word with the most vowels (the first one on a tie), using
+<code>max_by_key</code>. Careful: <code>max_by_key</code> returns the <strong>last</strong> maximum, so think about how to get the
+first.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -3847,6 +5184,29 @@ for (size_t i = 0; i &lt; n; i++) {
     let sum: i32 = a.iter().filter(|&amp;&amp;x| x &gt; 0).sum();
     let max = a.iter().max();          // Option: an empty slice has no maximum
     println!("{sum} {max:?}");         // 16 Some(9)
+}</code></pre>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn word_lengths(s: &amp;str) -&gt; Vec&lt;usize&gt; {
+    s.split_whitespace().map(|w| w.len()).collect()
+}
+
+fn main() {
+    assert_eq!(word_lengths("a bb ccc"), [1, 2, 3]);
+    assert_eq!(word_lengths("  "), Vec::&lt;usize&gt;::new());
+    println!("ok");
+}</code></pre>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn most_vowels&lt;'a&gt;(words: &amp;[&amp;'a str]) -&gt; Option&lt;&amp;'a str&gt; {
+    let count = |w: &amp;str| w.chars().filter(|c| "aeiou".contains(*c)).count();
+    // `rev` makes the last maximum of the reversed order the first one of the original.
+    words.iter().copied().rev().max_by_key(|w| count(w))
+}
+
+fn main() {
+    assert_eq!(most_vowels(&amp;["sky", "queue", "area"]), Some("queue"));
+    assert_eq!(most_vowels(&amp;["to", "be"]), Some("to"));
+    assert_eq!(most_vowels(&amp;[]), None);
+    println!("ok");
 }</code></pre>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
@@ -4012,12 +5372,44 @@ in the module can break it.</li>
 </ul>
 <h2 id="exercises-18"><a class="header" href="#exercises-18">Exercises</a></h2>
 <ol>
-<li>Split the <code>geometry</code> example into <code>main.rs</code> and <code>geometry.rs</code> on your machine.</li>
-<li>Call <code>helper</code> from <code>shapes</code> (it works: children can see their parent’s private
-items) and from <code>main</code> (it fails). Which visibility modifier fixes the second?</li>
-<li>Add <code>pub use shapes::dist2;</code> inside <code>geometry</code> and call
-<code>geometry::dist2</code> from <code>main</code>.</li>
+<li>
+<p>Split the <code>geometry</code> example into <code>main.rs</code> and <code>geometry.rs</code> on your machine.</p>
+</li>
+<li>
+<p>Call <code>helper</code> from <code>shapes</code> (it works: children can see their parent’s private
+items) and from <code>main</code> (it fails). Which visibility modifier fixes the second?</p>
+</li>
+<li>
+<p>Add <code>pub use shapes::dist2;</code> inside <code>geometry</code> and call
+<code>geometry::dist2</code> from <code>main</code>.</p>
+</li>
+<li>
+<p><strong>Fix the code.</strong> The field <code>balance</code> is private to the module, so <code>main</code> cannot touch it. Keep it
+private and add two public methods so the program compiles.</p>
+<pre class="playground"><code class="language-rust editable compile_fail edition2024">mod bank {
+    pub struct Account {
+        balance: i64,
+    }
+
+    impl Account {
+        pub fn new() -&gt; Account {
+            Account { balance: 0 }
+        }
+    }
+}
+
+fn main() {
+    let mut a = bank::Account::new();
+    a.balance = 100;
+    assert_eq!(a.balance, 100);
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Create <code>mod stats { pub mod basic { pub fn mean(v: &amp;[f64]) -&gt; f64 } }</code>, and re-export
+the function so callers write <code>stats::mean(...)</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> The crate root declares the module, and the module body moves to its own file:</p>
@@ -4052,6 +5444,50 @@ fn main() {
 
 fn main() {
     println!("{}", geometry::dist2(5, 2));   // 9
+}</code></pre>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">mod bank {
+    pub struct Account {
+        balance: i64,
+    }
+
+    impl Account {
+        pub fn new() -&gt; Account {
+            Account { balance: 0 }
+        }
+
+        pub fn deposit(&amp;mut self, amount: i64) {
+            self.balance += amount;
+        }
+
+        pub fn balance(&amp;self) -&gt; i64 {
+            self.balance
+        }
+    }
+}
+
+fn main() {
+    let mut a = bank::Account::new();
+    a.deposit(100);
+    assert_eq!(a.balance(), 100);
+    println!("ok");
+}</code></pre>
+<p>This is the opaque-struct idiom of C (<code>struct account;</code> in the header, functions in the
+<code>.c</code> file), enforced by the compiler.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">mod stats {
+    pub mod basic {
+        pub fn mean(v: &amp;[f64]) -&gt; f64 {
+            v.iter().sum::&lt;f64&gt;() / v.len() as f64
+        }
+    }
+    pub use basic::mean;           // re-export at the shorter path
+}
+
+fn main() {
+    assert_eq!(stats::mean(&amp;[1.0, 2.0, 3.0]), 2.0);
+    assert_eq!(stats::basic::mean(&amp;[2.0, 4.0]), 3.0);   // the long path still works
+    println!("ok");
 }</code></pre>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
@@ -4196,10 +5632,35 @@ can be hard to read: keep macros small.</li>
 </ul>
 <h2 id="exercises-19"><a class="header" href="#exercises-19">Exercises</a></h2>
 <ol>
-<li>Write <code>macro_rules! min</code> like <code>max</code>.</li>
-<li>Write a macro <code>hashmap!{ "a" =&gt; 1, "b" =&gt; 2 }</code> that builds a <code>HashMap</code>.</li>
-<li>Run <code>println!("{}", 1)</code> with an extra argument and read the compile error.</li>
+<li>
+<p>Write <code>macro_rules! min</code> like <code>max</code>.</p>
+</li>
+<li>
+<p>Write a macro <code>hashmap!{ "a" =&gt; 1, "b" =&gt; 2 }</code> that builds a <code>HashMap</code>.</p>
+</li>
+<li>
+<p>Run <code>println!("{}", 1)</code> with an extra argument and read the compile error.</p>
+</li>
+<li>
+<p><strong>Fix the macro.</strong> <code>square!</code> is wrong on purpose: it returns its argument. Fix it so both checks
+pass, and evaluate the argument only once.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">macro_rules! square {
+    ($x:expr) =&gt; {
+        $x
+    };
+}
+
+fn main() {
+    assert_eq!(square!(3), 9);
+    assert_eq!(square!(1 + 2), 9);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Write <code>my_vec![1, 2, 3]</code> (with an optional trailing comma) that builds a <code>Vec</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -4233,6 +5694,39 @@ fn main() {
 <p><strong>3.</strong> The format string is checked at compile time, which <code>printf</code> cannot do:</p>
 <pre class="playground"><code class="language-rust compile_fail edition2024">fn main() {
     println!("{}", 1, 2);   // error: argument never used
+}</code></pre>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">macro_rules! square {
+    ($x:expr) =&gt; {{
+        let v = $x;
+        v * v
+    }};
+}
+
+fn main() {
+    assert_eq!(square!(3), 9);
+    assert_eq!(square!(1 + 2), 9);
+    println!("ok");
+}</code></pre>
+<p>An <code>expr</code> fragment keeps its grouping, so <code>square!(1 + 2)</code> is <code>3 * 3</code>, not <code>1 + 2 * 1 + 2</code>
+as the C macro <code>#define SQ(x) x * x</code> gives. The <code>let</code> evaluates the argument only once.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">macro_rules! my_vec {
+    ($($x:expr),* $(,)?) =&gt; {{
+        let mut v = Vec::new();
+        $( v.push($x); )*
+        v
+    }};
+}
+
+fn main() {
+    let a = my_vec![1, 2, 3];
+    let b: Vec&lt;i32&gt; = my_vec![];
+    let c = my_vec![4, 5,];
+    assert_eq!(a, [1, 2, 3]);
+    assert!(b.is_empty());
+    assert_eq!(c, [4, 5]);
+    println!("ok");
 }</code></pre>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
@@ -4441,12 +5935,35 @@ free function.</li>
 </ul>
 <h2 id="exercises-20"><a class="header" href="#exercises-20">Exercises</a></h2>
 <ol>
-<li>Call <code>getpid()</code> or <code>atoi</code> from Rust through an <code>unsafe extern "C"</code> block.</li>
-<li>Declare a <code>#[repr(C)] struct Point { x: i32, y: i32 }</code> and compare its size
-with the C <code>sizeof</code>.</li>
-<li>Write a safe wrapper <code>fn c_strlen(s: &amp;str) -&gt; usize</code> around <code>strlen</code> that
-rejects interior NULs.</li>
+<li>
+<p>Call <code>getpid()</code> or <code>atoi</code> from Rust through an <code>unsafe extern "C"</code> block.</p>
+</li>
+<li>
+<p>Declare a <code>#[repr(C)] struct Point { x: i32, y: i32 }</code> and compare its size
+with the C <code>sizeof</code>.</p>
+</li>
+<li>
+<p>Write a safe wrapper <code>fn c_strlen(s: &amp;str) -&gt; usize</code> around <code>strlen</code> that
+rejects interior NULs.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Call the C library function <code>abs</code> from Rust.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn c_abs(x: i32) -&gt; i32 {
+    todo!("declare `fn abs(x: i32) -&gt; i32` in an unsafe extern \"C\" block, then call it in unsafe")
+}
+
+fn main() {
+    assert_eq!(c_abs(-5), 5);
+    assert_eq!(c_abs(7), 7);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Find the layout of this <code>#[repr(C)]</code> struct: its size, and the offset of each
+field (<code>std::mem::offset_of!</code>). Predict first, using C’s rules.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -4489,6 +6006,41 @@ fn main() {
     println!("{:?}", c_strlen("hello"));   // Ok(5)
     println!("{:?}", c_strlen("he\0llo")); // Err(NulError(2, ...))
 }</code></pre>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">unsafe extern "C" {
+    fn abs(x: i32) -&gt; i32;
+}
+
+fn c_abs(x: i32) -&gt; i32 {
+    // SAFETY: `abs` has no preconditions beyond a valid int.
+    unsafe { abs(x) }
+}
+
+fn main() {
+    assert_eq!(c_abs(-5), 5);
+    assert_eq!(c_abs(7), 7);
+    println!("ok");
+}</code></pre>
+<p>The wrapper hides the <code>unsafe</code> from callers. (<code>i32::abs</code> is the safe, idiomatic call; this is
+practice for functions that have no Rust version.)</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">use std::mem::{offset_of, size_of};
+
+#[repr(C)]
+struct Header {
+    a: u8,
+    b: u32,
+    c: u16,
+}
+
+fn main() {
+    assert_eq!(offset_of!(Header, a), 0);
+    assert_eq!(offset_of!(Header, b), 4);    // 3 bytes of padding after `a`
+    assert_eq!(offset_of!(Header, c), 8);
+    assert_eq!(size_of::&lt;Header&gt;(), 12);     // 2 bytes of tail padding, for alignment 4
+    println!("ok");
+}</code></pre>
+<p>These numbers are exactly what a C compiler gives for the same struct on common targets.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="concurrency"><a class="header" href="#concurrency">Concurrency</a></h1>
@@ -4647,6 +6199,44 @@ fn main() {
     got.sort();
     println!("{got:?}");                           // [0, 10, 20]
 }</code></pre>
+<h3 id="async-and-await"><a class="header" href="#async-and-await"><code>async</code> and <code>await</code></a></h3>
+<p>Threads are not the only way to wait for many things at once. An <code>async fn</code> returns a
+<strong>future</strong>: a value describing a computation that has not run yet, compiled into a state
+machine, much like the hand-written one a C event loop uses. <code>.await</code> pauses the
+function until the awaited future is ready. Nothing runs until something <strong>polls</strong> the
+future, and the standard library ships no scheduler: a crate such as <code>tokio</code> provides
+one. To show there is no magic, here is a complete executor for futures that never
+block:</p>
+<pre class="playground"><code class="language-rust edition2024">use std::future::Future;
+use std::pin::pin;
+use std::task::{Context, Poll, Waker};
+
+async fn add(a: i32, b: i32) -&gt; i32 {
+    a + b
+}
+
+async fn sum() -&gt; i32 {
+    add(1, 2).await + add(3, 4).await
+}
+
+fn block_on&lt;F: Future&gt;(f: F) -&gt; F::Output {
+    let mut f = pin!(f);                       // a future must not move once polled
+    let mut cx = Context::from_waker(Waker::noop());
+    loop {
+        if let Poll::Ready(v) = f.as_mut().poll(&amp;mut cx) {
+            return v;
+        }
+    }
+}
+
+fn main() {
+    println!("{}", block_on(sum()));          // 10
+}</code></pre>
+<p><code>pin!</code> fixes the future in place, because a state machine may hold pointers into itself;
+that is what the standard library’s <code>Pin</code> type guarantees. A real executor also parks the
+thread until a <code>Waker</code> says the future can make progress, instead of spinning as this
+one does. Use async for programs with very many mostly idle connections; ordinary threads
+(this chapter) are simpler and enough for most work.</p>
 <h2 id="side-by-side-21"><a class="header" href="#side-by-side-21">Side by side</a></h2>
 <div class="table-wrapper">
 <table>
@@ -4688,11 +6278,37 @@ last owner goes away; <code>Rc</code> does the same non-atomically and is cheape
 </ul>
 <h2 id="exercises-21"><a class="header" href="#exercises-21">Exercises</a></h2>
 <ol>
-<li>Remove <code>move</code> from the <code>spawn</code> in the first example and read the error.</li>
-<li>Replace the <code>Mutex</code> counter with <code>AtomicUsize</code> and compare the code.</li>
-<li>Write a producer thread sending 1..=5 over a channel and a consumer that sums
-them.</li>
+<li>
+<p>Remove <code>move</code> from the <code>spawn</code> in the first example and read the error.</p>
+</li>
+<li>
+<p>Replace the <code>Mutex</code> counter with <code>AtomicUsize</code> and compare the code.</p>
+</li>
+<li>
+<p>Write a producer thread sending 1..=5 over a channel and a consumer that sums
+them.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Sum a vector on two threads: split it in half, sum each half in its own
+thread, and add the results.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">use std::thread;
+
+fn parallel_sum(mut data: Vec&lt;u32&gt;) -&gt; u32 {
+    todo!("split_off, thread::spawn(move || ...) twice, join both")
+}
+
+fn main() {
+    let data: Vec&lt;u32&gt; = (1..=100).collect();
+    assert_eq!(parallel_sum(data), 5050);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Using the <code>block_on</code> function from the <code>async</code> section above, write
+<code>async fn total() -&gt; i32</code> that awaits <code>add(1, 2)</code>, <code>add(3, 4)</code> and <code>add(5, 6)</code> and returns the sum.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> Without <code>move</code> the closure borrows a local variable, and the thread may outlive that
@@ -4737,6 +6353,49 @@ fn main() {
     let sum: i32 = rx.iter().sum();   // ends when the channel closes
     producer.join().unwrap();
     println!("{sum}");                // 15
+}</code></pre>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">use std::thread;
+
+fn parallel_sum(mut data: Vec&lt;u32&gt;) -&gt; u32 {
+    let right = data.split_off(data.len() / 2);
+    let h1 = thread::spawn(move || data.iter().sum::&lt;u32&gt;());
+    let h2 = thread::spawn(move || right.iter().sum::&lt;u32&gt;());
+    h1.join().unwrap() + h2.join().unwrap()
+}
+
+fn main() {
+    let data: Vec&lt;u32&gt; = (1..=100).collect();
+    assert_eq!(parallel_sum(data), 5050);
+    println!("ok");
+}</code></pre>
+<p>Each half is moved into its thread, so there is no shared data and no lock.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">use std::future::Future;
+use std::pin::pin;
+use std::task::{Context, Poll, Waker};
+
+async fn add(a: i32, b: i32) -&gt; i32 {
+    a + b
+}
+
+async fn total() -&gt; i32 {
+    add(1, 2).await + add(3, 4).await + add(5, 6).await
+}
+
+fn block_on&lt;F: Future&gt;(f: F) -&gt; F::Output {
+    let mut f = pin!(f);
+    let mut cx = Context::from_waker(Waker::noop());
+    loop {
+        if let Poll::Ready(v) = f.as_mut().poll(&amp;mut cx) {
+            return v;
+        }
+    }
+}
+
+fn main() {
+    assert_eq!(block_on(total()), 21);
+    println!("ok");
 }</code></pre>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
@@ -4895,12 +6554,36 @@ or a PAC.</li>
 </ul>
 <h2 id="exercises-22"><a class="header" href="#exercises-22">Exercises</a></h2>
 <ol>
-<li>Add <code>#![no_std]</code> to a small library crate and fix what breaks (<code>println!</code>,
-<code>Vec</code>, <code>HashMap</code> are not in <code>core</code>).</li>
-<li>Write a <code>RingBuffer&lt;const N: usize&gt;</code> struct over <code>[u8; N]</code> with <code>push</code> and <code>pop</code>.</li>
-<li>Use <code>core::ptr::read_volatile</code> to read a <code>u32</code> out of a struct that is
-<code>#[repr(C)]</code>, and compare with the C pointer cast.</li>
+<li>
+<p>Add <code>#![no_std]</code> to a small library crate and fix what breaks (<code>println!</code>,
+<code>Vec</code>, <code>HashMap</code> are not in <code>core</code>).</p>
+</li>
+<li>
+<p>Write a <code>RingBuffer&lt;const N: usize&gt;</code> struct over <code>[u8; N]</code> with <code>push</code> and <code>pop</code>.</p>
+</li>
+<li>
+<p>Use <code>core::ptr::read_volatile</code> to read a <code>u32</code> out of a struct that is
+<code>#[repr(C)]</code>, and compare with the C pointer cast.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Compute an 8-bit checksum (the wrapping sum of the bytes). It uses no
+allocation, so it would work in a <code>#![no_std]</code> crate.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn checksum(data: &amp;[u8]) -&gt; u8 {
+    todo!("fold with wrapping_add")
+}
+
+fn main() {
+    assert_eq!(checksum(&amp;[200, 100]), 44);
+    assert_eq!(checksum(&amp;[]), 0);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> A fixed-capacity stack <code>FixedStack&lt;const N: usize&gt;</code> over <code>[i32; N]</code> with <code>push</code>
+(returning <code>Err(value)</code> when full) and <code>pop</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> Start the crate with <code>#![no_std]</code>. The compiler then rejects <code>println!</code>, <code>Vec</code>,
@@ -4966,6 +6649,55 @@ fn main() {
 <p>The C equivalent is <code>*(volatile uint32_t *)(base + 4)</code>. <code>read_volatile</code> marks the access
 as one the compiler may not remove, merge or reorder against other volatile accesses,
 which is what memory-mapped registers need.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn checksum(data: &amp;[u8]) -&gt; u8 {
+    data.iter().fold(0u8, |acc, &amp;b| acc.wrapping_add(b))
+}
+
+fn main() {
+    assert_eq!(checksum(&amp;[200, 100]), 44);   // 300 mod 256
+    assert_eq!(checksum(&amp;[]), 0);
+    println!("ok");
+}</code></pre>
+<p><code>wrapping_add</code> states that wraparound is intended. A plain <code>+</code> would panic in a debug build.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">struct FixedStack&lt;const N: usize&gt; {
+    items: [i32; N],
+    len: usize,
+}
+
+impl&lt;const N: usize&gt; FixedStack&lt;N&gt; {
+    fn new() -&gt; Self {
+        FixedStack { items: [0; N], len: 0 }
+    }
+
+    fn push(&amp;mut self, x: i32) -&gt; Result&lt;(), i32&gt; {
+        if self.len == N {
+            return Err(x);
+        }
+        self.items[self.len] = x;
+        self.len += 1;
+        Ok(())
+    }
+
+    fn pop(&amp;mut self) -&gt; Option&lt;i32&gt; {
+        if self.len == 0 {
+            return None;
+        }
+        self.len -= 1;
+        Some(self.items[self.len])
+    }
+}
+
+fn main() {
+    let mut s = FixedStack::&lt;2&gt;::new();
+    assert_eq!(s.push(1), Ok(()));
+    assert_eq!(s.push(2), Ok(()));
+    assert_eq!(s.push(3), Err(3));
+    assert_eq!(s.pop(), Some(2));
+    println!("ok");
+}</code></pre>
+<p>No heap is involved: the size is part of the type, which is how embedded code avoids <code>malloc</code>.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="errors-panics-testing-and-tooling"><a class="header" href="#errors-panics-testing-and-tooling">Errors, panics, testing and tooling</a></h1>
@@ -5145,11 +6877,36 @@ return <code>Result</code>.</li>
 </ul>
 <h2 id="exercises-23"><a class="header" href="#exercises-23">Exercises</a></h2>
 <ol>
-<li>Write a function <code>parse_port(&amp;str) -&gt; Result&lt;u16, String&gt;</code> and tests for good,
-empty and out-of-range input.</li>
-<li>Run a failing test with <code>RUST_BACKTRACE=1 cargo test -- --nocapture</code>.</li>
-<li>Add <code>#![warn(clippy::pedantic)]</code> to a crate and fix three lints.</li>
+<li>
+<p>Write a function <code>parse_port(&amp;str) -&gt; Result&lt;u16, String&gt;</code> and tests for good,
+empty and out-of-range input.</p>
+</li>
+<li>
+<p>Run a failing test with <code>RUST_BACKTRACE=1 cargo test -- --nocapture</code>.</p>
+</li>
+<li>
+<p>Add <code>#![warn(clippy::pedantic)]</code> to a crate and fix three lints.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Parse a percentage such as <code>"50%"</code>.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn parse_percent(s: &amp;str) -&gt; Result&lt;u8, String&gt; {
+    todo!("strip the % suffix, parse as u8, reject values above 100")
+}
+
+fn main() {
+    assert_eq!(parse_percent("50%"), Ok(50));
+    assert!(parse_percent("101%").is_err());
+    assert!(parse_percent("x%").is_err());
+    assert!(parse_percent("50").is_err());
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Write <code>fn average(v: &amp;[i32]) -&gt; i32</code> that panics on an empty slice, with a
+<code>#[should_panic]</code> test for that case, and a second test that returns a <code>Result</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -5193,6 +6950,54 @@ result should not be ignored) and <code>iter_without_into_iter</code> (an <code>
 a matching <code>IntoIterator</code> impl for <code>&amp;List</code>). Others you are likely to meet are
 <code>missing_errors_doc</code> and <code>cast_possible_truncation</code>. Pedantic lints are opinionated:
 fix the ones that improve the code and <code>#[allow(...)]</code> the rest with a comment.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn parse_percent(s: &amp;str) -&gt; Result&lt;u8, String&gt; {
+    let digits = s.strip_suffix('%').ok_or("missing %")?;
+    let n: u8 = digits.parse().map_err(|e| format!("bad number: {e}"))?;
+    if n &gt; 100 {
+        return Err(format!("{n} is above 100"));
+    }
+    Ok(n)
+}
+
+fn main() {
+    assert_eq!(parse_percent("50%"), Ok(50));
+    assert!(parse_percent("101%").is_err());
+    assert!(parse_percent("x%").is_err());
+    assert!(parse_percent("50").is_err());
+    println!("ok");
+}</code></pre>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn average(v: &amp;[i32]) -&gt; i32 {
+    assert!(!v.is_empty(), "average of an empty slice");
+    v.iter().sum::&lt;i32&gt;() / v.len() as i32
+}
+
+fn main() {
+    println!("{}", average(&amp;[2, 4]));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    #[should_panic(expected = "empty slice")]
+    fn empty_panics() {
+        average(&amp;[]);
+    }
+
+    #[test]
+    fn returns_result() -&gt; Result&lt;(), String&gt; {
+        if average(&amp;[2, 4]) == 3 {
+            Ok(())
+        } else {
+            Err("wrong average".to_string())
+        }
+    }
+}</code></pre>
+<p><code>#[should_panic]</code> checks that the failure path really fails, like a C test that expects <code>abort()</code>.
+A test that returns <code>Result</code> can use <code>?</code>.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="capstone-porting-a-c-project"><a class="header" href="#capstone-porting-a-c-project">Capstone: porting a C project</a></h1>
@@ -5583,13 +7388,53 @@ one function at a time.</li>
 </ul>
 <h2 id="exercises-24"><a class="header" href="#exercises-24">Exercises</a></h2>
 <ol>
-<li>Add <code>fn push_back(&amp;mut self, val: i32)</code> to <code>List</code>. Why is it harder than
-<code>push</code>, and what would a tail pointer require? (Hint: two owners of one node.)</li>
-<li>Make <code>List&lt;T&gt;</code> generic over its element type.</li>
-<li>Make <code>wordfreq</code> take the number of lines to print from <code>std::env::args()</code>.</li>
-<li>Port a C function of your own, for example a string tokenizer, and write tests
-for the C behavior first.</li>
+<li>
+<p>Add <code>fn push_back(&amp;mut self, val: i32)</code> to <code>List</code>. Why is it harder than
+<code>push</code>, and what would a tail pointer require? (Hint: two owners of one node.)</p>
+</li>
+<li>
+<p>Make <code>List&lt;T&gt;</code> generic over its element type.</p>
+</li>
+<li>
+<p>Make <code>wordfreq</code> take the number of lines to print from <code>std::env::args()</code>.</p>
+</li>
+<li>
+<p>Port a C function of your own, for example a string tokenizer, and write tests
+for the C behavior first.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Add <code>contains</code> to a small list: walk the nodes and compare.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">struct Node {
+    val: i32,
+    next: Option&lt;Box&lt;Node&gt;&gt;,
+}
+
+struct List {
+    head: Option&lt;Box&lt;Node&gt;&gt;,
+}
+
+impl List {
+    fn push(&amp;mut self, val: i32) {
+        let node = Box::new(Node { val, next: self.head.take() });
+        self.head = Some(node);
+    }
+
+    fn contains(&amp;self, x: i32) -&gt; bool {
+        todo!("follow `next` until it is None; hint: a `while let` over `as_deref()`")
+    }
+}
+
+fn main() {
+    let mut l = List { head: None };
+    l.push(1);
+    l.push(2);
+    assert!(l.contains(1));
+    assert!(!l.contains(9));
+    println!("ok");
+}</code></pre>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> A singly linked list with only a head pointer must walk to the end to append, which is
@@ -5670,12 +7515,49 @@ Rust. For a tokenizer, <code>strtok</code> modifies its input and keeps hidden g
 fn main() {
     assert_eq!(tokens("a,b;;c", &amp;[',', ';']), ["a", "b", "c"]);
 }</code></pre>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">struct Node {
+    val: i32,
+    next: Option&lt;Box&lt;Node&gt;&gt;,
+}
+
+struct List {
+    head: Option&lt;Box&lt;Node&gt;&gt;,
+}
+
+impl List {
+    fn push(&amp;mut self, val: i32) {
+        let node = Box::new(Node { val, next: self.head.take() });
+        self.head = Some(node);
+    }
+
+    fn contains(&amp;self, x: i32) -&gt; bool {
+        let mut cur = self.head.as_deref();
+        while let Some(node) = cur {
+            if node.val == x {
+                return true;
+            }
+            cur = node.next.as_deref();
+        }
+        false
+    }
+}
+
+fn main() {
+    let mut l = List { head: None };
+    l.push(1);
+    l.push(2);
+    assert!(l.contains(1));
+    assert!(!l.contains(9));
+    println!("ok");
+}</code></pre>
+<p><code>as_deref()</code> turns <code>&amp;Option&lt;Box&lt;Node&gt;&gt;</code> into <code>Option&lt;&amp;Node&gt;</code>: a borrowed cursor with no
+raw pointers, like the C loop <code>for (n = head; n; n = n-&gt;next)</code>.</p>
 </details>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="keyword-reference"><a class="header" href="#keyword-reference">Keyword reference</a></h1>
 <p>Every Rust keyword, with the nearest C construct and the chapter that teaches
-it. “None” means C has no counterpart. “Not covered” means the book does not
-teach it; see <a href="#further-reading">Further reading</a>.</p>
+it. “None” means C has no counterpart.</p>
 <p>This page is a lookup table, not a chapter, so it does not follow the
 six-section template.</p>
 <h2 id="strict-keywords"><a class="header" href="#strict-keywords">Strict keywords</a></h2>
@@ -5688,8 +7570,8 @@ six-section template.</p>
 </thead>
 <tbody>
 <tr><td><code>as</code></td><td>A cast <code>(T)x</code>, but only for primitives; also renames in <code>use</code></td><td>3, 19</td></tr>
-<tr><td><code>async</code></td><td>None (closest: a hand-written state machine)</td><td>Not covered; mentioned in 22</td></tr>
-<tr><td><code>await</code></td><td>None</td><td>Not covered</td></tr>
+<tr><td><code>async</code></td><td>None (closest: a hand-written state machine)</td><td>22</td></tr>
+<tr><td><code>await</code></td><td>None (pauses an <code>async fn</code> until a future is ready)</td><td>22</td></tr>
 <tr><td><code>break</code></td><td><code>break</code>, and it can carry a value out of <code>loop</code></td><td>5</td></tr>
 <tr><td><code>const</code></td><td><code>const</code> / <code>#define</code> constant; also <code>const fn</code> (compile-time functions)</td><td>2</td></tr>
 <tr><td><code>continue</code></td><td><code>continue</code></td><td>5</td></tr>
@@ -5711,7 +7593,7 @@ six-section template.</p>
 <tr><td><code>move</code></td><td><code>memcpy</code> of ownership; on closures, captures by value</td><td>7, 17</td></tr>
 <tr><td><code>mut</code></td><td>The absence of <code>const</code></td><td>2, 8</td></tr>
 <tr><td><code>pub</code></td><td>Non-<code>static</code> linkage; the opposite of <code>static</code> on a function</td><td>19</td></tr>
-<tr><td><code>ref</code></td><td>Not covered</td><td></td></tr>
+<tr><td><code>ref</code></td><td>Borrow instead of move in a pattern: <code>Some(ref s)</code></td><td>6</td></tr>
 <tr><td><code>return</code></td><td><code>return</code> (the last expression of a block is the usual way)</td><td>4</td></tr>
 <tr><td><code>self</code></td><td>The explicit <code>T *this</code> parameter of a method</td><td>13</td></tr>
 <tr><td><code>Self</code></td><td>The type being defined (no C analogue; you repeat the struct name)</td><td>13</td></tr>
@@ -5744,7 +7626,7 @@ variable names elsewhere.</p>
 <tbody>
 <tr><td><code>union</code></td><td><code>union Name { ... }</code></td><td><code>union</code> (reads are <code>unsafe</code>)</td><td>6, 12</td></tr>
 <tr><td><code>macro_rules</code></td><td><code>macro_rules! name { ... }</code></td><td><code>#define</code> macros, but hygienic and syntax-aware</td><td>20</td></tr>
-<tr><td><code>raw</code></td><td><code>&amp;raw const x</code>, <code>&amp;raw mut x</code></td><td><code>&amp;x</code> taken as a raw pointer directly</td><td>Not covered</td></tr>
+<tr><td><code>raw</code></td><td><code>&amp;raw const x</code>, <code>&amp;raw mut x</code></td><td><code>&amp;x</code> taken as a raw pointer directly</td><td>12</td></tr>
 <tr><td><code>safe</code></td><td><code>safe fn</code> inside <code>unsafe extern</code> blocks</td><td>None</td><td>12, 21</td></tr>
 <tr><td><code>'static</code></td><td>A lifetime name, not a keyword on its own</td><td>Storage duration of a global</td><td>9</td></tr>
 </tbody>
@@ -5804,6 +7686,7 @@ six-section template.</p>
 <tr><td><code>INT_MAX</code></td><td><code>i32::MAX</code></td><td>3</td></tr>
 <tr><td><code>__builtin_add_overflow</code></td><td><code>checked_add</code>, <code>overflowing_add</code></td><td>3</td></tr>
 <tr><td><code>sizeof(T)</code></td><td><code>std::mem::size_of::&lt;T&gt;()</code></td><td>3</td></tr>
+<tr><td><code>*(uint32_t *)&amp;f</code> (type pun)</td><td><code>f.to_bits()</code>, <code>f32::from_bits(u)</code></td><td>3</td></tr>
 <tr><td><code>int f(int a)</code></td><td><code>fn f(a: i32) -&gt; i32</code></td><td>4</td></tr>
 <tr><td><code>int (*fp)(int)</code></td><td><code>fn(i32) -&gt; i32</code></td><td>4</td></tr>
 <tr><td>out-parameter <code>int *out</code></td><td>return a tuple or a struct</td><td>4</td></tr>
@@ -5860,6 +7743,8 @@ six-section template.</p>
 <tr><td><code>goto cleanup</code> ladder</td><td>locals dropped automatically</td><td>11</td></tr>
 <tr><td><code>__attribute__((cleanup(fn)))</code></td><td><code>impl Drop</code></td><td>11</td></tr>
 <tr><td><code>pthread_mutex_unlock</code> on every path</td><td><code>MutexGuard</code> dropped</td><td>11</td></tr>
+<tr><td>mutate behind a <code>const</code> pointer (counters, caches)</td><td><code>Cell&lt;T&gt;</code> / <code>RefCell&lt;T&gt;</code></td><td>8</td></tr>
+<tr><td>buffer filled piece by piece</td><td><code>MaybeUninit&lt;T&gt;</code></td><td>12</td></tr>
 <tr><td><code>int *p</code></td><td><code>*mut i32</code> / <code>*const i32</code></td><td>12</td></tr>
 <tr><td><code>p + i</code></td><td><code>p.add(i)</code> (unsafe, counts elements)</td><td>12</td></tr>
 <tr><td><code>memcpy</code></td><td><code>ptr::copy_nonoverlapping</code> (unsafe)</td><td>12</td></tr>
@@ -5919,6 +7804,7 @@ six-section template.</p>
 <tr><td><code>_Atomic int</code>, <code>atomic_fetch_add</code></td><td><code>AtomicI32</code>, <code>fetch_add</code></td><td>22</td></tr>
 <tr><td>pipe or queue plus a lock</td><td><code>mpsc::channel</code></td><td>22</td></tr>
 <tr><td>shared pointer with a refcount</td><td><code>Arc&lt;T&gt;</code></td><td>22</td></tr>
+<tr><td>event loop built from state machines</td><td><code>async fn</code> and <code>.await</code></td><td>22</td></tr>
 <tr><td><code>-ffreestanding -nostdlib</code></td><td><code>#![no_std]</code></td><td>23</td></tr>
 <tr><td><code>volatile uint32_t *</code></td><td><code>read_volatile</code> / <code>write_volatile</code></td><td>23</td></tr>
 <tr><td><code>assert</code> handler, <code>abort()</code></td><td><code>#[panic_handler]</code></td><td>23</td></tr>
@@ -5968,7 +7854,7 @@ six-section template.</p>
 <tr><td>Out-of-range float to integer conversion</td><td><strong>Defined.</strong> <code>as</code> saturates: <code>1e10 as i32</code> is <code>i32::MAX</code>, <code>-1.5 as u8</code> is <code>0</code>, and <code>NaN as i32</code> is <code>0</code></td><td>3</td></tr>
 <tr><td>Narrowing integer conversion (<code>(uint8_t)300</code>)</td><td><strong>Defined.</strong> <code>300i32 as u8</code> is <code>44</code> (truncates). Use <code>u8::try_from(x)</code> to get an error instead</td><td>3</td></tr>
 <tr><td>Implicit conversion between integer types</td><td><strong>Compile error</strong> (<code>E0308</code>). Every conversion is written out</td><td>3</td></tr>
-<tr><td>Unspecified evaluation order (<code>i = i++ + i</code>, <code>f(a(), b())</code>)</td><td><strong>Defined.</strong> Operands and arguments are evaluated left to right</td><td>Not covered</td></tr>
+<tr><td>Unspecified evaluation order (<code>i = i++ + i</code>, <code>f(a(), b())</code>)</td><td><strong>Defined.</strong> Operands and arguments are evaluated left to right</td><td>4</td></tr>
 </tbody>
 </table>
 </div>
@@ -5989,7 +7875,7 @@ six-section template.</p>
 <tr><td>Pointer outlives the data it points to</td><td><strong>Compile error</strong> (<code>E0597</code> does not live long enough)</td><td>9</td></tr>
 <tr><td>Writing through a <code>const</code> pointer</td><td><strong>Compile error</strong> (<code>E0594</code>). Mutation needs <code>&amp;mut</code>.</td><td>8</td></tr>
 <tr><td>Modifying a string literal</td><td><strong>Compile error.</strong> A <code>&amp;'static str</code> is immutable</td><td>9</td></tr>
-<tr><td>Strict aliasing violation (reading a <code>float</code> through an <code>int *</code>)</td><td>No type-based aliasing rule exists, so a reinterpretation through a pointer cast is not UB for that reason. Reinterpret with <code>f32::to_bits</code>, <code>from_ne_bytes</code> or <code>transmute</code> (the last is <code>unsafe</code>).</td><td>Not covered</td></tr>
+<tr><td>Strict aliasing violation (reading a <code>float</code> through an <code>int *</code>)</td><td>No type-based aliasing rule exists, so a reinterpretation through a pointer cast is not UB for that reason. Reinterpret with <code>f32::to_bits</code>, <code>from_ne_bytes</code> or <code>transmute</code> (the last is <code>unsafe</code>).</td><td>3, 12</td></tr>
 <tr><td>Overlapping <code>memcpy</code></td><td><code>ptr::copy</code> is <code>memmove</code>. <code>ptr::copy_nonoverlapping</code> is <code>memcpy</code>, and an overlap is <strong>still UB</strong>. In safe code, <code>copy_from_slice</code> panics unless lengths match, and the borrow checker rejects overlap.</td><td>12</td></tr>
 <tr><td>Misaligned pointer dereference</td><td>Safe code cannot produce one. A misaligned raw-pointer read is <strong>still UB</strong>. Use <code>read_unaligned</code> instead.</td><td>21</td></tr>
 <tr><td>Pointer arithmetic past one-past-the-end</td><td>Safe code has no pointer arithmetic. <code>ptr.add(n)</code> outside the allocation is <strong>still UB</strong>.</td><td>12</td></tr>
@@ -6010,7 +7896,7 @@ six-section template.</p>
 <tr><td>Integer value outside an <code>enum</code>’s range</td><td><strong>Compile error.</strong> A number does not cast to an enum (<code>E0605</code>). The only way in is <code>unsafe</code> <code>transmute</code>, and an invalid value is <strong>still UB</strong>.</td><td>6, 12</td></tr>
 <tr><td><code>bool</code> that is neither 0 nor 1</td><td><strong>Compile error</strong> (<code>E0308</code>): an integer is not a <code>bool</code>. A <code>bool</code> forged by <code>unsafe</code> code is <strong>still UB</strong>.</td><td>3</td></tr>
 <tr><td>Invalid UTF-8 treated as text</td><td><strong>Defined.</strong> <code>String::from_utf8</code> returns <code>Err</code>, and slicing inside a character panics. <code>from_utf8_unchecked</code> on invalid bytes is <strong>still UB</strong>. Indexing a <code>str</code> by integer is a compile error (<code>E0277</code>).</td><td>10</td></tr>
-<tr><td>Deep recursion overflowing the stack</td><td><strong>Defined.</strong> The process aborts with a stack overflow message.</td><td>Not covered</td></tr>
+<tr><td>Deep recursion overflowing the stack</td><td><strong>Defined.</strong> The process aborts with a stack overflow message.</td><td>4</td></tr>
 </tbody>
 </table>
 </div>
@@ -6036,7 +7922,7 @@ six-section template.</p>
 <tbody>
 <tr><td>Memory leak</td><td><strong>Defined, not UB.</strong> <code>mem::forget</code> and reference cycles in <code>Rc</code> are safe. The compiler does not promise to prevent a leak.</td><td>11</td></tr>
 <tr><td>Use of a closed file or freed handle</td><td><strong>Compile error.</strong> The handle was moved or dropped.</td><td>11</td></tr>
-<tr><td><code>RefCell</code> borrowed mutably twice</td><td><strong>Panic</strong> (<code>RefCell already borrowed</code>). The borrow rules move from compile time to run time.</td><td>Not covered</td></tr>
+<tr><td><code>RefCell</code> borrowed mutably twice</td><td><strong>Panic</strong> (<code>RefCell already borrowed</code>). The borrow rules move from compile time to run time.</td><td>8</td></tr>
 </tbody>
 </table>
 </div>
@@ -6071,8 +7957,7 @@ on nightly.</li>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="glossary"><a class="header" href="#glossary">Glossary</a></h1>
 <p>Rust terms, each with the C idea it corresponds to and the chapter that teaches
-it. “Not covered” means the book does not teach the term; see
-<a href="#further-reading">Further reading</a>.</p>
+it. Terms the book leaves out are listed at the end.</p>
 <p>This page is a lookup table, not a chapter, so it does not follow the
 six-section template.</p>
 <div class="table-wrapper">
@@ -6100,7 +7985,9 @@ six-section template.</p>
 <tr><td><strong>fat pointer</strong></td><td>A pointer that carries extra data: a slice reference holds address and length, a trait object holds address and vtable</td><td>A <code>(ptr, len)</code> pair passed by hand</td><td>6, 16</td></tr>
 <tr><td><strong>FFI</strong></td><td>Foreign function interface: calling C from Rust or Rust from C</td><td>Calling between two C libraries</td><td>21</td></tr>
 <tr><td><strong>FnOnce / FnMut / Fn</strong></td><td>The three closure traits: consumes its captures, mutates them, or only reads them</td><td>None</td><td>17</td></tr>
+<tr><td><strong>future</strong></td><td>A value describing a computation that has not finished; <code>async fn</code> returns one and an executor polls it</td><td>A hand-written state machine in an event loop</td><td>22</td></tr>
 <tr><td><strong>generic</strong></td><td>Code written once over a type parameter, <code>fn f&lt;T&gt;(x: T)</code></td><td>A macro or a <code>void *</code> function</td><td>15</td></tr>
+<tr><td><strong>interior mutability</strong></td><td>Mutating through a shared reference with <code>Cell</code> or <code>RefCell</code> (borrow rules checked at run time), <code>Mutex</code> or atomics</td><td>A mutable field behind a <code>const</code> pointer, made legal and checked</td><td>8, 22</td></tr>
 <tr><td><strong>iterator</strong></td><td>A value with a <code>next()</code> method that yields items one at a time; <code>for</code> loops use it</td><td>A cursor struct with <code>has_next</code> and <code>next</code> functions</td><td>18</td></tr>
 <tr><td><strong>lifetime</strong></td><td>The region of code in which a reference is valid, written <code>'a</code></td><td>The scope in which a pointer is not dangling</td><td>9</td></tr>
 <tr><td><strong>lifetime elision</strong></td><td>The rules that let you omit lifetime names in common signatures</td><td>None</td><td>9</td></tr>
@@ -6110,6 +7997,7 @@ six-section template.</p>
 <tr><td><strong>monomorphization</strong></td><td>The compiler generating a separate copy of a generic function for each concrete type</td><td>One macro expansion per type</td><td>15</td></tr>
 <tr><td><strong>move</strong></td><td>Transferring ownership: after <code>let b = a;</code> the name <code>a</code> can no longer be used</td><td><code>memcpy</code> plus a promise not to touch the source</td><td>7</td></tr>
 <tr><td><strong>mutex</strong></td><td>A lock that owns the data it protects and returns a guard that unlocks on drop</td><td><code>pthread_mutex_t</code> kept next to the data</td><td>22</td></tr>
+<tr><td><strong>newtype</strong></td><td>A tuple struct with one field, used to give a type a distinct identity or to implement a foreign trait</td><td>A <code>typedef</code> that the compiler actually enforces</td><td>15</td></tr>
 <tr><td><strong>niche</strong></td><td>An invalid bit pattern of a type that the compiler reuses to store extra information, so <code>Option&lt;&amp;T&gt;</code> is the size of <code>&amp;T</code></td><td>A null pointer as the “no value” marker</td><td>6</td></tr>
 <tr><td><strong>no_std</strong></td><td>Compiling without the standard library, using only <code>core</code> (and optionally <code>alloc</code>)</td><td>A freestanding C environment</td><td>23</td></tr>
 <tr><td><strong>Option</strong></td><td>The enum <code>Some(T)</code> or <code>None</code>; Rust’s replacement for a nullable pointer</td><td>A pointer that may be <code>NULL</code></td><td>14</td></tr>
@@ -6117,8 +8005,9 @@ six-section template.</p>
 <tr><td><strong>ownership</strong></td><td>Every value has exactly one owner, and the value is dropped when the owner goes out of scope</td><td>The convention “who calls <code>free</code>”, enforced</td><td>7</td></tr>
 <tr><td><strong>panic</strong></td><td>An unrecoverable error: it prints a message and unwinds (or aborts)</td><td><code>abort()</code> or a failed <code>assert</code></td><td>24</td></tr>
 <tr><td><strong>pattern</strong></td><td>The left side of <code>let</code>, of a <code>match</code> arm or of <code>if let</code>, which tests and destructures a value</td><td>None</td><td>5, 6</td></tr>
-<tr><td><strong>raw pointer</strong></td><td><code>*const T</code> or <code>*mut T</code>: a pointer with no safety checks, dereferenced only in <code>unsafe</code></td><td>A C pointer</td><td>12</td></tr>
+<tr><td><strong>Pin</strong></td><td>A wrapper that stops a value from moving in memory; futures need it</td><td>None</td><td>22</td></tr>
 <tr><td><strong>RAII</strong></td><td>Resource acquisition is initialization: a value owns a resource and releases it on drop</td><td>A <code>goto cleanup</code> ladder, automated</td><td>11</td></tr>
+<tr><td><strong>raw pointer</strong></td><td><code>*const T</code> or <code>*mut T</code>: a pointer with no safety checks, dereferenced only in <code>unsafe</code></td><td>A C pointer</td><td>12</td></tr>
 <tr><td><strong>repr(C)</strong></td><td>An attribute that gives a struct C’s layout and field order</td><td>A struct’s normal layout</td><td>21</td></tr>
 <tr><td><strong>Result</strong></td><td>The enum <code>Ok(T)</code> or <code>Err(E)</code>; Rust’s error return</td><td>A status code plus an out-parameter</td><td>14</td></tr>
 <tr><td><strong>Send / Sync</strong></td><td>Marker traits: <code>Send</code> types may move to another thread, <code>Sync</code> types may be shared between threads</td><td>None; a convention in C</td><td>22</td></tr>
@@ -6127,6 +8016,7 @@ six-section template.</p>
 <tr><td><strong>trait</strong></td><td>A set of functions a type can implement; used as a bound or as <code>dyn Trait</code></td><td>A header of function prototypes, or a vtable struct</td><td>15</td></tr>
 <tr><td><strong>trait bound</strong></td><td>A requirement on a generic parameter, <code>T: Display</code></td><td>A comment saying which operations <code>T</code> must support</td><td>15</td></tr>
 <tr><td><strong>trait object</strong></td><td>A value used through <code>dyn Trait</code>, dispatched at run time through a vtable</td><td>A struct holding function pointers</td><td>16</td></tr>
+<tr><td><strong>turbofish</strong></td><td>The <code>::&lt;T&gt;</code> syntax for naming a type parameter at a call, as in <code>parse::&lt;u16&gt;()</code></td><td>None</td><td>14</td></tr>
 <tr><td><strong>unsafe</strong></td><td>A keyword that unlocks five extra operations; the programmer takes over the compiler’s checks</td><td>Every C line</td><td>12</td></tr>
 <tr><td><strong>unwinding</strong></td><td>Running <code>Drop</code> for each live value while a panic travels up the stack</td><td><code>longjmp</code>, with destructors</td><td>24</td></tr>
 <tr><td><strong>vtable</strong></td><td>The table of function pointers a trait object carries</td><td>A hand-written table of function pointers</td><td>16</td></tr>
@@ -6141,11 +8031,7 @@ six-section template.</p>
 <tr><th>Term</th><th>One-line meaning</th></tr>
 </thead>
 <tbody>
-<tr><td><strong>interior mutability</strong></td><td>Mutating through a shared reference, using <code>Cell</code>, <code>RefCell</code>, <code>Mutex</code> or atomics</td></tr>
-<tr><td><strong>newtype</strong></td><td>A tuple struct with one field, used to give a type a distinct identity</td></tr>
 <tr><td><strong>PhantomData</strong></td><td>A zero-sized marker that tells the compiler a type logically owns or borrows something</td></tr>
-<tr><td><strong>Pin</strong></td><td>A wrapper that stops a value from moving in memory; used by async code</td></tr>
-<tr><td><strong>turbofish</strong></td><td>The <code>::&lt;T&gt;</code> syntax for naming a type parameter, as in <code>parse::&lt;u16&gt;()</code></td></tr>
 </tbody>
 </table>
 </div>

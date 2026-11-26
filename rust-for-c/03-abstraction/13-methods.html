@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -336,11 +336,49 @@ only when consuming.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Add <code>fn peek(&amp;self) -&gt; Option&lt;&amp;i32&gt;</code> to <code>Stack</code> (hint: <code>self.items.last()</code>).
-Then change it to return <code>Option&lt;i32&gt;</code> using <code>.copied()</code>. When is each better?</li>
-<li>Add <code>#[derive(Clone)]</code> to <code>Stack</code> and clone it before pushing.</li>
-<li>Write <code>impl Counter { fn reset(&amp;mut self) }</code> and call it both ways.</li>
+<li>
+<p>Add <code>fn peek(&amp;self) -&gt; Option&lt;&amp;i32&gt;</code> to <code>Stack</code> (hint: <code>self.items.last()</code>).
+Then change it to return <code>Option&lt;i32&gt;</code> using <code>.copied()</code>. When is each better?</p>
+</li>
+<li>
+<p>Add <code>#[derive(Clone)]</code> to <code>Stack</code> and clone it before pushing.</p>
+</li>
+<li>
+<p>Write <code>impl Counter { fn reset(&amp;mut self) }</code> and call it both ways.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Finish the two methods. <code>withdraw</code> must refuse to overdraw.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">struct Account {
+    balance: u32,
+}
+
+impl Account {
+    fn deposit(&amp;mut self, amount: u32) {
+        todo!()
+    }
+
+    fn withdraw(&amp;mut self, amount: u32) -&gt; Result&lt;(), String&gt; {
+        todo!("Err if amount &gt; balance")
+    }
+}
+
+fn main() {
+    let mut a = Account { balance: 10 };
+    a.deposit(5);
+    assert_eq!(a.balance, 15);
+    assert!(a.withdraw(20).is_err());
+    assert_eq!(a.balance, 15);
+    assert!(a.withdraw(15).is_ok());
+    assert_eq!(a.balance, 0);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> A builder: give <code>Config</code> the methods <code>new()</code>, <code>port(self, p: u16) -&gt; Config</code> and
+<code>verbose(self, v: bool) -&gt; Config</code> so that <code>Config::new().port(8080).verbose(true)</code> works.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -392,6 +430,64 @@ fn main() {
     Counter::reset(&amp;mut c);     // the same call, written as a plain function
     println!("{}", c.n);        // 0
 }</code></pre>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">struct Account {
+    balance: u32,
+}
+
+impl Account {
+    fn deposit(&amp;mut self, amount: u32) {
+        self.balance += amount;
+    }
+
+    fn withdraw(&amp;mut self, amount: u32) -&gt; Result&lt;(), String&gt; {
+        if amount &gt; self.balance {
+            return Err(format!("only {} available", self.balance));
+        }
+        self.balance -= amount;
+        Ok(())
+    }
+}
+
+fn main() {
+    let mut a = Account { balance: 10 };
+    a.deposit(5);
+    assert_eq!(a.balance, 15);
+    assert!(a.withdraw(20).is_err());
+    assert_eq!(a.balance, 15);
+    assert!(a.withdraw(15).is_ok());
+    assert_eq!(a.balance, 0);
+    println!("ok");
+}</code></pre>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">#[derive(Debug, PartialEq)]
+struct Config {
+    port: u16,
+    verbose: bool,
+}
+
+impl Config {
+    fn new() -&gt; Config {
+        Config { port: 80, verbose: false }
+    }
+
+    fn port(mut self, p: u16) -&gt; Config {
+        self.port = p;
+        self
+    }
+
+    fn verbose(mut self, v: bool) -&gt; Config {
+        self.verbose = v;
+        self
+    }
+}
+
+fn main() {
+    let c = Config::new().port(8080).verbose(true);
+    assert_eq!(c, Config { port: 8080, verbose: true });
+    println!("ok");
+}</code></pre>
+<p>Each method takes <code>self</code> by value and returns it, so the calls chain without borrowing.</p>
 </details>
 
                     </main>

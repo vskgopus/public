@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -330,12 +330,36 @@ or a PAC.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Add <code>#![no_std]</code> to a small library crate and fix what breaks (<code>println!</code>,
-<code>Vec</code>, <code>HashMap</code> are not in <code>core</code>).</li>
-<li>Write a <code>RingBuffer&lt;const N: usize&gt;</code> struct over <code>[u8; N]</code> with <code>push</code> and <code>pop</code>.</li>
-<li>Use <code>core::ptr::read_volatile</code> to read a <code>u32</code> out of a struct that is
-<code>#[repr(C)]</code>, and compare with the C pointer cast.</li>
+<li>
+<p>Add <code>#![no_std]</code> to a small library crate and fix what breaks (<code>println!</code>,
+<code>Vec</code>, <code>HashMap</code> are not in <code>core</code>).</p>
+</li>
+<li>
+<p>Write a <code>RingBuffer&lt;const N: usize&gt;</code> struct over <code>[u8; N]</code> with <code>push</code> and <code>pop</code>.</p>
+</li>
+<li>
+<p>Use <code>core::ptr::read_volatile</code> to read a <code>u32</code> out of a struct that is
+<code>#[repr(C)]</code>, and compare with the C pointer cast.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Compute an 8-bit checksum (the wrapping sum of the bytes). It uses no
+allocation, so it would work in a <code>#![no_std]</code> crate.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn checksum(data: &amp;[u8]) -&gt; u8 {
+    todo!("fold with wrapping_add")
+}
+
+fn main() {
+    assert_eq!(checksum(&amp;[200, 100]), 44);
+    assert_eq!(checksum(&amp;[]), 0);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> A fixed-capacity stack <code>FixedStack&lt;const N: usize&gt;</code> over <code>[i32; N]</code> with <code>push</code>
+(returning <code>Err(value)</code> when full) and <code>pop</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> Start the crate with <code>#![no_std]</code>. The compiler then rejects <code>println!</code>, <code>Vec</code>,
@@ -401,6 +425,55 @@ fn main() {
 <p>The C equivalent is <code>*(volatile uint32_t *)(base + 4)</code>. <code>read_volatile</code> marks the access
 as one the compiler may not remove, merge or reorder against other volatile accesses,
 which is what memory-mapped registers need.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn checksum(data: &amp;[u8]) -&gt; u8 {
+    data.iter().fold(0u8, |acc, &amp;b| acc.wrapping_add(b))
+}
+
+fn main() {
+    assert_eq!(checksum(&amp;[200, 100]), 44);   // 300 mod 256
+    assert_eq!(checksum(&amp;[]), 0);
+    println!("ok");
+}</code></pre>
+<p><code>wrapping_add</code> states that wraparound is intended. A plain <code>+</code> would panic in a debug build.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">struct FixedStack&lt;const N: usize&gt; {
+    items: [i32; N],
+    len: usize,
+}
+
+impl&lt;const N: usize&gt; FixedStack&lt;N&gt; {
+    fn new() -&gt; Self {
+        FixedStack { items: [0; N], len: 0 }
+    }
+
+    fn push(&amp;mut self, x: i32) -&gt; Result&lt;(), i32&gt; {
+        if self.len == N {
+            return Err(x);
+        }
+        self.items[self.len] = x;
+        self.len += 1;
+        Ok(())
+    }
+
+    fn pop(&amp;mut self) -&gt; Option&lt;i32&gt; {
+        if self.len == 0 {
+            return None;
+        }
+        self.len -= 1;
+        Some(self.items[self.len])
+    }
+}
+
+fn main() {
+    let mut s = FixedStack::&lt;2&gt;::new();
+    assert_eq!(s.push(1), Ok(()));
+    assert_eq!(s.push(2), Ok(()));
+    assert_eq!(s.push(3), Err(3));
+    assert_eq!(s.pop(), Some(2));
+    println!("ok");
+}</code></pre>
+<p>No heap is involved: the size is part of the type, which is how embedded code avoids <code>malloc</code>.</p>
 </details>
 
                     </main>

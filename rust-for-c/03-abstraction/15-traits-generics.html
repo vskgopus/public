@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -307,6 +307,27 @@ fn main() {
     println!("{} {}", p.larger(), q.larger());
 }</code></pre>
 <p><code>Vec&lt;T&gt;</code>, <code>Option&lt;T&gt;</code> and <code>Result&lt;T, E&gt;</code> are ordinary generic types.</p>
+<h3 id="the-newtype-pattern-and-the-orphan-rule"><a class="header" href="#the-newtype-pattern-and-the-orphan-rule">The newtype pattern and the orphan rule</a></h3>
+<p>You may implement a trait for a type only if your crate defines the trait or the type
+(the <strong>orphan rule</strong>). It stops two libraries from giving the same type conflicting
+behavior. When you need a foreign trait on a foreign type, wrap the type in a one-field
+tuple struct, a <strong>newtype</strong>, which is yours:</p>
+<pre class="playground"><code class="language-rust edition2024">use std::fmt;
+
+struct Names(Vec&lt;String&gt;);          // `Vec` and `Display` are both foreign; `Names` is ours
+
+impl fmt::Display for Names {
+    fn fmt(&amp;self, f: &amp;mut fmt::Formatter) -&gt; fmt::Result {
+        write!(f, "[{}]", self.0.join(", "))
+    }
+}
+
+fn main() {
+    println!("{}", Names(vec!["ann".into(), "bob".into()]));   // [ann, bob]
+}</code></pre>
+<p>A newtype costs nothing at run time: it has the same layout as the field inside. It is
+also how you give two <code>u32</code> quantities (meters and seconds, say) different types so they
+cannot be mixed up, which a C <code>typedef</code> does not enforce.</p>
 <h2 id="side-by-side"><a class="header" href="#side-by-side">Side by side</a></h2>
 <div class="table-wrapper">
 <table>
@@ -345,11 +366,37 @@ checked, not text-pasted.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Write <code>fn sum_all&lt;T: std::ops::Add&lt;Output = T&gt; + Copy + Default&gt;(xs: &amp;[T]) -&gt; T</code>.</li>
-<li>Implement <code>Shape</code> for a <code>Rect { w, h }</code> and call <code>print_area</code>.</li>
-<li>Implement <code>Display</code> for your own struct and print it with <code>{}</code> and with
-<code>{:&gt;10}</code>; what changes?</li>
+<li>
+<p>Write <code>fn sum_all&lt;T: std::ops::Add&lt;Output = T&gt; + Copy + Default&gt;(xs: &amp;[T]) -&gt; T</code>.</p>
+</li>
+<li>
+<p>Implement <code>Shape</code> for a <code>Rect { w, h }</code> and call <code>print_area</code>.</p>
+</li>
+<li>
+<p>Implement <code>Display</code> for your own struct and print it with <code>{}</code> and with
+<code>{:&gt;10}</code>; what changes?</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Return a reference to the largest element, or <code>None</code> for an empty slice.
+It must work for numbers and for strings.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn largest&lt;T: PartialOrd&gt;(xs: &amp;[T]) -&gt; Option&lt;&amp;T&gt; {
+    todo!()
+}
+
+fn main() {
+    assert_eq!(largest(&amp;[3, 9, 4]), Some(&amp;9));
+    assert_eq!(largest(&amp;["pear", "apple"]), Some(&amp;"pear"));
+    assert_eq!(largest::&lt;i32&gt;(&amp;[]), None);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Use the newtype pattern: <code>Meters(f64)</code> and <code>Seconds(f64)</code>. Implement
+<code>std::ops::Div&lt;Seconds&gt; for Meters</code> so that <code>Meters(100.0) / Seconds(10.0)</code> is <code>10.0</code>. Check that
+swapping the arguments does not compile.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -405,6 +452,43 @@ fn main() {
 <p>With <code>write!</code>, the width in <code>{:&gt;10}</code> is ignored, because your <code>fmt</code> writes the pieces
 itself and never looks at the padding request. To honor it, build a <code>String</code> and pass it
 to <code>f.pad(&amp;s)</code>, which applies width, alignment and fill.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn largest&lt;T: PartialOrd&gt;(xs: &amp;[T]) -&gt; Option&lt;&amp;T&gt; {
+    let mut best = xs.first()?;
+    for x in xs {
+        if x &gt; best {
+            best = x;
+        }
+    }
+    Some(best)
+}
+
+fn main() {
+    assert_eq!(largest(&amp;[3, 9, 4]), Some(&amp;9));
+    assert_eq!(largest(&amp;["pear", "apple"]), Some(&amp;"pear"));
+    assert_eq!(largest::&lt;i32&gt;(&amp;[]), None);
+    println!("ok");
+}</code></pre>
+<p>Returning a reference needs no <code>Copy</code> bound: the element stays in the slice.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">use std::ops::Div;
+
+struct Meters(f64);
+struct Seconds(f64);
+
+impl Div&lt;Seconds&gt; for Meters {
+    type Output = f64;                    // meters per second
+    fn div(self, t: Seconds) -&gt; f64 {
+        self.0 / t.0
+    }
+}
+
+fn main() {
+    assert_eq!(Meters(100.0) / Seconds(10.0), 10.0);
+    println!("ok");
+}</code></pre>
+<p><code>Seconds(10.0) / Meters(100.0)</code> is rejected, because no <code>Div&lt;Meters&gt; for Seconds</code> exists.
+Two C <code>double</code>s would have accepted either order.</p>
 </details>
 
                     </main>

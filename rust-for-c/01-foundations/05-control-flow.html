@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -363,10 +363,35 @@ also lets the compiler drop bounds checks that an indexed loop might keep.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Rewrite FizzBuzz (1..=100) with a single <code>match</code> on <code>(i % 3, i % 5)</code>.</li>
-<li>Convert <code>do { ... } while (x != 0)</code> to a <code>loop</code>.</li>
-<li>Remove the <code>_</code> arm of <code>describe</code> and read the exhaustiveness error.</li>
+<li>
+<p>Rewrite FizzBuzz (1..=100) with a single <code>match</code> on <code>(i % 3, i % 5)</code>.</p>
+</li>
+<li>
+<p>Convert <code>do { ... } while (x != 0)</code> to a <code>loop</code>.</p>
+</li>
+<li>
+<p>Remove the <code>_</code> arm of <code>describe</code> and read the exhaustiveness error.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Count the steps of the Collatz sequence (halve if even, otherwise
+<code>3n + 1</code>) until it reaches 1.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn collatz_steps(mut n: u64) -&gt; u32 {
+    todo!("loop until n == 1, counting steps")
+}
+
+fn main() {
+    assert_eq!(collatz_steps(1), 0);
+    assert_eq!(collatz_steps(6), 8);
+    assert_eq!(collatz_steps(27), 111);
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Write <code>fn grade(score: u32) -&gt; char</code> with a <code>match</code>: 90 and up is <code>'A'</code>, 80-89
+<code>'B'</code>, 70-79 <code>'C'</code>, anything lower <code>'F'</code>. Test the boundaries (89, 90, 69, 70).</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -395,6 +420,40 @@ at the bottom does the same:</p>
 <p><strong>3.</strong> Without the <code>_</code> arm the compiler rejects the <code>match</code> with <code>error[E0004]: non-exhaustive patterns</code>, and names a range of values that no arm covers. A guard such
 as <code>x if x &lt; 0</code> does not count towards exhaustiveness, because the compiler cannot
 reason about arbitrary conditions. C compilers at best warn about a missing <code>default</code>.</p>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn collatz_steps(mut n: u64) -&gt; u32 {
+    let mut steps = 0;
+    while n != 1 {
+        n = if n % 2 == 0 { n / 2 } else { 3 * n + 1 };
+        steps += 1;
+    }
+    steps
+}
+
+fn main() {
+    assert_eq!(collatz_steps(1), 0);
+    assert_eq!(collatz_steps(6), 8);
+    assert_eq!(collatz_steps(27), 111);
+    println!("ok");
+}</code></pre>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn grade(score: u32) -&gt; char {
+    match score {
+        90.. =&gt; 'A',
+        80..=89 =&gt; 'B',
+        70..=79 =&gt; 'C',
+        _ =&gt; 'F',
+    }
+}
+
+fn main() {
+    assert_eq!(grade(90), 'A');
+    assert_eq!(grade(89), 'B');
+    assert_eq!(grade(70), 'C');
+    assert_eq!(grade(69), 'F');
+    println!("ok");
+}</code></pre>
+<p>Ranges replace the <code>if</code>/<code>else if</code> ladder, and the compiler checks that every value is covered.</p>
 </details>
 
                     </main>

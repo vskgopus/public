@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -337,12 +337,44 @@ in the module can break it.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Split the <code>geometry</code> example into <code>main.rs</code> and <code>geometry.rs</code> on your machine.</li>
-<li>Call <code>helper</code> from <code>shapes</code> (it works: children can see their parent’s private
-items) and from <code>main</code> (it fails). Which visibility modifier fixes the second?</li>
-<li>Add <code>pub use shapes::dist2;</code> inside <code>geometry</code> and call
-<code>geometry::dist2</code> from <code>main</code>.</li>
+<li>
+<p>Split the <code>geometry</code> example into <code>main.rs</code> and <code>geometry.rs</code> on your machine.</p>
+</li>
+<li>
+<p>Call <code>helper</code> from <code>shapes</code> (it works: children can see their parent’s private
+items) and from <code>main</code> (it fails). Which visibility modifier fixes the second?</p>
+</li>
+<li>
+<p>Add <code>pub use shapes::dist2;</code> inside <code>geometry</code> and call
+<code>geometry::dist2</code> from <code>main</code>.</p>
+</li>
+<li>
+<p><strong>Fix the code.</strong> The field <code>balance</code> is private to the module, so <code>main</code> cannot touch it. Keep it
+private and add two public methods so the program compiles.</p>
+<pre class="playground"><code class="language-rust editable compile_fail edition2024">mod bank {
+    pub struct Account {
+        balance: i64,
+    }
+
+    impl Account {
+        pub fn new() -&gt; Account {
+            Account { balance: 0 }
+        }
+    }
+}
+
+fn main() {
+    let mut a = bank::Account::new();
+    a.balance = 100;
+    assert_eq!(a.balance, 100);
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Create <code>mod stats { pub mod basic { pub fn mean(v: &amp;[f64]) -&gt; f64 } }</code>, and re-export
+the function so callers write <code>stats::mean(...)</code>.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong> The crate root declares the module, and the module body moves to its own file:</p>
@@ -377,6 +409,50 @@ fn main() {
 
 fn main() {
     println!("{}", geometry::dist2(5, 2));   // 9
+}</code></pre>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">mod bank {
+    pub struct Account {
+        balance: i64,
+    }
+
+    impl Account {
+        pub fn new() -&gt; Account {
+            Account { balance: 0 }
+        }
+
+        pub fn deposit(&amp;mut self, amount: i64) {
+            self.balance += amount;
+        }
+
+        pub fn balance(&amp;self) -&gt; i64 {
+            self.balance
+        }
+    }
+}
+
+fn main() {
+    let mut a = bank::Account::new();
+    a.deposit(100);
+    assert_eq!(a.balance(), 100);
+    println!("ok");
+}</code></pre>
+<p>This is the opaque-struct idiom of C (<code>struct account;</code> in the header, functions in the
+<code>.c</code> file), enforced by the compiler.</p>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">mod stats {
+    pub mod basic {
+        pub fn mean(v: &amp;[f64]) -&gt; f64 {
+            v.iter().sum::&lt;f64&gt;() / v.len() as f64
+        }
+    }
+    pub use basic::mean;           // re-export at the shorter path
+}
+
+fn main() {
+    assert_eq!(stats::mean(&amp;[1.0, 2.0, 3.0]), 2.0);
+    assert_eq!(stats::basic::mean(&amp;[2.0, 4.0]), 3.0);   // the long path still works
+    println!("ok");
 }</code></pre>
 </details>
 

@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-041f66fa.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-4a592c45.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0c6e6701.js";
+            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-62f66b31.js"></script>
+        <script src="../toc-7af7fb05.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -355,10 +355,34 @@ and then prefer <code>enumerate()</code>.</li>
 </ul>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <ol>
-<li>Reverse a string with <code>"hello".chars().rev().collect::&lt;String&gt;()</code>.</li>
-<li>Count characters in a string with a <code>HashMap&lt;char, usize&gt;</code> and print them sorted.</li>
-<li>Rewrite your favorite C loop (find the max, filter and sum) as one iterator chain.</li>
+<li>
+<p>Reverse a string with <code>"hello".chars().rev().collect::&lt;String&gt;()</code>.</p>
+</li>
+<li>
+<p>Count characters in a string with a <code>HashMap&lt;char, usize&gt;</code> and print them sorted.</p>
+</li>
+<li>
+<p>Rewrite your favorite C loop (find the max, filter and sum) as one iterator chain.</p>
+</li>
+<li>
+<p><strong>Complete the code.</strong> Turn a sentence into the lengths of its words, using one iterator chain.</p>
+<pre class="playground"><code class="language-rust editable should_panic edition2024">fn word_lengths(s: &amp;str) -&gt; Vec&lt;usize&gt; {
+    todo!("split_whitespace, map, collect")
+}
+
+fn main() {
+    assert_eq!(word_lengths("a bb ccc"), [1, 2, 3]);
+    assert_eq!(word_lengths("  "), Vec::&lt;usize&gt;::new());
+    println!("ok");
+}</code></pre>
+</li>
+<li>
+<p><strong>Write and test.</strong> Return the word with the most vowels (the first one on a tie), using
+<code>max_by_key</code>. Careful: <code>max_by_key</code> returns the <strong>last</strong> maximum, so think about how to get the
+first.</p>
+</li>
 </ol>
+<!-- more-exercises -->
 <details>
 <summary>Solutions</summary>
 <p><strong>1.</strong></p>
@@ -396,6 +420,29 @@ for (size_t i = 0; i &lt; n; i++) {
     let sum: i32 = a.iter().filter(|&amp;&amp;x| x &gt; 0).sum();
     let max = a.iter().max();          // Option: an empty slice has no maximum
     println!("{sum} {max:?}");         // 16 Some(9)
+}</code></pre>
+<p><strong>4.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn word_lengths(s: &amp;str) -&gt; Vec&lt;usize&gt; {
+    s.split_whitespace().map(|w| w.len()).collect()
+}
+
+fn main() {
+    assert_eq!(word_lengths("a bb ccc"), [1, 2, 3]);
+    assert_eq!(word_lengths("  "), Vec::&lt;usize&gt;::new());
+    println!("ok");
+}</code></pre>
+<p><strong>5.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">fn most_vowels&lt;'a&gt;(words: &amp;[&amp;'a str]) -&gt; Option&lt;&amp;'a str&gt; {
+    let count = |w: &amp;str| w.chars().filter(|c| "aeiou".contains(*c)).count();
+    // `rev` makes the last maximum of the reversed order the first one of the original.
+    words.iter().copied().rev().max_by_key(|w| count(w))
+}
+
+fn main() {
+    assert_eq!(most_vowels(&amp;["sky", "queue", "area"]), Some("queue"));
+    assert_eq!(most_vowels(&amp;["to", "be"]), Some("to"));
+    assert_eq!(most_vowels(&amp;[]), None);
+    println!("ok");
 }</code></pre>
 </details>
 
