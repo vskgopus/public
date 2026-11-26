@@ -1,0 +1,11 @@
+Rust for C Programmers
+Copyright (C) 2026 Gopu Sugumar
+Licensed under the GNU General Public License, version 3 or (at your option) any later
+version (GPL-3.0-or-later). See LICENSE.
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+This book describes the Rust programming language and the C language for teaching. Rust,
+C and other product or API names are used only to identify the technologies being taught;
+this project is not affiliated with or endorsed by their owners. Code run through the Rust
+Playground is executed by that service under its own terms.

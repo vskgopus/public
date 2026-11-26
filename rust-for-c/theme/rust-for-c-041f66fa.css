@@ -1,0 +1,249 @@
+/* Rust for C Programmers: look and feel. Works with every mdBook theme. */
+
+:root {
+  --rc-accent: #c2410c;          /* rust orange */
+  --rc-accent-soft: #fff1e8;
+  --rc-c: #2563eb;               /* C blocks */
+  --rc-c-soft: #eef4ff;
+  --rc-rust: #c2410c;            /* Rust blocks */
+  --rc-ok: #15803d;
+  --rc-card: #ffffff;
+  --rc-line: #e6e1dc;
+  --rc-th: #fbeee4;
+  --rc-zebra: #faf7f4;
+  --rc-shadow: 0 1px 2px rgba(60, 30, 10, .06), 0 4px 14px rgba(60, 30, 10, .06);
+}
+.coal, .navy, .ayu {
+  --rc-accent: #f59e5b;
+  --rc-accent-soft: rgba(245, 158, 91, .12);
+  --rc-c: #7db1ff;
+  --rc-c-soft: rgba(125, 177, 255, .10);
+  --rc-rust: #f59e5b;
+  --rc-ok: #5fd08a;
+  --rc-card: rgba(255, 255, 255, .04);
+  --rc-line: rgba(255, 255, 255, .13);
+  --rc-th: rgba(245, 158, 91, .14);
+  --rc-zebra: rgba(255, 255, 255, .03);
+  --rc-shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 18px rgba(0, 0, 0, .25);
+}
+.rust {
+  --rc-accent: #9a3412;
+  --rc-accent-soft: rgba(154, 52, 18, .08);
+  --rc-card: rgba(255, 255, 255, .5);
+  --rc-line: #d9c9b8;
+  --rc-th: #ecd9c3;
+  --rc-zebra: rgba(255, 255, 255, .35);
+}
+
+/* ---------- Page and typography ---------- */
+:root { --content-max-width: 820px; }
+html { scroll-behavior: smooth; }
+.content main { line-height: 1.7; }
+.content p, .content li { font-size: 1.04em; }
+
+.content h1 {
+  font-size: 2.25rem;
+  letter-spacing: -.02em;
+  line-height: 1.2;
+  margin-top: .4em;
+  padding-bottom: .35em;
+  border-bottom: 3px solid var(--rc-accent);
+  background: none;
+}
+.content h2 {
+  margin-top: 2.2em;
+  padding-bottom: .25em;
+  border-bottom: 1px solid var(--rc-line);
+  letter-spacing: -.01em;
+}
+.content h2 .header, .content h3 .header { color: inherit; }
+.content h3 { margin-top: 1.7em; color: var(--rc-accent); }
+.content a { text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.content hr { border: 0; border-top: 1px solid var(--rc-line); margin: 2em 0; }
+
+/* Section numbers in the chapter template read as a flow */
+.content h2 + p:first-of-type::first-line { font-weight: 500; }
+
+/* ---------- Code ---------- */
+.content pre {
+  border-radius: 10px;
+  border: 1px solid var(--rc-line);
+  box-shadow: var(--rc-shadow);
+  margin: 1.1em 0;
+  position: relative;
+}
+.content pre > code { padding: 1rem 1.15rem; line-height: 1.55; }
+
+/* Language edge and tag: C is blue, Rust is orange */
+.content pre:has(> code.language-c) { border-left: 5px solid var(--rc-c); }
+.content pre:has(> code.language-rust) { border-left: 5px solid var(--rc-rust); }
+.content pre:has(> code.language-c)::after,
+.content pre:has(> code.language-rust)::after {
+  position: absolute;
+  right: 10px;
+  bottom: 6px;
+  font: 700 .66rem/1 var(--mono-font, monospace);
+  letter-spacing: .08em;
+  padding: 3px 7px;
+  border-radius: 999px;
+  opacity: .85;
+  pointer-events: none;
+}
+.content pre:has(> code.language-c)::after { content: "C"; color: var(--rc-c); background: var(--rc-c-soft); }
+.content pre:has(> code.language-rust)::after { content: "RUST"; color: var(--rc-rust); background: var(--rc-accent-soft); }
+
+/* Blocks the compiler must reject get a red edge */
+.content pre:has(> code.language-rust.compile_fail) { border-left-color: #dc2626; }
+.content pre:has(> code.language-rust.compile_fail)::after {
+  content: "DOES NOT COMPILE"; color: #dc2626; background: rgba(220, 38, 38, .10);
+}
+.content pre:has(> code.language-rust.should_panic)::after {
+  content: "PANICS"; color: #b45309; background: rgba(180, 83, 9, .12);
+}
+
+/* inline code */
+.content :not(pre) > code {
+  border-radius: 6px;
+  padding: .12em .4em;
+  border: 1px solid var(--rc-line);
+}
+
+/* ---------- Tables ---------- */
+.content table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--rc-line);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--rc-shadow);
+  margin: 1.3em 0;
+  font-size: .97em;
+}
+.content table thead th {
+  background: var(--rc-th);
+  border: 0;
+  border-bottom: 2px solid var(--rc-accent);
+  padding: .65em .9em;
+  text-align: left;
+  font-weight: 700;
+}
+.content table td { border: 0; border-top: 1px solid var(--rc-line); padding: .55em .9em; vertical-align: top; }
+.content table tbody tr:nth-child(even) { background: var(--rc-zebra); }
+.content table tbody tr:hover { background: var(--rc-accent-soft); }
+.content table td:first-child { font-weight: 500; }
+
+/* ---------- Lists and quotes ---------- */
+.content ol > li::marker { color: var(--rc-accent); font-weight: 700; }
+.content ul > li::marker { color: var(--rc-accent); }
+.content blockquote {
+  margin: 1.3em 0;
+  padding: .7em 1.1em;
+  border: 0;
+  border-left: 5px solid var(--rc-accent);
+  border-radius: 0 10px 10px 0;
+  background: var(--rc-accent-soft);
+}
+
+/* ---------- Solutions (collapsible) ---------- */
+.content details {
+  margin: 1.4em 0;
+  border: 1px solid var(--rc-line);
+  border-radius: 12px;
+  background: var(--rc-card);
+  box-shadow: var(--rc-shadow);
+  overflow: hidden;
+}
+.content details > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: .8em 1.1em;
+  font-weight: 700;
+  color: var(--rc-accent);
+  background: var(--rc-accent-soft);
+  user-select: none;
+}
+.content details > summary::-webkit-details-marker { display: none; }
+.content details > summary::before { content: "▸"; display: inline-block; width: 1.2em; transition: transform .15s; }
+.content details[open] > summary::before { transform: rotate(90deg); }
+.content details[open] > summary { border-bottom: 1px solid var(--rc-line); }
+.content details > :not(summary) { margin-left: 1.1em; margin-right: 1.1em; }
+.content details > summary + * { margin-top: 1em; }
+.content details > :last-child { margin-bottom: 1em; }
+
+/* ---------- Sidebar ---------- */
+.sidebar .chapter li.part-title {
+  margin-top: 1.4em;
+  padding-bottom: .3em;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--rc-accent);
+  border-bottom: 1px solid var(--rc-line);
+}
+.sidebar .chapter li a.active { color: var(--rc-accent); font-weight: 700; }
+.sidebar .chapter li a { padding: .12em 0; }
+#menu-bar { border-bottom-color: var(--rc-line); }
+.menu-title { font-weight: 800; letter-spacing: -.01em; }
+
+/* ---------- Chapter navigation ---------- */
+.nav-chapters { transition: color .15s, transform .15s; }
+.nav-chapters:hover { color: var(--rc-accent); transform: scale(1.12); }
+
+/* ---------- Intro page: hero and cards ---------- */
+.rc-hero {
+  margin: .4em 0 1.6em;
+  padding: 1.6em 1.6em 1.3em;
+  border-radius: 16px;
+  border: 1px solid var(--rc-line);
+  background:
+    radial-gradient(900px 260px at 100% -20%, var(--rc-accent-soft), transparent 70%),
+    var(--rc-card);
+  box-shadow: var(--rc-shadow);
+}
+.rc-hero p { margin: .4em 0; }
+.rc-kicker {
+  font-size: .78rem; font-weight: 800; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--rc-accent);
+}
+.rc-lead { font-size: 1.18em; line-height: 1.55; }
+.rc-vs { display: flex; gap: .6em; align-items: center; flex-wrap: wrap; margin-top: .9em; }
+.rc-chip {
+  display: inline-block; padding: .25em .8em; border-radius: 999px;
+  font: 700 .85rem var(--mono-font, monospace); border: 1px solid currentColor;
+}
+.rc-chip.c { color: var(--rc-c); background: var(--rc-c-soft); }
+.rc-chip.r { color: var(--rc-rust); background: var(--rc-accent-soft); }
+.rc-arrow { font-size: 1.3em; color: var(--rc-accent); }
+
+.rc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+  margin: 1.2em 0 1.8em;
+}
+.rc-card {
+  padding: 1em 1.1em;
+  border: 1px solid var(--rc-line);
+  border-top: 4px solid var(--rc-accent);
+  border-radius: 12px;
+  background: var(--rc-card);
+  box-shadow: var(--rc-shadow);
+  transition: transform .15s, box-shadow .15s;
+}
+.rc-card:hover { transform: translateY(-3px); }
+.rc-card h3 { margin: 0 0 .3em; font-size: 1.05rem; }
+.rc-card .rc-num { font-size: .72rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--rc-accent); }
+.rc-card p { margin: .35em 0; font-size: .95em; line-height: 1.5; }
+.rc-card ul { margin: .4em 0 0; padding-left: 1.1em; font-size: .93em; }
+
+/* ---------- Print ---------- */
+@media print {
+  .content details { break-inside: avoid; }
+  .content details > summary::before { content: ""; }
+}
+@media (max-width: 620px) {
+  .content h1 { font-size: 1.8rem; }
+  .content table { font-size: .9em; display: block; overflow-x: auto; }
+}
