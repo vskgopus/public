@@ -1,0 +1,1 @@
+{"name":"Browser Tools","short_name":"Browser Tools","description":"PDF, photo and scan tools that run entirely in your browser. Files never leave your device.","start_url":"./","display":"standalone","background_color":"#f2f4f9","theme_color":"#2438d8","lang":"en","scope":"./","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}]}
