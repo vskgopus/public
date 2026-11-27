@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-8cc5dcc8.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-5df2b918.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
+            window.path_to_searchindex_js = "../searchindex-3a257367.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-7af7fb05.js"></script>
+        <script src="../toc-d239aef9.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -177,7 +177,7 @@
                     <main>
                         <h1 id="glossary"><a class="header" href="#glossary">Glossary</a></h1>
 <p>Rust terms, each with the C idea it corresponds to and the chapter that teaches
-it. Terms the book leaves out are listed at the end.</p>
+it.</p>
 <p>This page is a lookup table, not a chapter, so it does not follow the
 six-section template.</p>
 <div class="table-wrapper">
@@ -226,6 +226,7 @@ six-section template.</p>
 <tr><td><strong>panic</strong></td><td>An unrecoverable error: it prints a message and unwinds (or aborts)</td><td><code>abort()</code> or a failed <code>assert</code></td><td>24</td></tr>
 <tr><td><strong>pattern</strong></td><td>The left side of <code>let</code>, of a <code>match</code> arm or of <code>if let</code>, which tests and destructures a value</td><td>None</td><td>5, 6</td></tr>
 <tr><td><strong>Pin</strong></td><td>A wrapper that stops a value from moving in memory; futures need it</td><td>None</td><td>22</td></tr>
+<tr><td><strong>PhantomData</strong></td><td>A zero-sized marker that makes a struct count as holding a <code>T</code> or <code>&amp;'a T</code>, so lifetimes and ownership of raw pointers are checked</td><td>A comment saying “this pointer borrows from that array”</td><td>12</td></tr>
 <tr><td><strong>RAII</strong></td><td>Resource acquisition is initialization: a value owns a resource and releases it on drop</td><td>A <code>goto cleanup</code> ladder, automated</td><td>11</td></tr>
 <tr><td><strong>raw pointer</strong></td><td><code>*const T</code> or <code>*mut T</code>: a pointer with no safety checks, dereferenced only in <code>unsafe</code></td><td>A C pointer</td><td>12</td></tr>
 <tr><td><strong>repr(C)</strong></td><td>An attribute that gives a struct C’s layout and field order</td><td>A struct’s normal layout</td><td>21</td></tr>
@@ -240,18 +241,6 @@ six-section template.</p>
 <tr><td><strong>unsafe</strong></td><td>A keyword that unlocks five extra operations; the programmer takes over the compiler’s checks</td><td>Every C line</td><td>12</td></tr>
 <tr><td><strong>unwinding</strong></td><td>Running <code>Drop</code> for each live value while a panic travels up the stack</td><td><code>longjmp</code>, with destructors</td><td>24</td></tr>
 <tr><td><strong>vtable</strong></td><td>The table of function pointers a trait object carries</td><td>A hand-written table of function pointers</td><td>16</td></tr>
-</tbody>
-</table>
-</div>
-<h2 id="terms-the-book-does-not-teach"><a class="header" href="#terms-the-book-does-not-teach">Terms the book does not teach</a></h2>
-<p>These appear in other Rust material. See <a href="further-reading.html">Further reading</a>.</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Term</th><th>One-line meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><strong>PhantomData</strong></td><td>A zero-sized marker that tells the compiler a type logically owns or borrows something</td></tr>
 </tbody>
 </table>
 </div>
@@ -313,6 +302,7 @@ six-section template.</p>
 
         <!-- Custom JS scripts -->
         <script src="../theme/copyright-1014955b.js"></script>
+        <script src="../theme/quiz-2368efd9.js"></script>
 
 
 

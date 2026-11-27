@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/rust-for-c-8cc5dcc8.css">
+        <link rel="stylesheet" href="../theme/rust-for-c-5df2b918.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-60e0eff3.js";
+            window.path_to_searchindex_js = "../searchindex-3a257367.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-7af7fb05.js"></script>
+        <script src="../toc-d239aef9.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -276,6 +276,100 @@ fn main() {
     }
 }</code></pre>
 <p>Forgetting <code>from_raw</code> leaks; calling it twice is a double free.</p>
+<h3 id="phantomdata-what-a-raw-pointer-cannot-say"><a class="header" href="#phantomdata-what-a-raw-pointer-cannot-say"><code>PhantomData</code>: what a raw pointer cannot say</a></h3>
+<p>In C, <code>struct view { const int *ptr; size_t len; }</code> does not record that the struct
+points into somebody else’s array. Nothing stops you from freeing the array and keeping
+the view. A Rust struct that stores only a raw pointer has the same blind spot, because
+<code>*const T</code> carries no lifetime. If you add a lifetime parameter and never use it, the
+compiler refuses:</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct View&lt;'a&gt; {              // error[E0392]: `'a` is never used
+    ptr: *const i32,
+    len: usize,
+}
+<span class="boring">}</span></code></pre>
+<p><code>std::marker::PhantomData&lt;T&gt;</code> is the fix. It is a zero-sized value that <strong>pretends</strong> the
+struct holds a <code>T</code>, so the compiler treats the lifetime or type as used. Here the view
+behaves as if it held a <code>&amp;'a i32</code>:</p>
+<pre class="playground"><code class="language-rust edition2024">use std::marker::PhantomData;
+
+struct View&lt;'a&gt; {
+    ptr: *const i32,
+    len: usize,
+    _borrow: PhantomData&lt;&amp;'a i32&gt;,    // costs no bytes; ties the view to the slice
+}
+
+impl&lt;'a&gt; View&lt;'a&gt; {
+    fn new(xs: &amp;'a [i32]) -&gt; View&lt;'a&gt; {
+        View { ptr: xs.as_ptr(), len: xs.len(), _borrow: PhantomData }
+    }
+
+    fn get(&amp;self, i: usize) -&gt; Option&lt;i32&gt; {
+        if i &lt; self.len {
+            Some(unsafe { *self.ptr.add(i) })    // in range; 'a keeps the data alive
+        } else {
+            None
+        }
+    }
+}
+
+fn main() {
+    let v = vec![1, 2, 3];
+    let view = View::new(&amp;v);
+    println!("{:?} {:?}", view.get(1), view.get(3));   // Some(2) None
+}</code></pre>
+<p>Now the dangling view that C allows is a compile error, because <code>view</code> still borrows <code>v</code>:</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">use std::marker::PhantomData;
+</span><span class="boring">struct View&lt;'a&gt; { ptr: *const i32, len: usize, _borrow: PhantomData&lt;&amp;'a i32&gt; }
+</span><span class="boring">impl&lt;'a&gt; View&lt;'a&gt; {
+</span><span class="boring">    fn new(xs: &amp;'a [i32]) -&gt; View&lt;'a&gt; {
+</span><span class="boring">        View { ptr: xs.as_ptr(), len: xs.len(), _borrow: PhantomData }
+</span><span class="boring">    }
+</span><span class="boring">    fn get(&amp;self, i: usize) -&gt; Option&lt;i32&gt; { if i &lt; self.len { Some(unsafe { *self.ptr.add(i) }) } else { None } }
+</span><span class="boring">}
+</span>fn main() {
+    let v = vec![1, 2, 3];
+    let view = View::new(&amp;v);
+    drop(v);              // error[E0505]: cannot move out of `v`
+    println!("{:?}", view.get(0));
+}</code></pre>
+<p>The same trick has two more uses:</p>
+<ul>
+<li><strong>Ownership.</strong> A <code>Vec</code>-like type that owns its heap block through a <code>*mut T</code> adds
+<code>PhantomData&lt;T&gt;</code>. This tells the compiler that dropping the struct drops <code>T</code>s, which
+matters for variance and for the drop checker.</li>
+<li><strong>Zero-cost tags.</strong> A type parameter that exists only to separate one kind of value
+from another (units, states, handles) needs a <code>PhantomData</code> to be allowed at all. In
+C you would write one <code>struct</code> per unit and copy the code, or accept that <code>double</code>
+is <code>double</code>.</li>
+</ul>
+<pre class="playground"><code class="language-rust compile_fail edition2024">use std::marker::PhantomData;
+use std::ops::Add;
+
+struct Meters;
+struct Feet;
+
+struct Length&lt;U&gt; {
+    value: f64,
+    _unit: PhantomData&lt;U&gt;,            // no bytes at run time
+}
+
+impl&lt;U&gt; Length&lt;U&gt; {
+    fn new(value: f64) -&gt; Self { Length { value, _unit: PhantomData } }
+}
+
+impl&lt;U&gt; Add for Length&lt;U&gt; {
+    type Output = Length&lt;U&gt;;
+    fn add(self, o: Length&lt;U&gt;) -&gt; Length&lt;U&gt; { Length::new(self.value + o.value) }
+}
+
+fn main() {
+    assert_eq!(size_of::&lt;Length&lt;Meters&gt;&gt;(), size_of::&lt;f64&gt;());  // tag is free
+    let a = Length::&lt;Meters&gt;::new(1.0);
+    let b = Length::&lt;Feet&gt;::new(3.0);
+    let _c = a + b;       // error[E0308]: mismatched types (Meters, Feet)
+}</code></pre>
 <h3 id="uninitialized-memory-maybeuninit"><a class="header" href="#uninitialized-memory-maybeuninit">Uninitialized memory: <code>MaybeUninit</code></a></h3>
 <p>Safe Rust never lets you read an uninitialized variable. When you really need a buffer
 that is filled piece by piece, such as an array built in a loop or memory handed to a C
@@ -331,6 +425,7 @@ which edition 2024 rejects by default.</p>
 <tr><td>calling any function</td><td>calling <code>unsafe fn</code> needs <code>unsafe { }</code></td></tr>
 <tr><td><code>union</code> read</td><td><code>unsafe</code> field read</td></tr>
 <tr><td><code>memcpy</code></td><td><code>ptr::copy_nonoverlapping</code> (unsafe)</td></tr>
+<tr><td>pointer that borrows from an array (nothing records it)</td><td>raw pointer plus <code>PhantomData&lt;&amp;'a T&gt;</code></td></tr>
 </tbody>
 </table>
 </div>
@@ -343,6 +438,8 @@ plain load or store.</li>
 compile-time marker for humans and tools.</li>
 <li>Undefined behavior in <code>unsafe</code> can break the guarantees of the <strong>safe</strong> code
 around it. That is why unsafe blocks should be tiny and wrapped in safe APIs.</li>
+<li><code>PhantomData&lt;T&gt;</code> is a zero-sized type: <code>size_of::&lt;PhantomData&lt;T&gt;&gt;()</code> is 0, and the struct
+that holds it has the layout it would have without it.</li>
 <li>To catch UB in tests, run <code>cargo +nightly miri test</code>. It interprets your code
 and detects invalid reads, dangling pointers and aliasing violations.</li>
 </ul>
@@ -387,6 +484,24 @@ fn main() {
 <li>
 <p><strong>Write and test.</strong> Build an array of the first four squares with <code>MaybeUninit</code>: write each element,
 then convert. Assert the result is <code>[0, 1, 4, 9]</code>.</p>
+</li>
+<li>
+<p><strong>Fix the code.</strong> This <code>Cursor</code> is meant to borrow from a slice, but it does not compile. Make it
+compile with a <code>PhantomData</code> field. Then add <code>drop(v);</code> before the <code>println!</code> and confirm the compiler
+now rejects the program.</p>
+<pre class="playground"><code class="language-rust editable compile_fail edition2024">struct Cursor&lt;'a&gt; {
+    ptr: *const u8,
+}
+
+fn cursor_at&lt;'a&gt;(v: &amp;'a [u8], i: usize) -&gt; Cursor&lt;'a&gt; {
+    Cursor { ptr: &amp;v[i] }
+}
+
+fn main() {
+    let v = vec![7u8, 8, 9];
+    let c = cursor_at(&amp;v, 1);
+    println!("{}", unsafe { *c.ptr });
+}</code></pre>
 </li>
 </ol>
 <!-- more-exercises -->
@@ -465,6 +580,27 @@ fn main() {
 }</code></pre>
 <p>If the loop wrote only three elements, the <code>transmute</code> would still compile, and the
 program would have undefined behavior: that is what <code>unsafe</code> means.</p>
+<p><strong>6.</strong></p>
+<pre class="playground"><code class="language-rust edition2024">use std::marker::PhantomData;
+
+struct Cursor&lt;'a&gt; {
+    ptr: *const u8,
+    _borrow: PhantomData&lt;&amp;'a u8&gt;,
+}
+
+fn cursor_at&lt;'a&gt;(v: &amp;'a [u8], i: usize) -&gt; Cursor&lt;'a&gt; {
+    Cursor { ptr: &amp;v[i], _borrow: PhantomData }
+}
+
+fn main() {
+    let v = vec![7u8, 8, 9];
+    let c = cursor_at(&amp;v, 1);
+    println!("{}", unsafe { *c.ptr });     // 8
+    drop(v);                               // fine: c is not used after this line
+}</code></pre>
+<p>The starter fails with <code>E0392</code> (unused lifetime). With <code>drop(v)</code> placed before the <code>println!</code>, the
+compiler reports <code>E0505</code>, because <code>c</code> is still live and borrows <code>v</code>. Without the <code>PhantomData</code>, that
+program would compile and read freed memory.</p>
 </details>
 
                     </main>
@@ -475,7 +611,7 @@ program would have undefined behavior: that is what <code>unsafe</code> means.</
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../03-abstraction/13-methods.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../02-memory-model/review.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -489,7 +625,7 @@ program would have undefined behavior: that is what <code>unsafe</code> means.</
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../03-abstraction/13-methods.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../02-memory-model/review.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
@@ -524,6 +660,7 @@ program would have undefined behavior: that is what <code>unsafe</code> means.</
 
         <!-- Custom JS scripts -->
         <script src="../theme/copyright-1014955b.js"></script>
+        <script src="../theme/quiz-2368efd9.js"></script>
 
 
 

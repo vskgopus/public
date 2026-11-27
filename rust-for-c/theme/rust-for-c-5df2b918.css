@@ -266,3 +266,37 @@ html { scroll-behavior: smooth; }
   .content h1 { font-size: 1.8rem; }
   .content table { font-size: .9em; display: block; overflow-x: auto; }
 }
+
+/* ---------- Quiz page ---------- */
+.quiz-score {
+  position: sticky; top: calc(var(--menu-bar-height, 50px) + 6px); z-index: 5;
+  display: flex; align-items: center; justify-content: space-between; gap: 1em;
+  margin: 1em 0; padding: .6em 1em;
+  border: 1px solid var(--rc-line); border-radius: 10px;
+  background: var(--rc-card); box-shadow: var(--rc-shadow);
+  font-weight: 700; color: var(--rc-accent);
+}
+.quiz-score[hidden] { display: none; }
+.quiz-score button {
+  font: inherit; font-size: .85em; cursor: pointer;
+  padding: .25em .9em; border-radius: 999px;
+  border: 1px solid var(--rc-accent); background: transparent; color: var(--rc-accent);
+}
+.quiz-score button:hover { background: var(--rc-accent-soft); }
+.quiz-q {
+  margin: 1.2em 0; padding: .2em 1.1em .6em;
+  border: 1px solid var(--rc-line); border-radius: 12px; background: var(--rc-card);
+}
+.quiz-q ul { list-style: none; padding-left: 0; }
+.quiz-q.live ul > li {
+  cursor: pointer; margin: .35em 0; padding: .45em .8em;
+  border: 1px solid var(--rc-line); border-radius: 8px;
+}
+.quiz-q.live:not(.done) ul > li:hover,
+.quiz-q.live:not(.done) ul > li:focus { border-color: var(--rc-accent); background: var(--rc-accent-soft); outline: none; }
+.quiz-q.done ul > li { cursor: default; }
+.quiz-q ul > li.right { border-color: var(--rc-ok); background: rgba(21, 128, 61, .10); }
+.quiz-q ul > li.wrong { border-color: #dc2626; background: rgba(220, 38, 38, .10); }
+.quiz-q.live details:not([open]) { display: none; }
+.quiz-q details { margin: .8em 0 .2em; }
+@media print { .quiz-score { display: none; } }
